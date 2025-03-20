@@ -3,6 +3,7 @@ import {
   Authorization,
   AuthorizationTypes,
   Headers,
+  Parameters,
   RequestBody,
 } from "@/types/API.types";
 import { generateUUID } from "./dataUtils";
@@ -24,8 +25,8 @@ export const AppConstants = {
     contentType: "application/json",
     content: "{}",
   } as RequestBody,
-  DEFAULT_API_PARAMETERS: {},
-  DEFAULT_API_HEADERS: {},
+  DEFAULT_API_PARAMETERS: {} as Parameters,
+  DEFAULT_API_HEADERS: {} as Headers,
 };
 
 export const getDefaultRestApi = (): APISchema => {

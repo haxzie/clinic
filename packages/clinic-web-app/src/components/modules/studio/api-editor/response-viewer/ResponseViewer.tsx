@@ -26,7 +26,7 @@ export default function ResponseViewer() {
   return (
     <Panel minSize={10} className={styles.responseViewer}>
       <PanelResizeHandle />
-      {true ? (
+      {response ? (
         <PanelGroup direction="horizontal" className={styles.responseArea}>
           <Panel defaultSize={70} className={styles.viewerContent}>
             <ResponseStatusBar />

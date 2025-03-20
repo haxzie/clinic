@@ -24,6 +24,7 @@
     "@uiw/codemirror-themes": "^4.23.10",
     "@uiw/react-codemirror": "^4.23.10",
     "highlight.js": "^11.11.1",
+    "lowlight": "^3.3.0",
     "next": "^15.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

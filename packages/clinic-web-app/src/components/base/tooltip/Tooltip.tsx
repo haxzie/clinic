@@ -114,7 +114,7 @@ const Tooltip = ({
         window.removeEventListener("resize", handleResize);
       };
     }
-  }, [isVisible]);
+  }, [isVisible, updateTooltipPosition]);
 
   // Clean up timeout when component unmounts
   useEffect(() => {
