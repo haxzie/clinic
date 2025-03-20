@@ -1,0 +1,61 @@
+.navigationWrapper {
+    width: 280px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+
+    .resizableHandle {
+        // position: absolute;
+    }
+}
+.explorerPanel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        height: 48px;
+        gap: 10px;
+        border-bottom: 1px solid var(--color-border);
+
+        .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title {
+            font-size: var(--font-size-s);
+            line-height: var(--line-height-s);
+            font-family: var(--font-monospace);
+            font-weight: var(--font-weight-semibold);
+        }
+    }
+
+    .listHeader {
+        display: flex;
+        align-items: center;
+        height: 48px;
+        padding: 10px 10px 10px 15px;
+        border-bottom: 1px solid var(--color-border);
+
+        .title {
+            flex: 1;
+            font-size: var(--font-size-s);
+            line-height: var(--line-height-s);
+            font-weight: var(--font-weight-semibold);
+            font-family: var(--font-monospace);
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    }
+}

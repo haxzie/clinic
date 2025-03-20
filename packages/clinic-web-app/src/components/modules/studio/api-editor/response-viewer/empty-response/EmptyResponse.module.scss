@@ -1,0 +1,35 @@
+.emptyResponse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 50px;
+  gap: 25px;
+
+  h4.title {
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    color: var(--color-font-light);
+    font-family: var(--font-monospace);
+  }
+
+  p.commandHint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    span {
+        padding: 4px 10px;
+        height: 38px;
+        width: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-background-light);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-m);
+        color: var(--color-font-light);
+    }
+  }
+}

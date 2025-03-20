@@ -1,0 +1,102 @@
+.parameterEditor {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  position: relative;
+
+  .header,
+  .param {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    border-bottom: 1px solid var(--color-border);
+    height: 42px;
+    position: relative;
+
+    .paramKey {
+      border-right: 1px solid var(--color-border);
+      padding: 10px 15px;
+      font-size: var(--font-size-s);
+      font-family: var(--font-monospace);
+    }
+
+    .paramValue {
+      padding: 10px 15px;
+      font-size: var(--font-size-s);
+      font-family: var(--font-monospace);
+    }
+
+    input {
+      border: 0;
+      height: 100%;
+      width: 100%;
+      background-color: transparent;
+      color: var(--color-font);
+      outline: none;
+      padding: 10px 15px;
+      font-size: var(--font-size-s);
+      font-family: var(--font-monospace);
+
+      &:focus {
+        background-color: var(--color-input-background);
+      }
+    }
+
+    .deleteButton {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto 4px;
+      width: 32px;
+      height: 32px;
+      background: transparent;
+      border: 0;
+      color: var(--color-font-light);
+      border-radius: 50%;
+      transition: all 0.2s ease-in-out;
+
+      &:active {
+        transform: scale(0.9);
+      }
+
+      &:hover {
+        color: var(--color-font);
+        background-color: var(--color-background-light);
+        cursor: pointer;
+      }
+    }
+
+    &.readOnly {
+      opacity: 0.5;
+    }
+  }
+
+  .placeholder {
+    .paramKey,
+    .paramValue {
+      padding: 0;
+      color: var(--color-font-light);
+    }
+  }
+
+  .header {
+    color: var(--color-font-light);
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-input-background);;
+
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+    .paramKey,
+    .paramValue {
+      font-size: var(--font-size-xs);
+    }
+  }
+}
