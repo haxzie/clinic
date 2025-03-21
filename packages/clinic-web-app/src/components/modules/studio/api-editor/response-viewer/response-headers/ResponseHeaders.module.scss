@@ -32,8 +32,11 @@
 
     h4.title {
       position: sticky;
+      display: flex;
+      align-items: center;
       top: 0;
-      background-color: var(--color-input-background);
+      z-index: 1;
+      background-color: var(--color-background);
       font-size: var(--font-size-xs);
       line-height: var(--line-height-xs);
       font-family: var(--font-monospace);
@@ -80,6 +83,7 @@
       display: grid;
       grid-template-columns: 1fr 2fr;
       padding: 10px 15px;
+      gap: 10px;
       border-bottom: 1px solid var(--color-border);
 
       .timingKey,
@@ -118,6 +122,7 @@
         font-size: var(--font-size-xs);
         line-height: var(--line-height-xs);
         font-family: var(--font-monospace);
+        word-break: break-all;
       }
     }
   }

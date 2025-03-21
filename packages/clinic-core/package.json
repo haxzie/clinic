@@ -1,0 +1,21 @@
+{
+  "name": "@apiclinic/core",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.5",
+  "devDependencies": {
+    "@types/bun": "^1.2.5",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "axios": "^1.8.4"
+  }
+}

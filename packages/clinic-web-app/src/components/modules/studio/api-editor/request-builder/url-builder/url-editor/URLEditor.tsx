@@ -37,12 +37,15 @@ export default function URLEditor({
     // Port number
     const portRegex = /:(\d+)(?=\/|$|[?#])/;
 
-    // Path (excluding domain and query/hash)
+    // Path anything that starts with / and ends with ? or #, shouldn't be before a / or colon, also should not be a file name
     const pathRegex =
       /^https?:\/\/(?:[^@\/]+@)?[^\/:#?]+(?::\d+)?(\/.+?)(?=[?#]|$)/;
 
     // Query parameters
     const queryRegex = /(\?[^#]+)(?=#|$)/;
+
+    // file name + extension
+    const fileRegex = /\/([^/]+\.[^./?#]+)(?=[?#]|$)/;
 
     // Hash fragment
     const hashRegex = /(#.*)$/;
@@ -101,6 +104,28 @@ export default function URLEditor({
         // Find the actual position in the original URL string
         const position = url.indexOf(value);
         if (position !== -1) {
+          // check if it's a filename
+          if (regexConfig.className === "path") {
+            const fileMatch = value.match(fileRegex);
+            if (fileMatch && fileMatch[1]) {
+              const fileName = fileMatch[1];
+              const fileNamePosition = value.indexOf(fileName);
+              highlightedURLParts.push({
+                className: "path",
+                value: value.substring(0, fileNamePosition),
+                position: [position, position + fileNamePosition],
+              });
+              highlightedURLParts.push({
+                className: "file",
+                value: fileName,
+                position: [
+                  position + fileNamePosition,
+                  position + fileNamePosition + fileName.length,
+                ],
+              });
+              return;
+            }
+          }
           highlightedURLParts.push({
             className: regexConfig.className,
             value: value,

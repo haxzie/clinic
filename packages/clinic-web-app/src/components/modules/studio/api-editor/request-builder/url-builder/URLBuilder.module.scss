@@ -40,43 +40,18 @@
   }
 }
 
-
 .options {
   display: flex;
   align-items: center;
   padding: 0px 8px 0px 10px;
   gap: 10px;
 
-  .sendButton {
+  .buttonIcons {
     display: flex;
-    gap: 10px;
     align-items: center;
-    padding: 10px 12px 10px 10px;
-    height: 34px;
-    font-size: var(--font-size-s);
-    line-height: var(--line-height-s);
-    font-weight: var(--font-weight-semibold);
-    background-color: var(--color-primary);
-    font-family: var(--font-monospace);
-    border: none;
-    border-radius: var(--radius-m);
+    gap: 5px;
     color: var(--color-font);
-
-    span {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      color: var(--color-font);
-      opacity: 0.5;
-    }
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &:active {
-      background-color: var(--color-primary-dark);
-    }
+    opacity: 0.5;
   }
 
   .copyButton {

@@ -8,6 +8,7 @@ interface TooltipProps {
   text?: string;
   position?: TooltipPosition;
   delay?: number; // Time in milliseconds
+  style?: React.CSSProperties;
   children: ReactNode;
 }
 
@@ -15,6 +16,7 @@ const Tooltip = ({
   text,
   position = "top",
   delay = 500,
+  style = {},
   children,
 }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -131,6 +133,7 @@ const Tooltip = ({
       onFocus={handleShowTooltip}
       onBlur={handleHideTooltip}
       ref={childRef}
+      style={style}
     >
       {children}
 

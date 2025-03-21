@@ -1,0 +1,1 @@
+export const RELAY_API_URL = process.env.NEXT_PUBLIC_RELAY_API_URL;

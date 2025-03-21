@@ -1,32 +1,33 @@
 import {
-  APISchema,
   Authorization,
   AuthorizationTypes,
-  Headers,
-  Parameters,
   RequestBody,
-} from "@/types/API.types";
+  RequestHeaders,
+  RequestParameters,
+} from "@apiclinic/core";
 import { generateUUID } from "./dataUtils";
+import { RequestMethod } from "@apiclinic/core";
+import { APISchema } from "@/types/API.types";
 
 export const ApiConstants = {};
 
 export const AppConstants = {
   ROOT_API_PARENT_ID: "root",
   DEFAULT_REST_API_NAME: "Untitled API",
-  DEFAULT_API_PATH: "https://api.clinic.dev/ping",
-  DEFAULT_API_METHOD: "GET",
+  DEFAULT_API_PATH: "https://api.apico.dev/v1/BE15m1/users.list",
+  DEFAULT_API_METHOD: "GET" as RequestMethod,
   DEFAULT_API_DESCRIPTION: `<h1>Untitled API</h1>
 <p>This is an API description. You can use this space to describe the API, its purpose, and how to use it.</p>`,
   DEFAULT_API_AUTHORIZATION: {
-    type: AuthorizationTypes.NONE,
+    type: "None" as AuthorizationTypes.NONE,
     content: {},
   } as Authorization,
   DEFAULT_REQUEST_BODY: {
     contentType: "application/json",
     content: "{}",
   } as RequestBody,
-  DEFAULT_API_PARAMETERS: {} as Parameters,
-  DEFAULT_API_HEADERS: {} as Headers,
+  DEFAULT_API_PARAMETERS: {} as RequestParameters,
+  DEFAULT_API_HEADERS: {} as RequestHeaders,
 };
 
 export const getDefaultRestApi = (): APISchema => {

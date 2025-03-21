@@ -1,10 +1,5 @@
 import useApiStore from "@/store/api-store/api.store";
-import {
-  Authorization,
-  Headers,
-  Parameters,
-  RequestBody,
-} from "@/types/API.types";
+import { RequestHeaders, RequestMethod, RequestParameters, Authorization, RequestBody } from "@apiclinic/core";
 import React, { createContext, useContext, ReactNode, useRef } from "react";
 
 // Define the context type
@@ -42,7 +37,7 @@ export const useAPI = () => {
     throw new Error("useAPI must be used within a CounterProvider");
   }
 
-  const setMethod = (method: string) => {
+  const setMethod = (method: RequestMethod) => {
     useApiStore.getState().updateAPI(context?.apiId, { method });
   };
 
@@ -54,11 +49,11 @@ export const useAPI = () => {
     useApiStore.getState().updateAPI(context?.apiId, { description });
   };
 
-  const setHeaders = (headers: Headers) => {
+  const setHeaders = (headers: RequestHeaders) => {
     useApiStore.getState().updateAPI(context?.apiId, { headers });
   };
 
-  const setParameters = (parameters: Parameters) => {
+  const setParameters = (parameters: RequestParameters) => {
     useApiStore.getState().updateAPI(context?.apiId, { parameters });
   };
 
@@ -70,6 +65,10 @@ export const useAPI = () => {
     useApiStore.getState().updateAPI(context?.apiId, { authorization });
   };
 
+  const makeHTTPRequest = async () => {
+    await useApiStore.getState().makeHTTPRequest(context?.apiId);
+  }
+
   return {
     apiId: context.apiId,
     setMethod,
@@ -79,5 +78,6 @@ export const useAPI = () => {
     setParameters,
     setRequestBody,
     setAuthorization,
+    makeHTTPRequest 
   };
 };

@@ -9,16 +9,19 @@ import { useAPI } from "../../api-context-provider/APIContextProvider";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import URLEditor from "./url-editor/URLEditor";
+import { RequestMethod } from "@apiclinic/core";
+import Button from "@/components/base/button/Button";
 
 export default function URLBuilder() {
   const [focused, setFocused] = React.useState(false);
-  const { apiId, setMethod } = useAPI();
-  const { method } = useApiStore(
+  const { apiId, setMethod, makeHTTPRequest } = useAPI();
+  const { method, isLoading } = useApiStore(
     useShallow((state) => ({
       method: state.apis[apiId].method,
+      isLoading: state.apis[apiId].isLoading,
     }))
   );
-  const handleMethodChange = (method: string) => {
+  const handleMethodChange = (method: RequestMethod) => {
     setMethod(method);
   };
 
@@ -49,13 +52,13 @@ export default function URLBuilder() {
         >
           <CopyIcon size={16} />
         </IconButton>
-        <button className={styles.sendButton}>
+        <Button onClick={makeHTTPRequest} loading={isLoading}>
           Send
-          <span>
+          <span className={styles.buttonIcons}>
             <CommandIcon size={14} />
             <EnterIcon size={18} />
           </span>
-        </button>
+        </Button>
       </div>
     </div>
   );
