@@ -1,6 +1,8 @@
 {
   "name": "@apiclinic/server",
   "type": "module",
+  "main": "src/index.ts",
+  "version": "1.0.0",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node"

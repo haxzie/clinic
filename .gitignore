@@ -134,3 +134,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# turbo
+.turbo
+
+# Mac shit
+.DS_Store
