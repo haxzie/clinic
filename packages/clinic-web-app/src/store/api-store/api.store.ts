@@ -12,6 +12,13 @@ const initialState = {
 const useApiStore = create<APIStoreState>()((set, get) => ({
   ...initialState,
 
+  /**
+   * Makes an HTTP request to the specified API and updates the state with the response.
+   * 
+   * @TODO - Move this to a separate service
+   * @param apiId - The ID of the API to make the request for
+   * @returns {Promise<void>} - A promise that resolves when the request is complete
+   */
   makeHTTPRequest: async (apiId) => {
     const api = get().apis[apiId];
     if (!api) {

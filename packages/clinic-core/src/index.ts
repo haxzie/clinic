@@ -1,4 +1,5 @@
 export { relayHTTPRequest } from "./lib/request";
+export { RequestMethods } from "./lib/request";
 export type {
   Request,
   Response,

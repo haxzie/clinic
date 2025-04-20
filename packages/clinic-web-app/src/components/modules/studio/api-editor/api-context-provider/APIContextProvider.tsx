@@ -1,6 +1,13 @@
 import useApiStore from "@/store/api-store/api.store";
-import { RequestHeaders, RequestMethod, RequestParameters, Authorization, RequestBody } from "@apiclinic/core";
+import {
+  RequestHeaders,
+  RequestMethod,
+  RequestParameters,
+  Authorization,
+  RequestBody,
+} from "@apiclinic/core";
 import React, { createContext, useContext, ReactNode, useRef } from "react";
+import { useShallow } from "zustand/shallow";
 
 // Define the context type
 interface APIEditorContextType {
@@ -32,6 +39,11 @@ export const APIEditorContextProvider = ({
 // Custom hook for using the Counter context
 export const useAPI = () => {
   const context = useContext(APIEditorContext);
+  const { api } = useApiStore(
+    useShallow((state) => ({
+      api: state.apis[context?.apiId as string],
+    }))
+  );
 
   if (!context) {
     throw new Error("useAPI must be used within a CounterProvider");
@@ -67,10 +79,11 @@ export const useAPI = () => {
 
   const makeHTTPRequest = async () => {
     await useApiStore.getState().makeHTTPRequest(context?.apiId);
-  }
+  };
 
   return {
     apiId: context.apiId,
+    api,
     setMethod,
     setPath,
     setDescription,
@@ -78,6 +91,6 @@ export const useAPI = () => {
     setParameters,
     setRequestBody,
     setAuthorization,
-    makeHTTPRequest 
+    makeHTTPRequest,
   };
 };

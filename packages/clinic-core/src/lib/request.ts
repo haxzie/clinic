@@ -1,7 +1,6 @@
 import http from "http";
 import https from "https";
 import { URL } from "url";
-import { performance } from "perf_hooks";
 /**
  * Parameters
  */
@@ -78,14 +77,17 @@ export interface Authorization {
   };
 }
 
-export type RequestMethod =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "OPTIONS"
-  | "HEAD";
+export const RequestMethods = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  DELETE: "DELETE",
+  PATCH: "PATCH",
+  OPTIONS: "OPTIONS",
+  HEAD: "HEAD",
+} as const;
+export type RequestMethodType = keyof typeof RequestMethods;
+export type RequestMethod = typeof RequestMethods[RequestMethodType];
 
 export type ResponsePerformance = {
   duration: number;

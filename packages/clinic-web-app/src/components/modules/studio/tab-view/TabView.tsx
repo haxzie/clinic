@@ -11,6 +11,7 @@ import { useShallow } from "zustand/shallow";
 import { TabRegistry } from "./TabRegistry";
 import { TabType } from "@/store/editor-store/editor.types";
 import WelcomeScreen from "../welcome-screen/WelcomeScreen";
+import ArrowUpDownIcon from "@/components/icons/ArrowUpDownIcon";
 
 export default function TabView() {
   const { activeTab, tabs, setActiveTab, removeTab, createTab } =
@@ -81,7 +82,7 @@ export default function TabView() {
           <button className={styles.envButton}>
             <VariableIcon size={18} />
             <span>Environment</span>
-            <ChevronDownIcon size={18} />
+            <ArrowUpDownIcon size={24} />
           </button>
         </div>
       </div>

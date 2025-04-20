@@ -11,6 +11,7 @@ import { useShallow } from "zustand/shallow";
 import URLEditor from "./url-editor/URLEditor";
 import { RequestMethod } from "@apiclinic/core";
 import Button from "@/components/base/button/Button";
+import MethodPicker from "./method-picker/MethodPicker";
 
 export default function URLBuilder() {
   const [focused, setFocused] = React.useState(false);
@@ -32,13 +33,7 @@ export default function URLBuilder() {
 
   return (
     <div className={[styles.urlBuilder, focused && styles.focused].join(" ")}>
-      <div
-        className={styles.methodPicker}
-        onClick={() => handleMethodChange("POST")}
-      >
-        <span>{method}</span>
-        <ChevronDownIcon size={16} />
-      </div>
+      <MethodPicker value={method} onChange={setMethod}/>
       <URLEditor
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}

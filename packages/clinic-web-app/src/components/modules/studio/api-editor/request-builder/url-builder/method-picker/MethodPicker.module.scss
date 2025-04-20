@@ -1,0 +1,18 @@
+.methodPicker {
+    color: var(--color-font);
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-monospace);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    font-weight: var(--font-weight-bold);
+    padding: 0px 10px 0px 10px;
+    width: 100px;
+    height: 100%;
+    gap: 5px;
+    border-right: 1px solid var(--color-border);
+
+
+}

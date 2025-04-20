@@ -4,38 +4,12 @@
   display: flex;
   align-items: center;
   background-color: var(--color-background);
-  overflow: hidden;
+  overflow-x: hidden;
   height: 48px;
   border-bottom: 1px solid var(--color-border);
   background-color: var(--color-input-background);
 
   &.focused {
-    background-color: var(--color-element-background-dark);
-  }
-}
-
-.methodPicker {
-  border-right: 1px solid var(--color-border);
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-s);
-  line-height: var(--line-height-s);
-  font-weight: var(--font-weight-bold);
-  font-weight: 500;
-  padding: 0px 10px 0px 10px;
-  width: 100px;
-  span {
-    font-family: var(--font-monospace);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-primary);
-    text-align: center;
-    flex: 1;
-  }
-
-  &:hover {
-    cursor: pointer;
     background-color: var(--color-element-background-dark);
   }
 }
