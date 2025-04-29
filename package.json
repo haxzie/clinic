@@ -8,7 +8,7 @@
     "dev": "turbo run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "lint": "eslint ."
+    "lint": "eslint . && turbo lint"
   },
   "packageManager": "pnpm@10.8.1",
   "workspaces": {

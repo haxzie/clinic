@@ -11,6 +11,11 @@
         "persistent": true,
         "cache": false
       },
+      "lint": {
+        "dependsOn": ["^lint"],
+        "cache": false,
+        "outputs": []
+      },
       "check-types": {
         "dependsOn": ["^check-types"]
       }
