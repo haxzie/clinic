@@ -82,7 +82,7 @@
     background-color: var(--color-input-background);
     color: var(--color-font);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-l);
+    border-radius: var(--radius-m);
 
     .loader {
       span {
@@ -91,7 +91,7 @@
     }
 
     &:hover {
-      background-color: var(--color-element-background);
+      background-color: var(--color-element-background-dark);
     }
   }
 

@@ -3,14 +3,27 @@ import { create } from "zustand";
 import { APIStoreState } from "./api.types";
 import { getDefaultRestApi } from "@/utils/constants";
 import { relayRequest } from "@/services/clinic-server/relay";
+import { generateUUID } from "@/utils/dataUtils";
 
-const initialState = {
-  apis: {},
-  environment: "development",
-};
+const getInitialState = () => {
+  const defaultAPIId = generateUUID("api");
+  const defaultAPI = getDefaultRestApi();
+  return {
+    activeAPI: defaultAPIId,
+    apis: {
+      [defaultAPIId]: {
+        ...defaultAPI,
+        id: defaultAPIId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    },
+    environment: "development",
+  };
+}
 
 const useApiStore = create<APIStoreState>()((set, get) => ({
-  ...initialState,
+  ...getInitialState(),
 
   /**
    * Makes an HTTP request to the specified API and updates the state with the response.

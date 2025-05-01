@@ -5,12 +5,13 @@ import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import { AnimatePresence, motion } from "motion/react";
 
 export type DropDownProps<T extends { id: string; value: string }> = {
-  value: T;
+  value?: T;
   onChange: (value: T) => void;
   options: Array<T> | Record<string, T>;
   className?: string;
   disabled?: boolean;
   placeholder?: string;
+  showChevron?: boolean;
   selectElement?: React.ComponentType<{ value: T["value"] }>;
   optionElement?: React.ComponentType<{ value: T["value"] }>;
 };
@@ -32,11 +33,12 @@ export function DropDownPortal({
   const parentRect = parentRef?.current?.getBoundingClientRect();
   const portalStyle: React.CSSProperties = {
     position: "absolute",
-    top: parentRect ? parentRect.bottom : 0,
+    top: parentRect ? parentRect.bottom + 2 : 2,
     left: parentRect ? parentRect.left : 0,
-    width: parentRect ? parentRect.width : "auto",
+    minWidth: parentRect ? parentRect.width : "auto",
     height: "auto",
     maxHeight: window.innerHeight - (parentRect ? parentRect.bottom : 0) - 20,
+    maxWidth: window.innerWidth - (parentRect ? parentRect.left : 0) - 20,
     zIndex: 1000,
   };
 
@@ -81,6 +83,7 @@ export function DropDown<T extends { id: string; value: string }>({
   className,
   selectElement,
   optionElement,
+  showChevron = true,
 }: DropDownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const parentRef = React.useRef<HTMLDivElement>(null);
@@ -101,15 +104,19 @@ export function DropDown<T extends { id: string; value: string }>({
         onClick={() => setIsOpen(!isOpen)}
       >
         {selectElement ? (
-          React.createElement(selectElement, { value: value?.value })
+          React.createElement(selectElement, {
+            value: value?.value as T["value"],
+          })
         ) : (
           <span className={styles.selectValue}>
             {value?.value || "Select an option"}
           </span>
         )}
-        <div className={[styles.chevron, isOpen && styles.open].join(` `)}>
-          <ChevronDownIcon size={18} />
-        </div>
+        {showChevron && (
+          <div className={[styles.chevron, isOpen && styles.open].join(` `)}>
+            <ChevronDownIcon size={18} />
+          </div>
+        )}
       </div>
 
       {isOpen && (
@@ -117,7 +124,7 @@ export function DropDown<T extends { id: string; value: string }>({
           parentRef={parentRef}
           onClickOutside={() => setIsOpen(false)}
         >
-          <div className={styles.options}>
+          <div className={`${styles.options}`}>
             {displayOptions.map((option) => (
               <div
                 key={option.id}

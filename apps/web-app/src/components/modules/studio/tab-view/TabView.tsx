@@ -1,109 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./TabView.module.scss";
-import IconButton from "@/components/base/icon-button/IconButton";
-import ClearIcon from "@/components/icons/ClearIcon";
-import AddIcon from "@/components/icons/AddIcon";
-import VariableIcon from "@/components/icons/VariableIcon";
-import useEditorStore from "@/store/editor-store/editor.store";
 import { useShallow } from "zustand/shallow";
-import { TabRegistry } from "./TabRegistry";
-import { TabType } from "@/store/editor-store/editor.types";
-import WelcomeScreen from "../welcome-screen/WelcomeScreen";
-import ArrowUpDownIcon from "@/components/icons/ArrowUpDownIcon";
-import EnvironmentModal from "../modals/environment-modal/EnvironmentModal";
+import TopBar from "./top-bar/TopBar";
+import APIEditor from "../api-editor/APIEditor";
 import useApiStore from "@/store/api-store/api.store";
 
 export default function TabView() {
-  const [showEnvModal, setShowEnvModal] = useState(false);
-  const { apis } = useApiStore(
-    useShallow(({ apis }) => ({
-      apis,
-    }))
+  const { activeAPI } = useApiStore(
+    useShallow(({ activeAPI }) => ({ activeAPI }))
   );
-  const { activeTab, tabs, setActiveTab, removeTab, createTab } =
-    useEditorStore(
-      useShallow(({ activeTab, tabs, setActiveTab, removeTab, createTab }) => ({
-        activeTab,
-        tabs,
-        setActiveTab,
-        removeTab,
-        createTab,
-      }))
-    );
-
-  const ActiveTab = ({ tabId }: { tabId: string | null }) => {
-    console.log(tabId);
-    if (!tabId) return <WelcomeScreen />;
-    const TabComponent = TabRegistry[tabs[tabId].type].component;
-    console.log(TabComponent);
-    return <TabComponent tab={tabs[tabId]} />;
-  };
-
-  const handleCreateNewRestTab = () => {
-    createTab({
-      name: "Untitled API",
-      type: TabType.REST,
-      metadata: {},
-    });
-  };
 
   return (
     <div id="tab-view" className={styles.tabView}>
-      <div className={styles.header}>
-        <div className={styles.tabs}>
-          {Object.values(tabs).map((tab) => (
-            <div
-              key={tab.id}
-              className={`${styles.tab} ${
-                activeTab === tab.id ? styles.active : ""
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span>{tab.name}</span>
-              {tab.type === TabType.REST && !apis[tab.id]?.isSaved && (
-                <span className={styles.unsaved}></span>
-              )}
-              <IconButton
-                size="small"
-                color="var(--color-font-light)"
-                className={styles.iconButton}
-                onClick={() => removeTab(tab.id)}
-                tooltip="Close tab"
-                tooltipPosition="bottom"
-              >
-                <ClearIcon size={16} />
-              </IconButton>
-            </div>
-          ))}
-          <IconButton
-            size="small"
-            className={styles.addTab}
-            onClick={handleCreateNewRestTab}
-            tooltip="Add new tab"
-            tooltipPosition="bottom"
-          >
-            <AddIcon size={16} />
-          </IconButton>
-        </div>
-
-        <div className={styles.options}>
-          <button
-            className={styles.envButton}
-            onClick={() => setShowEnvModal(true)}
-          >
-            <VariableIcon size={18} />
-            <span>Environment</span>
-            <ArrowUpDownIcon size={20} />
-          </button>
-        </div>
-      </div>
-
+      <TopBar />
       <div className={styles.content}>
-        <ActiveTab tabId={activeTab} />
+        <APIEditor apiId={activeAPI} />
       </div>
-      {showEnvModal && (
-        <EnvironmentModal onClose={() => setShowEnvModal(false)} />
-      )}
     </div>
   );
 }

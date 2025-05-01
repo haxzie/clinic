@@ -1,6 +1,7 @@
 import { APISchema } from "@/types/API.types";
 
 export interface APIStoreState {
+  activeAPI: string;
   apis: Record<string, APISchema>;
   environment: string;
 

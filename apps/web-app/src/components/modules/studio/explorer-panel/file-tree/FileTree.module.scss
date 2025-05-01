@@ -63,31 +63,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         font-family: "Fira Code", monospace;
-
-        &.GET {
-          color: #46d326;
-          background-color: #46d326;
-        }
-
-        &.POST {
-          color: #83b2ff;
-          background-color: #2777f7;
-        }
-
-        &.PUT {
-          color: #e8aa1b;
-          background-color: #e8aa1b;
-        }
-
-        &.DELETE {
-          color: #f25b2d;
-          background-color: #f25b2d;
-        }
-
-        &.PATCH {
-          color: #9f92ff;
-          background-color: #9f92ff;
-        }
       }
 
       .texts {
@@ -102,7 +77,7 @@
           overflow: hidden;
           font-size: var(--font-size-s);
           line-height: var(--line-height-s);
-          color: var(--color-font-light);
+          color: var(--color-font);
           font-family: "Fira Code", monospace;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -118,6 +93,31 @@
           overflow: hidden;
           text-overflow: ellipsis;
           font-family: "Fira Code", monospace;
+
+          &.GET {
+            color: #46d326;
+            // background-color: #46d326;
+          }
+
+          &.POST {
+            color: #83b2ff;
+            // background-color: #2777f7;
+          }
+
+          &.PUT {
+            color: #e8aa1b;
+            // background-color: #e8aa1b;
+          }
+
+          &.DELETE {
+            color: #f25b2d;
+            // background-color: #f25b2d;
+          }
+
+          &.PATCH {
+            color: #9f92ff;
+            // background-color: #9f92ff;
+          }
         }
       }
 

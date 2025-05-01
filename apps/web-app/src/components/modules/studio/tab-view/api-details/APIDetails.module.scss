@@ -1,0 +1,77 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 20px;
+  gap: 5px;
+
+  .apiStatusIcon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: var(--color-font-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .editableTitle {
+    display: flex;
+    flex-direction: column;
+
+    h2,
+    input {
+      font-size: var(--font-size-s);
+      line-height: var(--line-height-s);
+      font-weight: var(--font-weight-semibold);
+      font-family: var(--font-monospace);
+      color: var(--color-font);
+      padding: 5px 10px;
+      width: 240px;
+      border: 1px solid transparent;
+    }
+
+    h2 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      
+      &:hover {
+        cursor: text;
+        background-color: var(--color-background-light);
+        border: 1px solid transparent;
+        border-radius: var(--radius-m);
+      }
+    }
+
+    input {
+      display: none;
+      height: 32px;
+      color: var(--color-font);
+      background-color: var(--color-background-light);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-m);
+      outline: none;
+
+      &:focus {
+        border: 1px solid var(--color-primary);
+        outline: none;
+      }
+    }
+
+    &.editable {
+      h2 {
+        display: none;
+      }
+
+      input {
+        display: block;
+      }
+    }
+
+    // input {
+    //   background-color: transparent;
+    //   color: ;
+    // }
+  }
+}

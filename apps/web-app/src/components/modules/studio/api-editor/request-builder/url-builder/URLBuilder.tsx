@@ -1,9 +1,7 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import styles from "./URLBuilder.module.scss";
 import CommandIcon from "@/components/icons/CommandIcon";
 import EnterIcon from "@/components/icons/EnterIcon";
-import CopyIcon from "@/components/icons/CopyIcon";
-import IconButton from "@/components/base/icon-button/IconButton";
 import { useAPI } from "../../api-context-provider/APIContextProvider";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
@@ -11,6 +9,7 @@ import URLEditor from "./url-editor/URLEditor";
 import { RequestMethod } from "@apiclinic/core";
 import Button from "@/components/base/button/Button";
 import MethodPicker from "./method-picker/MethodPicker";
+import CopyOptions from "./copy-options/CopyOptions";
 
 export default function URLBuilder() {
   const [focused, setFocused] = React.useState(false);
@@ -25,28 +24,32 @@ export default function URLBuilder() {
   const handleMethodChange = (method: RequestMethod) => {
     setMethod(method);
   };
+  /**
+   * Handle keyboard events for the URL builder
+   */
+  const handleCmdEnter = useCallback((event: KeyboardEvent) => {
+    if (event.key === "Enter" && event.metaKey) {
+      event.preventDefault();
+      makeHTTPRequest();
+    }
+  }, [makeHTTPRequest]);
 
-  const handleCopyURL = () => {
-    // Copy URL to clipboard
-    navigator.clipboard.writeText(useApiStore.getState().apis[apiId].path);
-  };
+  useEffect(() => {
+    window.addEventListener("keydown", handleCmdEnter);
+    return () => {
+      window.removeEventListener("keydown", handleCmdEnter);
+    };
+  }, [handleCmdEnter]);
 
   return (
     <div className={[styles.urlBuilder, focused && styles.focused].join(" ")}>
-      <MethodPicker value={method} onChange={handleMethodChange}/>
+      <MethodPicker value={method} onChange={handleMethodChange} />
       <URLEditor
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
       <div className={styles.options}>
-        <IconButton
-          size="small"
-          tooltip="Copy URL"
-          onClick={handleCopyURL}
-          showSuccess
-        >
-          <CopyIcon size={16} />
-        </IconButton>
+        <CopyOptions apiId={apiId} />
         <Button onClick={makeHTTPRequest} loading={isLoading}>
           Send
           <span className={styles.buttonIcons}>

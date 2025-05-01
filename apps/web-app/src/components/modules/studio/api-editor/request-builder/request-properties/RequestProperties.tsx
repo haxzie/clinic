@@ -4,8 +4,6 @@ import HeadersEditor from "./headers-editor/HeadersEditor";
 import ParamsEditor from "./params-editor/ParamsEditor";
 import RequestBodyEditor from "./request-body-editor/RequestBodyEditor";
 import DetailsEditor from "./details-editor/DetailsEditor";
-import IconButton from "@/components/base/icon-button/IconButton";
-import CodeIcon from "@/components/icons/CodeIcon";
 
 export default function RequestProperties() {
   enum Tabs {
@@ -74,11 +72,12 @@ export default function RequestProperties() {
             </button>
           ))}
         </div>
-        <div className={styles.options}>
-          <IconButton size="small">
-            <CodeIcon size={18} />
-          </IconButton>
-        </div>
+        {/* <div className={styles.options}>
+          <button className={styles.curlButton}>
+            curl://
+            <CopyIcon size={16} />
+          </button>
+        </div> */}
       </div>
       <div className={styles.tabView}>
         <ActiveView tabId={activeTab} />

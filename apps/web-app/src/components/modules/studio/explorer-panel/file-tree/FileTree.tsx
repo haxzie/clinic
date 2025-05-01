@@ -41,11 +41,10 @@ export default function FileTree() {
         ))}
         {files.map((file) => (
           <div key={file.name} className={styles.file}>
-            <div className={[styles.method, styles[file.method]].join(" ")}>
-              {/* {file.method} */}
-            </div>
+            {/* <div className={[styles.method, styles[file.method]].join(" ")}>
+            </div> */}
             <div className={styles.texts}>
-              <div className={styles.methodText}>{file.method}</div>
+              <div className={[styles.methodText].join(" ")}>{file.method}</div>
               <div className={styles.name}>{file.name}</div>
             </div>
           </div>

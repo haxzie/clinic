@@ -9,6 +9,7 @@ export default function ListPropertyEditor({
   title,
   value,
   onChange,
+  allowOptional = false,
 }: {
   type: string;
   title: string;
@@ -31,12 +32,13 @@ export default function ListPropertyEditor({
       isReadOnly?: boolean;
     };
   };
+  allowOptional?: boolean;
 }) {
   const inputKeyRef = useRef<HTMLInputElement>(null);
   const inputValueRef = useRef<HTMLInputElement>(null);
   const [keyInput, setKeyInput] = useState("");
   const [valueInput, setValueInput] = useState("");
-
+  console.log(allowOptional); // dummy
   /**
    * Adds a new key value pair into the store
    * @param key

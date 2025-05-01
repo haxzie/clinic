@@ -1,6 +1,7 @@
 .select {
   display: flex;
   align-items: center;
+  overflow: hidden;
 
   .chevron {
     display: flex;
@@ -23,6 +24,7 @@
 .options {
   display: flex;
   flex-direction: column;
+  width: auto;
 
   .option {
     display: flex;

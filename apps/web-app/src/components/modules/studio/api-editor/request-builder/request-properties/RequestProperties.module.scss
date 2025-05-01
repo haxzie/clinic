@@ -73,7 +73,28 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 0px 15px;
+      padding: 0px 5px;
+
+      .curlButton {
+        display: flex;
+        gap: 10px;
+        height: 32px;
+        padding: 0 10px;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+        color: var(--color-font-light);
+        font-family: var(--font-monospace);
+        font-size: var(--font-size-s);
+        font-weight: var(--font-weight-semibold);
+        border: none;
+        outline: none;
+
+        &:hover {
+          cursor: pointer;
+          background-color: var(--color-background-light);
+        }
+      }
     }
   }
 

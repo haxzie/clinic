@@ -4,13 +4,11 @@ import RequestBuilder from "./request-builder/RequestBuilder";
 import ResponseViewer from "./response-viewer/ResponseViewer";
 import { PanelGroup } from "react-resizable-panels";
 import { getResizablePanelStorage } from "@/utils/layout";
-import { TabComponentProps } from "../tab-view/TabRegistry";
 import { APIEditorContextProvider } from "./api-context-provider/APIContextProvider";
 
-export default function APIEditor({ tab }: TabComponentProps) {
-
+export default function APIEditor({ apiId }: { apiId: string }) {
   return (
-    <APIEditorContextProvider activeApiId={tab.id}>
+    <APIEditorContextProvider activeApiId={apiId}>
       <div className={styles.APIEditor}>
         {/* <APIDetails /> */}
         <PanelGroup
