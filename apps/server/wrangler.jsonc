@@ -1,6 +1,7 @@
 {
   "name": "clinic-server",
   "compatibility_date": "2025-05-04",
+  "compatility_flags": ["nodejs_compat"],
   "main": "dist/index.js",
   "assets": {
     "directory": "./dist"
