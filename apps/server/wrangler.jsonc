@@ -1,0 +1,7 @@
+{
+  "name": "@apiclinic/server",
+  "compatibility_date": "2025-05-04",
+  "assets": {
+    "directory": "./dist"
+  }
+}

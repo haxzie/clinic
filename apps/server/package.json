@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "bun run --hot src/server.ts",
-    "build": "bun build src/index.ts --outdir dist --target node"
+    "build": "bun build src/index.ts --outdir dist --target browser"
   },
   "dependencies": {
     "@apiclinic/core": "workspace:*",

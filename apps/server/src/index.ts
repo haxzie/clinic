@@ -14,4 +14,4 @@ app.use(
 app.route("/health", healthRoute);
 app.route("/relay", relayRoute);
 
-export default { fetch: app.fetch };
+export default app;
