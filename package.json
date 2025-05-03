@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo run build",
+    "build:server": "turbo run build --filter=@apiclinic/server",
+    "build:client": "turbo run build --filter=@apiclinic/web-app",
     "dev": "turbo run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
