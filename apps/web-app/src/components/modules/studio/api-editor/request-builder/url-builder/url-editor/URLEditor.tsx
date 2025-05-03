@@ -1,32 +1,37 @@
-import React, { useRef, useEffect } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import styles from "./URLEditor.module.scss";
-import { useAPI } from "../../../api-context-provider/APIContextProvider";
-import { useShallow } from "zustand/shallow";
-import useApiStore from "@/store/api-store/api.store";
+import debounce from "lodash.debounce";
 
 export default function URLEditor({
+  value,
+  onChange,
   onFocus,
   onBlur,
 }: {
+  value: string;
+  onChange: (url: string) => void;
   onFocus: () => void;
   onBlur: () => void;
 }) {
-  const { apiId, setPath } = useAPI();
-  const { path } = useApiStore(
-    useShallow((state) => ({
-      path: state.apis[apiId].path,
-    }))
-  );
-
+  const [currentUrl, setCurrentUrl] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const debouncedSetUrl = useMemo(
+    () => debounce((url: string) => onChange(url), 300),
+    [onChange]
+  );
 
-  
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // trim the leading and trailing spaces
     const trimmedValue = e.target.value.trimStart();
-    setPath(trimmedValue);
+    setCurrentUrl(trimmedValue);
+    debouncedSetUrl(trimmedValue);
   };
 
   // Sync input and overlay scroll positions
@@ -49,13 +54,23 @@ export default function URLEditor({
     };
   }, []);
 
+  // respond to value changes
+  useEffect(() => {
+    setCurrentUrl((value) => {
+      if (value !== currentUrl) {
+        return value;
+      }
+      return currentUrl;
+    });
+  }, [value, currentUrl]);
+
   return (
     <div className={styles.URLEditor}>
       <div className={styles.editorContainer}>
         <input
           ref={inputRef}
           type="text"
-          value={path}
+          value={currentUrl}
           onChange={handleInputChange}
           className={styles.input}
           spellCheck={false}

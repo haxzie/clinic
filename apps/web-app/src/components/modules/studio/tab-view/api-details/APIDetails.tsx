@@ -1,18 +1,18 @@
-import React, { useState, ChangeEvent, useCallback, useRef } from "react";
+import React, { useState, ChangeEvent, useCallback, useRef, useEffect } from "react";
 import styles from "./APIDetails.module.scss";
 import { useShallow } from "zustand/shallow";
 import useApiStore from "@/store/api-store/api.store";
 import APIStatusIcon from "./api-status-icon/APIStatusIcon";
 
-export default function APIDetails() {
-  const { activeAPI, apis, updateAPI } = useApiStore(
-    useShallow(({ apis, activeAPI, updateAPI }) => ({
-      apis,
-      activeAPI,
-      updateAPI,
+export default function APIDetails({ apiId }: { apiId: string }) {
+  const { name, status } = useApiStore(
+    useShallow(({ apis }) => ({
+      name: apis[apiId].name,
+      status: apis[apiId].response?.statusCode,
     }))
   );
-  const [apiName, setApiName] = useState(apis[activeAPI].name);
+
+  const [apiName, setApiName] = useState(name);
   const [editable, setEditable] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,19 +40,18 @@ export default function APIDetails() {
   const handleUpdateName = useCallback(() => {
     // check if the name is empty
     if (apiName.trim() === "") {
-      setApiName(apis[activeAPI].name);
+      setApiName(name);
       return;
     }
     // check if the name is different from the current name
     // and update the api name
-    if (apiName !== apis[activeAPI].name) {
-      updateAPI(activeAPI, { name: apiName });
+    if (apiName !== name) {
+      useApiStore.getState().updateAPI(apiId, { name: apiName });
     }
 
     setEditable(false);
     // inputRef.current?.blur();
-
-  }, [apis, apiName, activeAPI, updateAPI, editable]);
+  }, [apiName, apiId, name]);
 
   /**
    * Function to handle the submit of the form
@@ -62,12 +61,23 @@ export default function APIDetails() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current?.blur();
-  }
+  };
+
+  // handle name change
+  useEffect(() => {
+      setApiName(name => {
+        if (name !== apiName) {
+          return name;
+        }
+        return apiName;
+      }
+    );
+  }, [name, apiName]);
 
   return (
     <div className={styles.header}>
       <div className={styles.apiStatusIcon}>
-        <APIStatusIcon status={apis[activeAPI].response?.statusCode} />
+        <APIStatusIcon status={status} />
       </div>
       <form
         className={`${styles.editableTitle} ${editable ? styles.editable : ""}`}

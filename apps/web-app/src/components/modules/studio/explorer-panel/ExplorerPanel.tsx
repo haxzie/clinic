@@ -6,8 +6,18 @@ import IconButton from "@/components/base/icon-button/IconButton";
 import AddIcon from "@/components/icons/AddIcon";
 import AddFolderIcon from "@/components/icons/AddFolderIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
+import useApiStore from "@/store/api-store/api.store";
+import { useShallow } from "zustand/shallow";
 
 export default function ExplorerPanel() {
+  const { createAPI } = useApiStore(
+    useShallow(({ createAPI }) => ({ createAPI }))
+  );
+
+  const handleCreateNewRequest = () => {
+    createAPI({});
+  };
+
   return (
     <div id="sidebar" className={styles.navigationWrapper}>
       {/* <NavigationBar /> */}
@@ -27,7 +37,11 @@ export default function ExplorerPanel() {
             <IconButton size="small" tooltip="Create Collection">
               <AddFolderIcon size={16} />
             </IconButton>
-            <IconButton size="small" tooltip="New Request">
+            <IconButton
+              size="small"
+              tooltip="New Request"
+              onClick={handleCreateNewRequest}
+            >
               <AddIcon size={16} />
             </IconButton>
           </div>

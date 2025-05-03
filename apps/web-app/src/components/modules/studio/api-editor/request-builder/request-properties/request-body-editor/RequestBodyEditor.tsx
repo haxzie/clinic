@@ -5,14 +5,15 @@ import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import IconButton from "@/components/base/icon-button/IconButton";
 import FormatIcon from "@/components/icons/FormatIcon";
 import UploadIcon from "@/components/icons/UploadIcon";
-import { useAPI } from "../../../api-context-provider/APIContextProvider";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 
 export default function RequestBodyEditor() {
-  const { apiId, setRequestBody } = useAPI();
-  const { requestBody } = useApiStore(
-    useShallow((state) => ({ requestBody: state.apis[apiId].requestBody }))
+  const { requestBody, setRequestBody } = useApiStore(
+    useShallow((state) => ({
+      requestBody: state.apis[state.activeAPI].requestBody,
+      setRequestBody: state.setRequestBody,
+    }))
   );
 
   const handleRequestBodyChange = (value: string) => {
@@ -39,7 +40,12 @@ export default function RequestBodyEditor() {
           >
             <FormatIcon size={18} />
           </IconButton>
-          <IconButton size="small" className={styles.icon} tooltip="Upload Request Body" tooltipPosition="left">
+          <IconButton
+            size="small"
+            className={styles.icon}
+            tooltip="Upload Request Body"
+            tooltipPosition="left"
+          >
             <UploadIcon size={18} />
           </IconButton>
         </div>

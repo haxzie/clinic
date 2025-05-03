@@ -1,6 +1,6 @@
 import { IconProps } from "./icons.types";
 
-export default function AddFolderIcon({ size = 24 }: IconProps) {
+export default function AddFolderIcon({ size = 24, color = "currentColor" }: IconProps) {
   return (
     <svg
       width={size}
@@ -10,7 +10,7 @@ export default function AddFolderIcon({ size = 24 }: IconProps) {
     >
       <path
         fill="none"
-        stroke="currentColor"
+        stroke={color}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="2"

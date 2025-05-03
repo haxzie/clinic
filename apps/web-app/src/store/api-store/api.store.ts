@@ -4,6 +4,13 @@ import { APIStoreState } from "./api.types";
 import { getDefaultRestApi } from "@/utils/constants";
 import { relayRequest } from "@/services/clinic-server/relay";
 import { generateUUID } from "@/utils/dataUtils";
+import {
+  Authorization,
+  RequestBody,
+  RequestHeaders,
+  RequestMethod,
+  RequestParameters,
+} from "@apiclinic/core";
 
 const getInitialState = () => {
   const defaultAPIId = generateUUID("api");
@@ -20,14 +27,14 @@ const getInitialState = () => {
     },
     environment: "development",
   };
-}
+};
 
 const useApiStore = create<APIStoreState>()((set, get) => ({
   ...getInitialState(),
 
   /**
    * Makes an HTTP request to the specified API and updates the state with the response.
-   * 
+   *
    * @TODO - Move this to a separate service
    * @param apiId - The ID of the API to make the request for
    * @returns {Promise<void>} - A promise that resolves when the request is complete
@@ -44,7 +51,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       // make the http request
       const { status, data } = await relayRequest({
         method: api.method,
-        url: api.path,
+        url: api.url,
         headers: api.headers,
         body: api.requestBody,
         params: api.parameters,
@@ -70,6 +77,15 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     }
   },
 
+  /**
+   * Sets the active API in the store.
+   * */
+  setActiveAPI: (apiId) => {
+    set(() => ({
+      activeAPI: apiId,
+    }));
+  },
+
   setAPIStatus: (apiId, status) => {
     set((state) => ({
       apis: {
@@ -93,6 +109,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         ...state.apis,
         [newApi.id]: newApi,
       },
+      activeAPI: newApi.id,
     }));
     return newApi.id;
   },
@@ -115,6 +132,34 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       delete apis[id];
       return { apis };
     });
+  },
+
+  setMethod: (method: RequestMethod) => {
+    get().updateAPI(get().activeAPI, { method });
+  },
+
+  setUrl: (url: string) => {
+    get().updateAPI(get().activeAPI, { url });
+  },
+
+  setDescription: (description: string) => {
+    get().updateAPI(get().activeAPI, { description });
+  },
+
+  setHeaders: (headers: RequestHeaders) => {
+    get().updateAPI(get().activeAPI, { headers });
+  },
+
+  setParameters: (parameters: RequestParameters) => {
+    get().updateAPI(get().activeAPI, { parameters });
+  },
+
+  setRequestBody: (requestBody: RequestBody) => {
+    get().updateAPI(get().activeAPI, { requestBody });
+  },
+
+  setAuthorization: (authorization: Authorization) => {
+    get().updateAPI(get().activeAPI, { authorization });
   },
 }));
 

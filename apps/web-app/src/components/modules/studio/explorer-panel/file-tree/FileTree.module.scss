@@ -5,7 +5,7 @@
   .fileListing {
     display: flex;
     flex-direction: column;
-    padding: 10px 0px;
+    padding: 0px;
 
     .folder {
       display: flex;
@@ -45,7 +45,7 @@
     .file {
       display: flex;
       align-items: center;
-      padding: 10px 15px;
+      padding: 10px;
       gap: 15px;
       height: 44px;
       overflow: hidden;
@@ -119,9 +119,45 @@
             // background-color: #9f92ff;
           }
         }
+
+        .status {
+          font-size: var(--font-size-s);
+          line-height: var(--line-height-s);
+          color: var(--color-font-light);
+          width: auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-family: var(--font-monospace);
+
+          &.success {
+            color: #46d326;
+            // background-color: #46d326;
+          }
+          &.redirect {
+            color: #e8aa1b;
+            // background-color: #f25b2d;
+          }
+
+          &.clientError {
+            color: #f25b2d;
+            // background-color: #e8aa1b;
+          }
+
+          &.serverError {
+            color: #f25b2d;
+            // background-color: #f25b2d;
+          }
+        }
       }
 
       &:hover {
+        background-color: var(--color-background-dark);
+        .name {
+          color: var(--color-font);
+        }
+      }
+
+      &.active {
         background-color: var(--color-element-background-dark);
         .name {
           color: var(--color-font);

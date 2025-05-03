@@ -11,7 +11,7 @@ export interface APISchema {
   id: string;
   parentId: string;
   name: string;
-  path: string;
+  url: string;
   method: RequestMethod;
   description: string;
   parameters: RequestParameters;

@@ -5,8 +5,10 @@ import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 import { DropDown } from "@/components/base/dropdown/DropDown";
 import useApiStore from "@/store/api-store/api.store";
 import { createCurlCommand, createFetchCommand } from "@/utils/requestUtils";
+import CheckIcon from "@/components/icons/CheckIcon";
 
 export default function CopyOptions({ apiId }: { apiId: string }) {
+  const [copied, setCopied] = React.useState(false);
   const selectOptions = [
     {
       id: "copy-url",
@@ -27,12 +29,12 @@ export default function CopyOptions({ apiId }: { apiId: string }) {
     if (!api) {
       return;
     }
-    const { path } = api;
-    
+    const { url } = api;
+
     switch (option.id) {
       case "copy-url":
         // Copy URL to clipboard
-        navigator.clipboard.writeText(path);
+        navigator.clipboard.writeText(url);
         break;
       case "copy-curl": {
         // Copy cURL command to clipboard
@@ -46,11 +48,16 @@ export default function CopyOptions({ apiId }: { apiId: string }) {
       default:
         break;
     }
+
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
   };
 
   const SelectElement = () => (
     <Button size="small" variant="secondary">
-      <CopyIcon size={16} />
+      {copied ? <CheckIcon size={16} color="var(--color-success)" /> : <CopyIcon size={16} />}
       <ChevronDownIcon size={16} />
     </Button>
   );

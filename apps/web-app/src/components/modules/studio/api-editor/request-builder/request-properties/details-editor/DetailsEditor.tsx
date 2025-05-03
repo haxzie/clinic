@@ -21,7 +21,6 @@ import python from "highlight.js/lib/languages/python";
 
 // create a lowlight instance
 import { all, createLowlight } from "lowlight";
-import { useAPI } from "../../../api-context-provider/APIContextProvider";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 const lowlight = createLowlight(all);
@@ -35,9 +34,12 @@ lowlight.register("markdown", markdown);
 lowlight.register("python", python);
 
 export default function DetailsEditor() {
-  const { apiId, setDescription } = useAPI();
-  const { description } = useApiStore(
-    useShallow(({ apis }) => ({ description: apis[apiId].description }))
+  const { description, setDescription } = useApiStore(
+    useShallow(({ apis, activeAPI, setDescription }) => ({
+      description: apis[activeAPI].description,
+      activeAPI,
+      setDescription,
+    }))
   );
 
   const editor = useEditor({

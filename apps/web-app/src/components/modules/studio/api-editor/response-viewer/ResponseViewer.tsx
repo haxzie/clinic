@@ -15,7 +15,6 @@ import {
 } from "react-resizable-panels";
 import ResponseHeaders from "./response-headers/ResponseHeaders";
 import JSONEditor from "@/components/modules/studio/json-editor/JSONEditor";
-import { useAPI } from "../api-context-provider/APIContextProvider";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import EmptyResponse from "./empty-response/EmptyResponse";
@@ -33,11 +32,10 @@ export default function ResponseViewer() {
     }
   };
 
-  const { apiId } = useAPI();
   const { response, isLoading } = useApiStore(
     useShallow((state) => ({
-      response: state.apis[apiId].response,
-      isLoading: state.apis[apiId].isLoading,
+      response: state.apis[state.activeAPI].response,
+      isLoading: state.apis[state.activeAPI].isLoading,
     }))
   );
 

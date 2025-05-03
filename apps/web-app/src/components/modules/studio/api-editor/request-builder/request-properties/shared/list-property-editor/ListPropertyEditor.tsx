@@ -54,7 +54,6 @@ export default function ListPropertyEditor({
         value: data,
       },
     };
-    console.log(params);
     onChange(params);
 
     setTimeout(() => {
