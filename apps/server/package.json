@@ -4,8 +4,8 @@
   "main": "src/app.ts",
   "version": "1.0.0",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/app.ts --outdir dist --target node"
+    "dev": "bun run --hot src/server.ts",
+    "build": "bun build src/index.ts --outdir dist --target node"
   },
   "dependencies": {
     "@apiclinic/core": "workspace:*",
