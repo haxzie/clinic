@@ -1,7 +1,7 @@
 import { APISchema } from "@/types/API.types";
 
 export const createCurlCommand = (api: APISchema): string => {
-  let requestURL = api.path;
+  let requestURL = api.url;
   if (api.parameters && Object.keys(api.parameters).length > 0) {
     requestURL += "?";
     Object.entries(api.parameters).forEach(([key, value]) => {
@@ -28,7 +28,7 @@ export const createCurlCommand = (api: APISchema): string => {
 
 
 export const createFetchCommand = (api: APISchema): string => {
-  let requestURL = api.path;
+  let requestURL = api.url;
   if (api.parameters && Object.keys(api.parameters).length > 0) {
     requestURL += "?";
     Object.entries(api.parameters).forEach(([key, value]) => {
