@@ -1,11 +1,11 @@
 {
   "name": "@apiclinic/server",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/app.ts",
   "version": "1.0.0",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node"
+    "build": "bun build src/app.ts --outdir dist --target node"
   },
   "dependencies": {
     "@apiclinic/core": "workspace:*",
