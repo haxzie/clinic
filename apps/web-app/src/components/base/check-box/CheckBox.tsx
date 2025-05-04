@@ -20,7 +20,7 @@ export default function CheckBox({
       disabled={disabled}
       className={[styles.checkBox, value && styles.selected].join(" ")}
     >
-      {!!value ? <CheckBoxIcon size={18} /> : <CheckBoxUncheckedIcon size={18} />}
+      {value ? <CheckBoxIcon size={18} /> : <CheckBoxUncheckedIcon size={18} />}
     </IconButton>
   );
 }
