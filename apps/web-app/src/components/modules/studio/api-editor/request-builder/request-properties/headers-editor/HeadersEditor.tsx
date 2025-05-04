@@ -19,6 +19,7 @@ export default function HeadersEditor() {
         title="Header"
         value={headers}
         onChange={setHeaders}
+        allowSelection={true}
       />
     </div>
   );

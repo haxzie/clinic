@@ -1,44 +1,34 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import styles from "./ListPropertyEditor.module.scss";
 import { generateUUID } from "@/utils/dataUtils";
 import ClearIcon from "@/components/icons/ClearIcon";
 import CopyIcon from "@/components/icons/CopyIcon";
+import CheckBox from "@/components/base/check-box/CheckBox";
 
+type Parameter = {
+  id: string;
+  name: string;
+  value: string;
+  isDisabled?: boolean;
+  isReadOnly?: boolean;
+};
 export default function ListPropertyEditor({
   type,
   title,
   value,
   onChange,
-  allowOptional = false,
+  allowSelection = false,
 }: {
   type: string;
   title: string;
-  onChange: (
-    value: Record<
-      string,
-      {
-        id: string;
-        name: string;
-        value: string;
-        isReadOnly?: boolean;
-      }
-    >
-  ) => void;
-  value: {
-    [id: string]: {
-      id: string;
-      name: string;
-      value: string;
-      isReadOnly?: boolean;
-    };
-  };
-  allowOptional?: boolean;
+  onChange: (value: Record<string, Parameter>) => void;
+  value: Record<string, Parameter>;
+  allowSelection?: boolean;
 }) {
   const inputKeyRef = useRef<HTMLInputElement>(null);
   const inputValueRef = useRef<HTMLInputElement>(null);
   const [keyInput, setKeyInput] = useState("");
   const [valueInput, setValueInput] = useState("");
-  console.log(allowOptional); // dummy
   /**
    * Adds a new key value pair into the store
    * @param key
@@ -73,15 +63,55 @@ export default function ListPropertyEditor({
     onChange(params);
   };
 
+  const toggleKeyValue = (id: string) => {
+    const params = { ...value };
+    params[id] = {
+      ...params[id],
+      isDisabled: !params[id].isDisabled,
+    };
+    onChange(params);
+  };
+
   const deleteKeyValue = (id: string) => {
     const params = { ...value };
     delete params[id];
     onChange(params);
   };
 
+  const toggleAllSection = (shouldEnable: boolean) => {
+    const params = { ...value };
+    Object.keys(params).forEach((itemId) => {
+      params[itemId] = {
+        ...params[itemId],
+        isDisabled: !shouldEnable,
+      };
+    });
+    onChange(params);
+  };
+
+  const isAllEnabled = useMemo(
+    () => Object.keys(value).every((itemId) => !value[itemId].isDisabled),
+    [value]
+  );
+
   return (
-    <div className={styles.parameterEditor}>
+    <div
+      className={[
+        styles.parameterEditor,
+        allowSelection && styles.allowSelection,
+      ].join(" ")}
+    >
       <div className={styles.header}>
+        {allowSelection && (
+          <div className={styles.selection}>
+            <CheckBox
+              value={isAllEnabled}
+              onChange={() => {
+                toggleAllSection(!isAllEnabled);
+              }}
+            />
+          </div>
+        )}
         <div className={styles.paramKey}>{title}</div>
         <div className={styles.paramValue}>Value</div>
       </div>
@@ -91,9 +121,19 @@ export default function ListPropertyEditor({
             className={[
               styles.param,
               value[itemId].isReadOnly && styles.readOnly,
+              allowSelection && value[itemId].isDisabled && styles.notSelected,
             ].join(" ")}
             key={`kv-${itemId}`}
           >
+            {allowSelection && (
+              <div className={styles.selection}>
+                <CheckBox
+                  value={!value[itemId].isDisabled}
+                  onChange={() => toggleKeyValue(itemId)}
+                />
+              </div>
+            )}
+
             <input
               className={styles.paramKey}
               value={value[itemId].name || ""}
@@ -134,6 +174,11 @@ export default function ListPropertyEditor({
           </div>
         ))}
         <div className={[styles.param, styles.placeholder].join(" ")}>
+          {allowSelection && (
+            <div className={styles.selection}>
+              <CheckBox value={true} disabled={true} />
+            </div>
+          )}
           <div className={styles.paramKey}>
             <input
               ref={inputKeyRef}

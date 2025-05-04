@@ -1,10 +1,16 @@
 import {
-  RequestHeaders,
   RequestMethod,
-  RequestParameters,
   Response
 } from "@apiclinic/core";
 import { Authorization, RequestBody } from "@apiclinic/core";
+import { HeaderSchema, ParameterSchema } from "@apiclinic/core/src/lib/request";
+
+interface APIParmsExtras {
+  isDisabled?: boolean;
+  isReadonly?: boolean;
+}
+export type RequestHeaders = Record<string, HeaderSchema & APIParmsExtras>;
+export type RequestParameters = Record<string, ParameterSchema & APIParmsExtras>;
 
 // Representation of a path
 export interface APISchema {

@@ -19,6 +19,7 @@ export default function ParamsEditor() {
         title="Params"
         value={parameters}
         onChange={setParameters}
+        allowSelection={true}
       />
     </div>
   );

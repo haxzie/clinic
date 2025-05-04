@@ -1,8 +1,7 @@
-import { APISchema } from "@/types/API.types";
+import { APISchema, RequestHeaders } from "@/types/API.types";
 import {
   Authorization,
   RequestBody,
-  RequestHeaders,
   RequestMethod,
   RequestParameters,
 } from "@apiclinic/core";
@@ -19,6 +18,7 @@ export interface APIStoreState {
   createAPI: (api: Partial<APISchema>) => string;
   updateAPI: (id: string, api: Omit<Partial<APISchema>, "id">) => void;
   deleteAPI: (id: string) => void;
+
   // helpers
   setMethod: (method: RequestMethod) => void;
   setUrl: (url: string) => void;

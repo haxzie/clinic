@@ -53,3 +53,21 @@ export const createFetchCommand = (api: APISchema): string => {
 
   return fetchCommand;
 }
+
+
+export const extractAPINameFromURL = (url: string): string => {
+  // remove the protocol (http:// or https://)
+  const urlWithoutProtocol = url.replace(/(^\w+:|^)\/\//, "");
+  // split the url by /
+  const urlParts = urlWithoutProtocol.split("/");
+  // if there is only one part, return it
+  if (urlParts.length === 1) {
+    return `/${urlParts[0]}`;
+  }
+  // // if there is more than two parts, then return the last 2 parts
+  // if (urlParts.length > 2) {
+  //   return `/${urlParts.slice(-2).join("/")}`;
+  // }
+  // if there are two parts, then return the last part
+  return `/${urlParts[urlParts.length - 1]}`;
+}

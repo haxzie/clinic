@@ -1,4 +1,10 @@
-import React, { useState, ChangeEvent, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import styles from "./APIDetails.module.scss";
 import { useShallow } from "zustand/shallow";
 import useApiStore from "@/store/api-store/api.store";
@@ -65,13 +71,9 @@ export default function APIDetails({ apiId }: { apiId: string }) {
 
   // handle name change
   useEffect(() => {
-      setApiName(name => {
-        if (name !== apiName) {
-          return name;
-        }
-        return apiName;
-      }
-    );
+    if (name !== apiName) {
+      setApiName(name);
+    }
   }, [name, apiName]);
 
   return (

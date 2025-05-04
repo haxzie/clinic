@@ -1,0 +1,10 @@
+.checkBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-font-light);
+
+  &.selected {
+    color: var(--color-font);
+  }
+}

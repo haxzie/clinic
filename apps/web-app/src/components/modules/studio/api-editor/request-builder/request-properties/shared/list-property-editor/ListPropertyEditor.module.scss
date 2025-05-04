@@ -77,7 +77,32 @@
     }
   }
 
+  &.allowSelection {
+    .header,
+    .param {
+      grid-template-columns: auto 1fr 2fr;
 
+      .selection {
+        width: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid var(--color-border);
+        opacity: 0.5;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      &.notSelected {
+        .paramKey, .paramValue {
+          color: var(--color-font-light);
+          opacity: 0.5;
+        }
+      }
+    }
+  }
 
   .placeholder {
     .paramKey,
@@ -91,7 +116,7 @@
     color: var(--color-font-light);
     font-size: var(--font-size-s);
     font-weight: var(--font-weight-semibold);
-    background-color: var(--color-input-background);;
+    background-color: var(--color-input-background);
 
     text-transform: uppercase;
     position: sticky;

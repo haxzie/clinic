@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--color-font-light);
+    // color: var(--color-font-light);
   }
 
   .success {
@@ -56,5 +56,10 @@
   &.large {
     width: 40px;
     height: 40px;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 }

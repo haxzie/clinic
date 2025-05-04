@@ -11,6 +11,7 @@ import {
   RequestMethod,
   RequestParameters,
 } from "@apiclinic/core";
+import { extractAPINameFromURL } from "@/utils/requestUtils";
 
 const getInitialState = () => {
   const defaultAPIId = generateUUID("api");
@@ -48,13 +49,38 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     try {
       // set the api status to loading
       get().setAPIStatus(apiId, true);
+      const preparedHeaders = Object.values(api.headers).reduce(
+        (acc, value) => {
+          if (value.isDisabled) {
+            return acc;
+          }
+          return {
+            ...acc,
+            [value.name]: value.value,
+          };
+        },
+        {}
+      );
+
+      const preparedParameters = Object.values(api.parameters).reduce(
+        (acc, value) => {
+          if (value.isDisabled) {
+            return acc;
+          }
+          return {
+            ...acc,
+            [value.name]: value.value,
+          };
+        },
+        {}
+      );
       // make the http request
       const { status, data } = await relayRequest({
         method: api.method,
         url: api.url,
-        headers: api.headers,
+        headers: preparedHeaders,
+        params: preparedParameters,
         body: api.requestBody,
-        params: api.parameters,
       });
 
       // update the api response
@@ -74,6 +100,12 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     } finally {
       // set the api status to not loading
       get().setAPIStatus(apiId, false);
+      if (api.name === "Untitled API") {
+        console.log("API name is untitled, updating it to the URL path");
+        // get the path of the url
+        const name = extractAPINameFromURL(api.url);
+        get().updateAPI(apiId, { name });
+      }
     }
   },
 

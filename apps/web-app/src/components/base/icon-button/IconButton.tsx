@@ -12,6 +12,7 @@ export default function IconButton({
   className = "",
   tooltip,
   tooltipPosition = "top",
+  disabled = false,
 }: Readonly<{
   size?: "small" | "medium" | "large";
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export default function IconButton({
   showSuccess?: boolean;
   tooltip?: string;
   tooltipPosition?: "top" | "bottom" | "left" | "right";
+  disabled?: boolean;
 }>) {
   const [clicked, setClicked] = React.useState(false);
 
@@ -46,11 +48,13 @@ export default function IconButton({
           styles.iconButton,
           clicked && styles.clicked,
           styles[size],
+          disabled && styles.disabled,  
           className,
         ].join(" ")}
         onClick={handleClick}
         tabIndex={-1}
         type="button"
+        disabled={disabled}
       >
         <div
           className={styles.content}
