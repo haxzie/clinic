@@ -10,7 +10,8 @@
     "dev": "turbo run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "lint": "eslint . && turbo lint"
+    "lint": "eslint . && turbo lint",
+    "lint-staged": "lint-staged"
   },
   "packageManager": "pnpm@10.8.1",
   "workspaces": {
@@ -18,14 +19,12 @@
       "packages/*"
     ]
   },
-  "lint-stage": {
+  "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ],
     "*.{json,md}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "keywords": [],

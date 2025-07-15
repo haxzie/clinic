@@ -47,6 +47,8 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
       }
     }
 
+    
+
     // Build fetch options
     const fetchOptions: RequestInit = {
       method: request.method,
