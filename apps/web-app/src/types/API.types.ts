@@ -3,7 +3,7 @@ import {
   Response
 } from "@apiclinic/core";
 import { Authorization, RequestBody } from "@apiclinic/core";
-import { HeaderSchema, ParameterSchema } from "@apiclinic/core/src/lib/request";
+import { HeaderSchema, ParameterSchema } from "@apiclinic/core";
 
 interface APIParmsExtras {
   isDisabled?: boolean;
