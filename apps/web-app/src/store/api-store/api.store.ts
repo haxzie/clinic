@@ -18,6 +18,7 @@ const getInitialState = () => {
   const defaultAPI = getDefaultRestApi();
   return {
     activeAPI: defaultAPIId,
+    collections: {},
     apis: {
       [defaultAPIId]: {
         ...defaultAPI,
@@ -192,6 +193,44 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
 
   setAuthorization: (authorization: Authorization) => {
     get().updateAPI(get().activeAPI, { authorization });
+  },
+
+  createCollection: (collection) => {
+    const newCollection = {
+      ...collection,
+      id: generateUUID("collection"),
+      name: collection.name || "Untitled Collection",
+      description: collection.description || "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      collections: {
+        ...state.collections,
+        [newCollection.id]: newCollection,
+      },
+    }));
+    return newCollection.id;
+  },
+
+  updateCollection: (id, collection) => {
+    set((state) => ({
+      collections: {
+        ...state.collections,
+        [id]: {
+          ...state.collections[id],
+          ...collection,
+        },
+      },
+    }));
+  },
+
+  deleteCollection: (id) => {
+    set((state) => {
+      const collections = { ...state.collections };
+      delete collections[id];
+      return { collections };
+    });
   },
 }));
 

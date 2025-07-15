@@ -15,7 +15,7 @@ export type RequestParameters = Record<string, ParameterSchema & APIParmsExtras>
 // Representation of a path
 export interface APISchema {
   id: string;
-  parentId: string;
+  collectionId: string;
   name: string;
   url: string;
   method: RequestMethod;

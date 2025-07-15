@@ -24,11 +24,12 @@
       font-size: var(--font-size-s);
       line-height: var(--line-height-s);
       font-weight: var(--font-weight-semibold);
-      font-family: var(--font-monospace);
-      color: var(--color-font);
+      // font-family: var(--font-monospace);
+      color: var(--color-font-light);
       padding: 5px 10px;
       width: 240px;
       border: 1px solid transparent;
+
     }
 
     h2 {
@@ -38,6 +39,7 @@
       
       &:hover {
         cursor: text;
+        color: var(--color-font);
         background-color: var(--color-background-light);
         border: 1px solid transparent;
         border-radius: var(--radius-m);

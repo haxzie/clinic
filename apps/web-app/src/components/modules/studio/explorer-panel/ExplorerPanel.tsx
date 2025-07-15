@@ -10,31 +10,39 @@ import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 
 export default function ExplorerPanel() {
-  const { createAPI } = useApiStore(
-    useShallow(({ createAPI }) => ({ createAPI }))
+  const { createAPI, createCollection } = useApiStore(
+    useShallow(({ createAPI, createCollection }) => ({
+      createAPI,
+      createCollection,
+    }))
   );
 
   const handleCreateNewRequest = () => {
     createAPI({});
   };
 
+  const handleCreateNewCollection = () => {
+    createCollection({});
+  };
+
   return (
     <div id="sidebar" className={styles.navigationWrapper}>
       {/* <NavigationBar /> */}
       <div className={styles.explorerPanel}>
-        <div className={styles.header}>
-          <div className={styles.icon}>
-            <LogoIcon size={20} />
-          </div>
-          {/* <div className={styles.title}>Clinic</div> */}
-        </div>
         <div className={styles.listHeader}>
-          <h4 className={styles.title}>APIs</h4>
+          <h4 className={styles.title}>
+            <LogoIcon size={20} />
+            clinic
+          </h4>
           <div className={styles.options}>
             <IconButton size="small" tooltip="Search">
               <SearchIcon size={16} />
             </IconButton>
-            <IconButton size="small" tooltip="Create Collection">
+            <IconButton
+              size="small"
+              tooltip="Create Collection"
+              onClick={handleCreateNewCollection}
+            >
               <AddFolderIcon size={16} />
             </IconButton>
             <IconButton

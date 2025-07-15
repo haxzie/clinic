@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./DropDown.module.scss";
 import Portal from "@/components/shared/portal/Portal";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
@@ -54,6 +54,23 @@ export function DropDownPortal({
       }
     }
   };
+
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (onClickOutside) {
+          onClickOutside();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, []);
 
   return (
     <Portal>

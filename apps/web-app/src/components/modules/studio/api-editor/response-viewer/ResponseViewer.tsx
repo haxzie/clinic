@@ -14,7 +14,7 @@ import {
   PanelResizeHandle,
 } from "react-resizable-panels";
 import ResponseHeaders from "./response-headers/ResponseHeaders";
-import JSONEditor from "@/components/modules/studio/json-editor/JSONEditor";
+import ContentEditor from "@/components/modules/studio/content-editor/ContentEditor";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import EmptyResponse from "./empty-response/EmptyResponse";
@@ -154,7 +154,7 @@ export default function ResponseViewer() {
                 onClickCopy={handleResponseCopy}
                 onClickDownload={handleResponseDownload}
               />
-              <JSONEditor editable={false} value={formattedResponse} />
+              <ContentEditor editable={false} value={formattedResponse} />
             </Panel>
 
             <PanelResizeHandle />

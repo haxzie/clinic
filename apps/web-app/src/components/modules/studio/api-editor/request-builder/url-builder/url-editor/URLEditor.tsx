@@ -1,9 +1,4 @@
-import React, {
-  useRef,
-  useEffect,
-  useState,
-  useMemo,
-} from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import styles from "./URLEditor.module.scss";
 import debounce from "lodash.debounce";
 
@@ -54,15 +49,9 @@ export default function URLEditor({
     };
   }, []);
 
-  // respond to value changes
   useEffect(() => {
-    setCurrentUrl((value) => {
-      if (value !== currentUrl) {
-        return value;
-      }
-      return currentUrl;
-    });
-  }, [value, currentUrl]);
+    setCurrentUrl(value);
+  }, [value]);
 
   return (
     <div className={styles.URLEditor}>

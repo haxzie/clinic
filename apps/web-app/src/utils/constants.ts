@@ -33,7 +33,7 @@ export const AppConstants = {
 export const getDefaultRestApi = (): APISchema => {
   return {
     id: generateUUID("api"),
-    parentId: AppConstants.ROOT_API_PARENT_ID,
+    collectionId: AppConstants.ROOT_API_PARENT_ID,
     name: AppConstants.DEFAULT_REST_API_NAME,
     description: AppConstants.DEFAULT_API_DESCRIPTION,
     url: AppConstants.DEFAULT_API_URL,

@@ -71,10 +71,8 @@ export default function APIDetails({ apiId }: { apiId: string }) {
 
   // handle name change
   useEffect(() => {
-    if (name !== apiName) {
-      setApiName(name);
-    }
-  }, [name, apiName]);
+    setApiName(name);
+  }, [name]);
 
   return (
     <div className={styles.header}>

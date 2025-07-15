@@ -1,4 +1,4 @@
-import { APISchema, RequestHeaders } from "@/types/API.types";
+import { APISchema, CollectionSchema, RequestHeaders } from "@/types/API.types";
 import {
   Authorization,
   RequestBody,
@@ -9,6 +9,7 @@ import {
 export interface APIStoreState {
   activeAPI: string;
   apis: Record<string, APISchema>;
+  collections: Record<string, CollectionSchema>;
   environment: string;
 
   // actions
@@ -18,6 +19,14 @@ export interface APIStoreState {
   createAPI: (api: Partial<APISchema>) => string;
   updateAPI: (id: string, api: Omit<Partial<APISchema>, "id">) => void;
   deleteAPI: (id: string) => void;
+
+  // collections
+  createCollection: (collection: Partial<CollectionSchema>) => string;
+  updateCollection: (
+    id: string,
+    collection: Omit<Partial<CollectionSchema>, "id">
+  ) => void;
+  deleteCollection: (id: string) => void;
 
   // helpers
   setMethod: (method: RequestMethod) => void;

@@ -20,7 +20,7 @@ export const relayController = async (c: Context) => {
       method: body.method,
       params: body.params || {},
       headers: body.headers || {},
-      body: body.body || ""
+      body: body.body || {}
     };
     
     // Make the request using our relay function
