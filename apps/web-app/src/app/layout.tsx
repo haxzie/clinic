@@ -15,6 +15,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "API Clinic",
   description: "Model API Client for all your APIs",
+  openGraph: {
+    title: "API Clinic",
+    description: "Model API Client for all your APIs",
+    images: [
+      {
+        url: "/cover.png",
+        width: 1200,
+        height: 630,
+        alt: "API Clinic Cover Image",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
