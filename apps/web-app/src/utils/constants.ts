@@ -14,7 +14,7 @@ export const ApiConstants = {};
 export const AppConstants = {
   ROOT_API_PARENT_ID: "root",
   DEFAULT_REST_API_NAME: "Untitled API",
-  DEFAULT_API_URL: "https://api.clinic.sh/start",
+  DEFAULT_API_URL: "https://start.clinic.sh",
   DEFAULT_API_METHOD: "GET" as RequestMethod,
   DEFAULT_API_DESCRIPTION: `<h1>Untitled API</h1>
 <p>This is an API description. You can use this space to describe the API, its purpose, and how to use it.</p>`,
