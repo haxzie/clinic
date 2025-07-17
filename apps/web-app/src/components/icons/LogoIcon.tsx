@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { IconProps } from "./icons.types";
 
-export default function LogoIcon({ size = 24, color = "currentColor" }: IconProps) {
+function LogoIcon({ size = 24, color = "currentColor" }: IconProps) {
   return (
     <svg
       width={size}
@@ -12,3 +13,5 @@ export default function LogoIcon({ size = 24, color = "currentColor" }: IconProp
     </svg>
   );
 }
+
+export default memo(LogoIcon);

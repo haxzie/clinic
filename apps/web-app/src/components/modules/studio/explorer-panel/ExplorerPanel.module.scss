@@ -4,10 +4,6 @@
     flex-direction: row;
     overflow: hidden;
     position: relative;
-
-    .resizableHandle {
-        // position: absolute;
-    }
 }
 .explorerPanel {
     width: 100%;
@@ -20,7 +16,6 @@
         align-items: center;
         height: 48px;
         padding: 10px 10px 10px 15px;
-        border-bottom: 1px solid var(--color-border);
 
         .title {
             flex: 1;

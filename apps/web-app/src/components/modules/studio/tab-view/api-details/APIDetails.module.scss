@@ -3,7 +3,6 @@
   flex-direction: row;
   align-items: center;
   padding: 0px 20px;
-  gap: 5px;
 
   .apiStatusIcon {
     width: 20px;
@@ -15,65 +14,28 @@
     align-items: center;
   }
 
-  .editableTitle {
+  .collectionDetails {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
 
-    h2,
-    input {
+    .input {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .collectionName {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color-font-light);
       font-size: var(--font-size-s);
       line-height: var(--line-height-s);
-      font-weight: var(--font-weight-semibold);
-      // font-family: var(--font-monospace);
-      color: var(--color-font-light);
-      padding: 5px 10px;
-      width: 240px;
-      border: 1px solid transparent;
-
-    }
-
-    h2 {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      margin-left: 15px;
       
-      &:hover {
-        cursor: text;
-        color: var(--color-font);
-        background-color: var(--color-background-light);
-        border: 1px solid transparent;
-        border-radius: var(--radius-m);
+      span {
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-font-light);
       }
     }
-
-    input {
-      display: none;
-      height: 32px;
-      color: var(--color-font);
-      background-color: var(--color-background-light);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-m);
-      outline: none;
-
-      &:focus {
-        border: 1px solid var(--color-primary);
-        outline: none;
-      }
-    }
-
-    &.editable {
-      h2 {
-        display: none;
-      }
-
-      input {
-        display: block;
-      }
-    }
-
-    // input {
-    //   background-color: transparent;
-    //   color: ;
-    // }
   }
 }

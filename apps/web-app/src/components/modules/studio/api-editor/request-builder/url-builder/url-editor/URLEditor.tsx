@@ -29,6 +29,14 @@ export default function URLEditor({
     debouncedSetUrl(trimmedValue);
   };
 
+  // Handle key down events
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Ignore all key presses while Alt is pressed
+    if (e.altKey) {
+      e.preventDefault();
+    }
+  };
+
   // Sync input and overlay scroll positions
   useEffect(() => {
     const syncScroll = () => {
@@ -61,6 +69,7 @@ export default function URLEditor({
           type="text"
           value={currentUrl}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           className={styles.input}
           spellCheck={false}
           onFocus={() => onFocus()}

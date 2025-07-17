@@ -3,8 +3,10 @@
   align-items: center;
   padding: 10px;
   gap: 15px;
-  height: 44px;
+  height: 40px;
   overflow: hidden;
+  border-radius: var(--radius-m);
+  border: 1px solid transparent;
 
   .method {
     display: flex;
@@ -106,15 +108,37 @@
     }
   }
 
+  .deleteItem {
+    display: none;
+    color: var(--color-font-light);
+    opacity: 0.5;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+      color: var(--color-font);
+    }
+  }
+
   &:hover {
-    background-color: var(--color-background-dark);
+    background-color: var(--color-element-background-dark-transparent);
+
+    .status {
+      display: none;
+    }
+
+    .deleteItem {
+      display: block;
+    }
+
     .name {
       color: var(--color-font);
     }
   }
 
   &.active {
-    background-color: var(--color-element-background-dark);
+    background-color: var(--color-element-background-dark-transparent);
+    border: 1px solid var(--color-border);
     .name {
       color: var(--color-font);
     }

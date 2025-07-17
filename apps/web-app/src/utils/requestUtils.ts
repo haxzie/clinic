@@ -62,7 +62,7 @@ export const extractAPINameFromURL = (url: string): string => {
   const urlParts = urlWithoutProtocol.split("/");
   // if there is only one part, return it
   if (urlParts.length === 1) {
-    return `/${urlParts[0]}`;
+    return `${urlParts[0]}`;
   }
   // // if there is more than two parts, then return the last 2 parts
   // if (urlParts.length > 2) {

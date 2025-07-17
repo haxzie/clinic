@@ -5,19 +5,21 @@
   align-items: center;
   background-color: var(--color-background);
   overflow-x: hidden;
-  height: 48px;
-  border-bottom: 1px solid var(--color-border);
+  height: 44px;
+  margin: 4px 8px;
+  border: 1px solid var(--color-border);
   background-color: var(--color-input-background);
+  border-radius: var(--radius-m);
 
   &.focused {
-    background-color: var(--color-element-background-dark);
+    background-color: var(--color-element-background-dark-transparent);
   }
 }
 
 .options {
   display: flex;
   align-items: center;
-  padding: 0px 8px 0px 10px;
+  padding: 0px 4px 0px 10px;
   gap: 10px;
 
   .buttonIcons {

@@ -137,10 +137,11 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       ...defaultApi,
       ...api,
     };
+    console.log("newApi", newApi);
     set((state) => ({
       apis: {
-        ...state.apis,
         [newApi.id]: newApi,
+        ...state.apis,
       },
       activeAPI: newApi.id,
     }));
