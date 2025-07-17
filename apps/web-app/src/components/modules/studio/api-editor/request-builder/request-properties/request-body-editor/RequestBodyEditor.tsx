@@ -8,6 +8,7 @@ import UploadIcon from "@/components/icons/UploadIcon";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import { DropDown } from "@/components/base/dropdown/DropDown";
+import FormDataEditor from "../form-data-editor/FormDataEditor";
 
 export default function RequestBodyEditor() {
   const { requestBody, setRequestBody } = useApiStore(
@@ -22,7 +23,30 @@ export default function RequestBodyEditor() {
   };
 
   const handleRequestBodyTypeChange = ({ id }: { id: string }) => {
-    setRequestBody({ contentType: id, content: requestBody.content });
+    // Reset content based on the selected content type
+    let defaultContent = "";
+    
+    switch (id) {
+      case "application/json":
+        defaultContent = "{}";
+        break;
+      case "multipart/form-data":
+      case "application/x-www-form-urlencoded":
+        defaultContent = "{}"; // Empty JSON for form data
+        break;
+      case "application/xml":
+        defaultContent = "";
+        break;
+      case "text/plain":
+        defaultContent = "";
+        break;
+      case "none":
+      default:
+        defaultContent = "";
+        break;
+    }
+    
+    setRequestBody({ contentType: id, content: defaultContent });
   };
 
   const dropDownOptions = [
@@ -73,7 +97,7 @@ export default function RequestBodyEditor() {
       id: "multipart/form-data",
       value: "multipart/form-data",
       component: (
-        <ContentEditor
+        <FormDataEditor
           contentType="multipart/form-data"
           value={`${requestBody.content}`}
           onChange={handleRequestBodyChange}
@@ -84,8 +108,8 @@ export default function RequestBodyEditor() {
       id: "application/x-www-form-urlencoded",
       value: "application/x-www-form-urlencoded",
       component: (
-        <ContentEditor
-          contentType="multipart/form-data"
+        <FormDataEditor
+          contentType="application/x-www-form-urlencoded"
           value={`${requestBody.content}`}
           onChange={handleRequestBodyChange}
         />
@@ -102,13 +126,17 @@ export default function RequestBodyEditor() {
     );
   };
 
+  const selectedOption = dropDownOptions.find(
+    (option) => option.id === requestBody.contentType
+  ) || dropDownOptions[0];
+
   return (
     <div className={styles.requestBodyEditor}>
       <div className={styles.header}>
         <div className={styles.contentTypePicker}>
           Content Type:
           <DropDown
-            value={dropDownOptions[0]}
+            value={selectedOption}
             options={dropDownOptions}
             onChange={handleRequestBodyTypeChange}
             selectElement={DropDownSelectElement}
@@ -135,10 +163,7 @@ export default function RequestBodyEditor() {
           </IconButton>
         </div>
       </div>
-      <ContentEditor
-        value={`${requestBody.content}`}
-        onChange={handleRequestBodyChange}
-      />
+      {selectedOption.component}
     </div>
   );
 }

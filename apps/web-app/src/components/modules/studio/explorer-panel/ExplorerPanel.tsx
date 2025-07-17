@@ -31,17 +31,24 @@ export default function ExplorerPanel() {
       <div className={styles.explorerPanel}>
         <div className={styles.listHeader}>
           <h4 className={styles.title}>
-            <LogoIcon size={20} />
+            <div className={styles.logo}>
+              <LogoIcon size={20} />
+            </div>
             clinic
           </h4>
           <div className={styles.options}>
-            <IconButton size="small" tooltip="Search">
+            <IconButton
+              size="small"
+              tooltip="Search"
+              className={styles.optionIcon}
+            >
               <SearchIcon size={16} />
             </IconButton>
             <IconButton
               size="small"
               tooltip="Create Collection"
               onClick={handleCreateNewCollection}
+              className={styles.optionIcon}
             >
               <AddFolderIcon size={16} />
             </IconButton>
@@ -49,6 +56,7 @@ export default function ExplorerPanel() {
               size="small"
               tooltip="New Request"
               onClick={handleCreateNewRequest}
+              className={styles.optionIcon}
             >
               <AddIcon size={16} />
             </IconButton>
