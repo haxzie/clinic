@@ -6,7 +6,7 @@ import { json } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { markdown } from "@codemirror/lang-markdown";
 import { xml } from "@codemirror/lang-xml";
-
+import { linkifyPlugin } from "./plugins/linkify";
 
 export default function ContentEditor({
   disabled = false,
@@ -64,7 +64,11 @@ export default function ContentEditor({
         placeholder={placeholder}
         height="100%"
         theme={tokyoNight}
-        extensions={[fontSize, getLanguageForContentType(contentType)]}
+        extensions={[
+          fontSize,
+          getLanguageForContentType(contentType),
+          linkifyPlugin(),
+        ]}
         onChange={handleChange}
       />
     </div>
