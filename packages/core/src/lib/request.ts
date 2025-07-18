@@ -30,8 +30,15 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
     };
 
     // Add original headers
-    Object.values(request.headers).forEach(({ name, value }) => {
-      requestHeaders[name] = value;
+    Object.entries(request.headers).forEach(([key, value]) => {
+      // Handle both simple string headers and HeaderSchema objects
+      if (typeof value === 'string') {
+        // Simple key-value format from frontend
+        requestHeaders[key] = value;
+      } else if (value && typeof value === 'object' && 'name' in value && 'value' in value) {
+        // HeaderSchema format
+        requestHeaders[value.name] = value.value;
+      }
     });
 
     // Prepare request body (ignore for GET, HEAD, OPTIONS methods)
@@ -41,13 +48,30 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
     if (request.body && request.body.content && !methodsWithoutBody.includes(request.method.toUpperCase())) {
       requestBody = request.body.content;
       
+      // Process JSON content to ensure it's properly formatted
+      if (request.body.contentType === "application/json" && typeof request.body.content === "string") {
+        try {
+          // Parse and re-stringify to ensure proper JSON formatting
+          const parsed = JSON.parse(request.body.content);
+          requestBody = JSON.stringify(parsed);
+        } catch (error) {
+          // If JSON parsing fails, use the raw content
+          console.warn("Failed to parse JSON request body, using raw content:", error);
+          requestBody = request.body.content;
+        }
+      }
+      
       // Set content-type if provided and not already set
-      if (request.body.contentType && !requestHeaders["content-type"]) {
-        requestHeaders["content-type"] = request.body.contentType;
+      if (request.body.contentType) {
+        // Check if content-type header already exists (case-insensitive)
+        const hasContentType = Object.keys(requestHeaders).some(
+          key => key.toLowerCase() === "content-type"
+        );
+        if (!hasContentType) {
+          requestHeaders["content-type"] = request.body.contentType;
+        }
       }
     }
-
-    
 
     // Build fetch options
     const fetchOptions: RequestInit = {
@@ -55,6 +79,7 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
       headers: requestHeaders,
       body: requestBody,
     };
+
 
     // Make the request
     const fetchResponse = await fetch(parsedUrl.toString(), fetchOptions);

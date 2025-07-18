@@ -1,4 +1,4 @@
-import { relayHTTPRequest, Request as RelayRequest, Response as RelayResponse } from "@apiclinic/core";
+import { relayHTTPRequest, Response as RelayResponse } from "@apiclinic/core";
 import { Context } from "hono";
 
 export const relayController = async (c: Context) => {
@@ -14,17 +14,15 @@ export const relayController = async (c: Context) => {
       }, 400);
     }
     
-    // Prepare request for relay
-    const relayRequest: RelayRequest = {
-      url: body.url,
-      method: body.method,
-      params: body.params || {},
-      headers: body.headers || {},
-      body: body.body || {}
-    };
     
     // Make the request using our relay function
-    const response: RelayResponse = await relayHTTPRequest(relayRequest);
+    const response: RelayResponse = await relayHTTPRequest({
+      url: body.url,
+      method: body.method,
+      params: body.params ?? {},
+      headers: body.headers ?? {},
+      body: body.body ?? {}
+    });
     
     // Return the relayed response with performance metrics
     return c.json({
