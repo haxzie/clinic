@@ -70,7 +70,7 @@ export function DropDownPortal({
     return () => {
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, []);
+  }, [onClickOutside]);
 
   return (
     <Portal>

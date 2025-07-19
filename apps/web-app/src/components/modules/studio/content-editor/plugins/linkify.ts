@@ -22,7 +22,7 @@ export function linkifyPlugin() {
       buildDecorations(view: EditorView) {
         const decorations = [];
 
-        for (let { from, to } of view.visibleRanges) {
+        for (const { from, to } of view.visibleRanges) {
           const text = view.state.doc.sliceString(from, to);
           let match;
           while ((match = urlRegex.exec(text))) {
