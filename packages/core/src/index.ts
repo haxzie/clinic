@@ -1,5 +1,6 @@
 export { relayHTTPRequest } from "./lib/request";
 export { RequestMethods } from "./types/API";
+export { AuthorizationTypes } from "./types/API";
 export type {
   Request,
   Response,
@@ -10,7 +11,8 @@ export type {
   ResponseHeaders,
   Authorization,
   RequestBody,
-  AuthorizationTypes,
+  AuthorizationType,
   HeaderSchema,
   ParameterSchema,
 } from "./types/API";
+

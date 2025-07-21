@@ -56,6 +56,23 @@
           background-color: var(--color-success);
           border-radius: var(--radius-rounded);
         }
+
+        .streamingIndicator {
+          width: 10px;
+          height: 10px;
+          background-color: var(--color-primary);
+          border-radius: var(--radius-rounded);
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
       }
     }
   }

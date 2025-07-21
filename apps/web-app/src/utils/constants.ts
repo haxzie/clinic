@@ -19,7 +19,7 @@ export const AppConstants = {
   DEFAULT_API_DESCRIPTION: `<h1>Untitled API</h1>
 <p>This is an API description. You can use this space to describe the API, its purpose, and how to use it.</p>`,
   DEFAULT_API_AUTHORIZATION: {
-    type: "None" as AuthorizationTypes.NONE,
+    type: AuthorizationTypes.NONE,
     content: {},
   } as Authorization,
   DEFAULT_REQUEST_BODY: {
@@ -27,7 +27,8 @@ export const AppConstants = {
     content: "{}",
   } as RequestBody,
   DEFAULT_API_PARAMETERS: {} as RequestParameters,
-  DEFAULT_API_HEADERS: {} as RequestHeaders,
+  DEFAULT_API_HEADERS: {
+  } as RequestHeaders,
 };
 
 export const getDefaultRestApi = (): APISchema => {

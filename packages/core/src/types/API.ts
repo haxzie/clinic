@@ -27,52 +27,54 @@ export interface RequestBody {
   content?: string;
 }
 
-export enum AuthorizationTypes {
-  NONE = "NONE",
-  BASIC = "BASIC",
-  BEARER = "BEARER",
-  API_KEY = "API_KEY",
-  OAUTH2 = "OAUTH2",
-  CUSTOM = "CUSTOM",
-}
+export const AuthorizationTypes = {
+  NONE: "NONE",
+  BASIC: "BASIC",
+  BEARER: "BEARER",
+  API_KEY: "API_KEY",
+  OAUTH2: "OAUTH2",
+  CUSTOM: "CUSTOM",
+} as const;
+export type AuthorizationType =
+  (typeof AuthorizationTypes)[keyof typeof AuthorizationTypes];
 
 export interface BasicAuthorization {
-  type: AuthorizationTypes.BASIC;
+  type: typeof AuthorizationTypes.BASIC;
   username: string;
   password: string;
 }
 
 export interface BearerAuthorization {
-  type: AuthorizationTypes.BEARER;
+  type: typeof AuthorizationTypes.BEARER;
   token: string;
 }
 
 export interface ApiKeyAuthorization {
-  type: AuthorizationTypes.API_KEY;
+  type: typeof AuthorizationTypes.API_KEY;
   key: string;
 }
 
 export interface OAuth2Authorization {
-  type: AuthorizationTypes.OAUTH2;
+  type: typeof AuthorizationTypes.OAUTH2;
   token: string;
 }
 
 export interface CustomAuthorization {
-  type: Authorization;
+  type: typeof AuthorizationTypes.CUSTOM;
   token: string;
 }
 
-export interface Authorization {
-  type: AuthorizationTypes;
-  content: {
-    [key in AuthorizationTypes]:
-      | BasicAuthorization
-      | BearerAuthorization
-      | ApiKeyAuthorization
-      | OAuth2Authorization
-      | CustomAuthorization;
-  };
+export interface NoAuthorization {
+  type: typeof AuthorizationTypes.NONE;
 }
+
+export type Authorization =
+  | BasicAuthorization
+  | BearerAuthorization
+  | ApiKeyAuthorization
+  | OAuth2Authorization
+  | CustomAuthorization
+  | NoAuthorization;
 
 export const RequestMethods = {
   GET: "GET",

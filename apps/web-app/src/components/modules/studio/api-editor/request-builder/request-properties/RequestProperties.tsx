@@ -4,6 +4,7 @@ import HeadersEditor from "./headers-editor/HeadersEditor";
 import ParamsEditor from "./params-editor/ParamsEditor";
 import RequestBodyEditor from "./request-body-editor/RequestBodyEditor";
 import DetailsEditor from "./details-editor/DetailsEditor";
+import AuthorizationEditor from "./authorization-editor/AuthorizationEditor";
 
 export default function RequestProperties() {
   enum Tabs {
@@ -45,7 +46,7 @@ export default function RequestProperties() {
     [Tabs.auth]: {
       id: Tabs.auth,
       label: "Authorization",
-      component: () => null,
+      component: AuthorizationEditor,
     },
   };
 

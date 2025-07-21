@@ -76,7 +76,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         {}
       );
       // make the http request
-      const { status, data } = await relayRequest({
+      const response = await relayRequest({
         method: api.method,
         url: api.url,
         headers: preparedHeaders,
@@ -84,14 +84,14 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         body: api.requestBody,
       });
 
-      // update the api response
-      if (status === 200 && data && data.response) {
+      // Handle the response
+      if (response.status === 'success' && response.response) {
         set((state) => ({
           apis: {
             ...state.apis,
             [apiId]: {
               ...state.apis[apiId],
-              response: data.response,
+              response: response.response,
             },
           },
         }));

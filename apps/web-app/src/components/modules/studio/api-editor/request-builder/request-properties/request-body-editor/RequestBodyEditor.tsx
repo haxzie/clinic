@@ -52,11 +52,12 @@ export default function RequestBodyEditor() {
   const dropDownOptions = [
     {
       id: "none",
-      value: "None",
+      value: "none",
       component: (
         <ContentEditor
           value={`${requestBody.content}`}
           onChange={handleRequestBodyChange}
+          editable={false}
         />
       ),
     },

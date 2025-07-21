@@ -5,25 +5,35 @@ import ClearIcon from "@/components/icons/ClearIcon";
 import CopyIcon from "@/components/icons/CopyIcon";
 import CheckBox from "@/components/base/check-box/CheckBox";
 
-type Parameter = {
+export type Parameter = {
   id: string;
   name: string;
   value: string;
   isDisabled?: boolean;
   isReadOnly?: boolean;
+  placeholder?: string;
 };
+
 export default function ListPropertyEditor({
   type,
   title,
   value,
   onChange,
   allowSelection = false,
+  hideHeader = false,
+  disableNewItem = false,
+  disableKeyChange = false,
+  disableRemoveItem = false,
 }: {
   type: string;
   title: string;
   onChange: (value: Record<string, Parameter>) => void;
   value: Record<string, Parameter>;
   allowSelection?: boolean;
+  hideHeader?: boolean;
+  disableNewItem?: boolean;
+  disableKeyChange?: boolean;
+  disableRemoveItem?: boolean;
 }) {
   const inputKeyRef = useRef<HTMLInputElement>(null);
   const inputValueRef = useRef<HTMLInputElement>(null);
@@ -59,7 +69,7 @@ export default function ListPropertyEditor({
 
   const updateKeyValue = (id: string, name: string, data: string) => {
     const params = { ...value };
-    params[id] = { id, name, value: data };
+    params[id] = { ...params[id], id, name, value: data };
     onChange(params);
   };
 
@@ -101,34 +111,43 @@ export default function ListPropertyEditor({
         allowSelection && styles.allowSelection,
       ].join(" ")}
     >
-      <div className={styles.header}>
-        {allowSelection && (
-          <div className={styles.selection}>
-            <CheckBox
-              value={isAllEnabled}
-              onChange={() => {
-                toggleAllSection(!isAllEnabled);
-              }}
-            />
-          </div>
-        )}
-        <div className={styles.paramKey}>{title}</div>
-        <div className={styles.paramValue}>Value</div>
-      </div>
+      {!hideHeader && (
+        <div className={styles.header}>
+          {allowSelection && (
+            <div className={styles.selection}>
+              <CheckBox
+                value={isAllEnabled}
+                onChange={() => {
+                  toggleAllSection(!isAllEnabled);
+                }}
+              />
+            </div>
+          )}
+          <div className={styles.paramKey}>{title}</div>
+          <div className={styles.paramValue}>Value</div>
+        </div>
+      )}
       <div className={styles.values}>
+        {/* Render the static values first */}
         {Object.keys(value).map((itemId) => (
           <div
             className={[
               styles.param,
               value[itemId].isReadOnly && styles.readOnly,
-              allowSelection && value[itemId].isDisabled && styles.notSelected,
+              allowSelection &&
+                value[itemId].isDisabled &&
+                !value[itemId].isReadOnly &&
+                styles.notSelected,
             ].join(" ")}
             key={`kv-${itemId}`}
           >
             {allowSelection && (
               <div className={styles.selection}>
                 <CheckBox
-                  value={!value[itemId].isDisabled}
+                  value={
+                    value[itemId].isReadOnly ? true : !value[itemId].isDisabled
+                  }
+                  disabled={value[itemId].isReadOnly}
                   onChange={() => toggleKeyValue(itemId)}
                 />
               </div>
@@ -141,7 +160,8 @@ export default function ListPropertyEditor({
               onChange={(e) =>
                 updateKeyValue(itemId, e.target.value, value[itemId].value)
               }
-              readOnly={value[itemId].isReadOnly}
+              readOnly={value[itemId].isReadOnly || disableKeyChange}
+              disabled={value[itemId].isReadOnly || disableKeyChange}
             />
             <input
               className={styles.paramValue}
@@ -152,6 +172,7 @@ export default function ListPropertyEditor({
                 updateKeyValue(itemId, value[itemId].name, e.target.value)
               }
               readOnly={value[itemId].isReadOnly}
+              placeholder={value[itemId].placeholder}
             />
             {/** Show delete button only for editable items items */}
             {value[itemId].isReadOnly ? (
@@ -164,40 +185,44 @@ export default function ListPropertyEditor({
                 <CopyIcon size={18} />
               </button>
             ) : (
-              <button
-                className={styles.deleteButton}
-                onClick={() => deleteKeyValue(itemId)}
-              >
-                <ClearIcon size={18} />
-              </button>
+              !disableRemoveItem && (
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => deleteKeyValue(itemId)}
+                >
+                  <ClearIcon size={18} />
+                </button>
+              )
             )}
           </div>
         ))}
-        <div className={[styles.param, styles.placeholder].join(" ")}>
-          {allowSelection && (
-            <div className={styles.selection}>
-              <CheckBox value={true} disabled={true} />
+        {!disableNewItem && (
+          <div className={[styles.param, styles.placeholder].join(" ")}>
+            {allowSelection && (
+              <div className={styles.selection}>
+                <CheckBox value={true} disabled={true} />
+              </div>
+            )}
+            <div className={styles.paramKey}>
+              <input
+                ref={inputKeyRef}
+                value={keyInput}
+                type="text"
+                placeholder="key"
+                onChange={(e) => addKeyValue(e.target.value, "")}
+              />
             </div>
-          )}
-          <div className={styles.paramKey}>
-            <input
-              ref={inputKeyRef}
-              value={keyInput}
-              type="text"
-              placeholder="key"
-              onChange={(e) => addKeyValue(e.target.value, "")}
-            />
+            <div className={styles.paramValue}>
+              <input
+                ref={inputValueRef}
+                value={valueInput}
+                type="text"
+                placeholder="value"
+                onChange={(e) => addKeyValue("", e.target.value)}
+              />
+            </div>
           </div>
-          <div className={styles.paramValue}>
-            <input
-              ref={inputValueRef}
-              value={valueInput}
-              type="text"
-              placeholder="value"
-              onChange={(e) => addKeyValue("", e.target.value)}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

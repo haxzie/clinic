@@ -40,7 +40,7 @@ export default function ResponseViewer() {
   );
 
   const formattedResponse = useMemo(() => {
-    if (response?.contentType === "application/json") {
+    if (response?.contentType === "application/json" && response?.content && response.content.trim()) {
       try {
         const data = JSON.parse(response.content);
         return JSON.stringify(data, null, 2);
@@ -49,7 +49,7 @@ export default function ResponseViewer() {
         return response?.content;
       }
     }
-    return response?.content;
+    return response?.content || '';
   }, [response]);
 
   const handleResponseDownload = () => {
@@ -129,8 +129,8 @@ export default function ResponseViewer() {
 
   return (
     <>
-      <NProgress active={isLoading} />
       <PanelResizeHandle />
+      {/* This is outside the panel to avoid the panel from being hidden */}
       {response && (
         <ResponseStatusBar
           status={response.statusCode}
@@ -145,6 +145,7 @@ export default function ResponseViewer() {
         onResize={handleResize}
         className={styles.responseViewer}
       >
+        <NProgress active={isLoading} />
         {response ? (
           <PanelGroup direction="horizontal" className={styles.responseArea}>
             <Panel defaultSize={70} className={styles.viewerContent}>
