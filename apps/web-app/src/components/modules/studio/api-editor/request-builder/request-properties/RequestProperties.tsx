@@ -6,7 +6,7 @@ import RequestBodyEditor from "./request-body-editor/RequestBodyEditor";
 import DetailsEditor from "./details-editor/DetailsEditor";
 import AuthorizationEditor from "./authorization-editor/AuthorizationEditor";
 
-export default function RequestProperties() {
+export default function RequestProperties({ apiId }: { apiId: string }) {
   enum Tabs {
     description = "description",
     auth = "auth",
@@ -20,7 +20,7 @@ export default function RequestProperties() {
     {
       id: Tabs;
       label: string;
-      component: React.ComponentType;
+      component: React.ComponentType<{ apiId: string }>;
     }
   > = {
     [Tabs.description]: {
@@ -52,7 +52,7 @@ export default function RequestProperties() {
 
   const ActiveView = ({ tabId }: { tabId: Tabs }) => {
     const TabComponent = tabs[tabId].component;
-    return <TabComponent />;
+    return <TabComponent apiId={apiId} />;
   };
 
   return (

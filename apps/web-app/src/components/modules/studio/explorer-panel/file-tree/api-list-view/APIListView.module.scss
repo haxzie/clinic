@@ -29,17 +29,11 @@
     gap: 5px;
     flex: 1;
     overflow: hidden;
+    color: var(--color-font-light);
 
     .name {
       flex: 1;
-      overflow: hidden;
-      font-size: var(--font-size-s);
-      line-height: var(--line-height-s);
-      color: var(--color-font);
-      // font-family: "Fira Code", monospace;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      color: var(--color-font-light);
     }
 
     .methodText {
@@ -121,8 +115,6 @@
   }
 
   &:hover {
-    background-color: var(--color-element-background-dark-transparent);
-
     .status {
       display: none;
     }

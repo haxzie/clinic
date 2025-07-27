@@ -6,30 +6,29 @@ import EditableInputField from "../editable-input-field/EditableInputField";
 import { AnimatePresence, motion } from "motion/react";
 import IconButton from "@/components/base/icon-button/IconButton";
 import DeleteIcon from "@/components/icons/DeleteIcon";
+import { useEditorStore } from "@/store/editor-store/editor.store";
+import { TabTypes } from "@/store/editor-store/editor.types";
+import { cn } from "@/utils/cn";
 
 export default function APIListView({
   collectionId = "root",
 }: {
   collectionId: string;
 }) {
-  const { apis, setActiveAPI, activeAPI, updateAPI, deleteAPI } = useApiStore(
-    useShallow(
-      ({
-        apis,
-        setActiveAPI,
-        updateAPI,
-        activeAPI,
-        collections,
-        deleteAPI,
-      }) => ({
-        collections,
-        apis,
-        setActiveAPI,
-        activeAPI,
-        updateAPI,
-        deleteAPI,
-      })
-    )
+  const { activeTab } = useEditorStore(
+    useShallow(({ activeTab }) => ({ activeTab }))
+  );
+  const { apis, updateAPI, deleteAPI } = useApiStore(
+    useShallow(({ apis, updateAPI, collections, deleteAPI }) => ({
+      collections,
+      apis,
+      updateAPI,
+      deleteAPI,
+    }))
+  );
+
+  const { createTab } = useEditorStore(
+    useShallow(({ createTab }) => ({ createTab }))
   );
 
   const filteredAPIs = useMemo(() => {
@@ -75,10 +74,10 @@ export default function APIListView({
           transition={{ duration: 0.2 }}
           layout
           key={api.id}
-          className={`${styles.file} ${
-            api.id === activeAPI ? styles.active : ""
-          }`}
-          onClick={() => setActiveAPI(api.id)}
+          className={cn(styles.file, activeTab === api.id && styles.active)}
+          onClick={() => {
+            createTab({ type: TabTypes.API, id: api.id });
+          }}
         >
           <div className={styles.texts}>
             <div className={[styles.methodText].join(" ")}>{api.method}</div>
@@ -101,7 +100,7 @@ export default function APIListView({
                 tooltip="Delete"
                 onClick={() => handleDeleteAPI(api.id)}
               >
-                <DeleteIcon size={16}/>
+                <DeleteIcon size={16} />
               </IconButton>
             </div>
           </div>

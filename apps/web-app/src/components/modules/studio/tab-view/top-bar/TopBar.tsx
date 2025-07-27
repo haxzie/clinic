@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./TopBar.module.scss";
-import EnvironmentModal from "../../modals/environment-modal/EnvironmentModal";
-import ArrowUpDownIcon from "@/components/icons/ArrowUpDownIcon";
-import VariableIcon from "@/components/icons/VariableIcon";
-import APIDetails from "../api-details/APIDetails";
-import useApiStore from "@/store/api-store/api.store";
-import { useShallow } from "zustand/shallow";
+import Tabs from "./tabs/Tabs";
+// import IconButton from "@/components/base/icon-button/IconButton";
+// import AddIcon from "@/components/icons/AddIcon";
+// import { useEditor } from "@tiptap/react";
+// import { useEditorStore } from "@/store/editor-store/editor.store";
+// import { TabTypes } from "@/store/editor-store/editor.types";
+// import useApiStore from "@/store/api-store/api.store";
 
 export default function TopBar() {
-  const [showEnvModal, setShowEnvModal] = useState(false);
-  const { activeAPI } = useApiStore(
-    useShallow(({ activeAPI }) => ({ activeAPI }))
-  );
+  // const [showEnvModal, setShowEnvModal] = useState(false);
+
 
   return (
     <div className={styles.topBar}>
-      {/* <APITabs /> */}
-      <APIDetails apiId={activeAPI} />
-      <div className={styles.options}>
+      {/* <div className={styles.left}> */}
+      <Tabs />
+
+      {/* <div className={styles.options}>
         <button
           className={styles.envButton}
           onClick={() => setShowEnvModal(true)}
@@ -29,7 +29,7 @@ export default function TopBar() {
       </div>
       {showEnvModal && (
         <EnvironmentModal onClose={() => setShowEnvModal(false)} />
-      )}
+      )}  */}
     </div>
   );
 }

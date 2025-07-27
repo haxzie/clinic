@@ -1,7 +1,4 @@
-import {
-  RequestMethod,
-  Response
-} from "@apiclinic/core";
+import { RequestMethod, Response } from "@apiclinic/core";
 import { Authorization, RequestBody } from "@apiclinic/core";
 import { HeaderSchema, ParameterSchema } from "@apiclinic/core";
 
@@ -10,7 +7,10 @@ interface APIParmsExtras {
   isReadonly?: boolean;
 }
 export type RequestHeaders = Record<string, HeaderSchema & APIParmsExtras>;
-export type RequestParameters = Record<string, ParameterSchema & APIParmsExtras>;
+export type RequestParameters = Record<
+  string,
+  ParameterSchema & APIParmsExtras
+>;
 
 // Representation of a path
 export interface APISchema {
@@ -38,3 +38,4 @@ export interface CollectionSchema {
   createdAt: string;
   updatedAt: string;
 }
+

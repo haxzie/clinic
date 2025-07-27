@@ -22,7 +22,7 @@ import { downloadFile } from "@/utils/fileUtils";
 import ResponseBodyTopBar from "./response-body-top-bar/ResponseBodyTopBar";
 import NProgress from "./nprogress/NProgress";
 
-export default function ResponseViewer() {
+export default function ResponseViewer({ apiId }: { apiId: string }) {
   const [isPanelHidden, setIsPanelHidden] = useState(false);
   const panelRef = useRef<ImperativePanelHandle | null>(null);
 
@@ -34,8 +34,8 @@ export default function ResponseViewer() {
 
   const { response, isLoading } = useApiStore(
     useShallow((state) => ({
-      response: state.apis[state.activeAPI].response,
-      isLoading: state.apis[state.activeAPI].isLoading,
+      response: state.apis[apiId].response,
+      isLoading: state.apis[apiId].isLoading,
     }))
   );
 

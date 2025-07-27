@@ -4,10 +4,10 @@ import ListPropertyEditor from "../shared/list-property-editor/ListPropertyEdito
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 
-export default function HeadersEditor() {
+export default function HeadersEditor({ apiId }: { apiId: string }) {
   const { headers, setHeaders } = useApiStore(
     useShallow((state) => ({
-      headers: state.apis[state.activeAPI].headers,
+      headers: state.apis[apiId].headers,
       setHeaders: state.setHeaders,
     }))
   );

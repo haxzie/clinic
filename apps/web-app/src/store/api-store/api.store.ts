@@ -12,21 +12,13 @@ import {
   RequestParameters,
 } from "@apiclinic/core";
 import { extractAPINameFromURL } from "@/utils/requestUtils";
+import { useEditorStore } from "../editor-store/editor.store";
 
 const getInitialState = () => {
-  const defaultAPIId = generateUUID("api");
-  const defaultAPI = getDefaultRestApi();
   return {
-    activeAPI: defaultAPIId,
+    activeAPI: null,
     collections: {},
-    apis: {
-      [defaultAPIId]: {
-        ...defaultAPI,
-        id: defaultAPIId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    },
+    apis: {},
     environment: "development",
   };
 };
@@ -85,7 +77,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       });
 
       // Handle the response
-      if (response.status === 'success' && response.response) {
+      if (response.status === "success" && response.response) {
         set((state) => ({
           apis: {
             ...state.apis,
@@ -110,15 +102,6 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     }
   },
 
-  /**
-   * Sets the active API in the store.
-   * */
-  setActiveAPI: (apiId) => {
-    set(() => ({
-      activeAPI: apiId,
-    }));
-  },
-
   setAPIStatus: (apiId, status) => {
     set((state) => ({
       apis: {
@@ -137,7 +120,6 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       ...defaultApi,
       ...api,
     };
-    console.log("newApi", newApi);
     set((state) => ({
       apis: {
         [newApi.id]: newApi,
@@ -161,6 +143,14 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
   },
 
   deleteAPI: (id) => {
+    // check if any tab is using this api
+    const { tabs } = useEditorStore.getState();
+    const tabUsingAPI = Object.values(tabs).find((tab) => tab.id === id);
+    if (tabUsingAPI) {
+      // delete the tab using the tab id
+      useEditorStore.getState().deleteTab(tabUsingAPI.id);
+    }
+    // delete the api
     set((state) => {
       const apis = { ...state.apis };
       delete apis[id];
@@ -168,32 +158,32 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     });
   },
 
-  setMethod: (method: RequestMethod) => {
-    get().updateAPI(get().activeAPI, { method });
+  setMethod: (apiId: string, method: RequestMethod) => {
+    get().updateAPI(apiId, { method });
   },
 
-  setUrl: (url: string) => {
-    get().updateAPI(get().activeAPI, { url });
+  setUrl: (apiId: string, url: string) => {
+    get().updateAPI(apiId, { url });
   },
 
-  setDescription: (description: string) => {
-    get().updateAPI(get().activeAPI, { description });
+  setDescription: (apiId: string, description: string) => {
+    get().updateAPI(apiId, { description });
   },
 
-  setHeaders: (headers: RequestHeaders) => {
-    get().updateAPI(get().activeAPI, { headers });
+  setHeaders: (apiId: string, headers: RequestHeaders) => {
+    get().updateAPI(apiId, { headers });
   },
 
-  setParameters: (parameters: RequestParameters) => {
-    get().updateAPI(get().activeAPI, { parameters });
+  setParameters: (apiId: string, parameters: RequestParameters) => {
+    get().updateAPI(apiId, { parameters });
   },
 
-  setRequestBody: (requestBody: RequestBody) => {
-    get().updateAPI(get().activeAPI, { requestBody });
+  setRequestBody: (apiId: string, requestBody: RequestBody) => {
+    get().updateAPI(apiId, { requestBody });
   },
 
-  setAuthorization: (authorization: Authorization) => {
-    get().updateAPI(get().activeAPI, { authorization });
+  setAuthorization: (apiId: string, authorization: Authorization) => {
+    get().updateAPI(apiId, { authorization });
   },
 
   createCollection: (collection) => {

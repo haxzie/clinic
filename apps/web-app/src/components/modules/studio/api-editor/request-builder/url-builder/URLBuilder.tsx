@@ -10,34 +10,34 @@ import Button from "@/components/base/button/Button";
 import MethodPicker from "./method-picker/MethodPicker";
 import CopyOptions from "./copy-options/CopyOptions";
 
-export default function URLBuilder() {
+export default function URLBuilder({ apiId }: { apiId: string }) {
   const [focused, setFocused] = React.useState(false);
-  const {
-    activeAPI,
-    method,
-    isLoading,
-    setMethod,
-    makeHTTPRequest,
-    url,
-    setUrl,
-  } = useApiStore(
-    useShallow((state) => ({
-      activeAPI: state.activeAPI,
-      url: state.apis[state.activeAPI].url,
-      setUrl: state.setUrl,
-      method: state.apis[state.activeAPI].method,
-      isLoading: state.apis[state.activeAPI].isLoading,
-      setMethod: state.setMethod,
-      makeHTTPRequest: state.makeHTTPRequest,
-    }))
-  );
+  const { method, isLoading, setMethod, makeHTTPRequest, url, setUrl } =
+    useApiStore(
+      useShallow((state) => ({
+        url: state.apis[apiId].url,
+        setUrl: state.setUrl,
+        method: state.apis[apiId].method,
+        isLoading: state.apis[apiId].isLoading,
+        setMethod: state.setMethod,
+        makeHTTPRequest: state.makeHTTPRequest,
+      }))
+    );
 
   const handleMethodChange = useCallback(
     (method: RequestMethod) => {
-      setMethod(method);
+      setMethod(apiId, method);
     },
     [setMethod]
   );
+
+  const handleUrlChange = useCallback(
+    (url: string) => {
+      setUrl(apiId, url);
+    },
+    [setUrl]
+  );
+
   /**
    * Handle keyboard events for the URL builder
    */
@@ -45,10 +45,10 @@ export default function URLBuilder() {
     (event: KeyboardEvent) => {
       if (event.key === "Enter" && event.metaKey) {
         event.preventDefault();
-        makeHTTPRequest(activeAPI);
+        makeHTTPRequest(apiId);
       }
     },
-    [makeHTTPRequest, activeAPI]
+    [makeHTTPRequest, apiId]
   );
 
   useEffect(() => {
@@ -56,20 +56,21 @@ export default function URLBuilder() {
     return () => {
       window.removeEventListener("keydown", handleCmdEnter);
     };
-  }, [handleCmdEnter, activeAPI]);
+  }, [handleCmdEnter, apiId]);
 
   return (
     <div className={[styles.urlBuilder, focused && styles.focused].join(" ")}>
       <MethodPicker value={method} onChange={handleMethodChange} />
       <URLEditor
+        apiId={apiId}
         value={url}
-        onChange={setUrl}
+        onChange={handleUrlChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
       <div className={styles.options}>
-        <CopyOptions apiId={activeAPI} />
-        <Button onClick={() => makeHTTPRequest(activeAPI)} loading={isLoading}>
+        <CopyOptions apiId={apiId} />
+        <Button onClick={() => makeHTTPRequest(apiId)} loading={isLoading}>
           Send
           <span className={styles.buttonIcons}>
             <CommandIcon size={14} />

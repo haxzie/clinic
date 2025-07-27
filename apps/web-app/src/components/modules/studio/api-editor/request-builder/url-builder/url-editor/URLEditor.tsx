@@ -11,11 +11,13 @@ export default function URLEditor({
   onChange,
   onFocus,
   onBlur,
+  apiId,
 }: {
   value: string;
   onChange: (url: string) => void;
   onFocus: () => void;
   onBlur: () => void;
+  apiId: string;
 }) {
   // Get store methods for curl parsing
   const { setMethod, setHeaders, setParameters, setRequestBody } = useApiStore(
@@ -61,20 +63,20 @@ export default function URLEditor({
       const parsed = parseCurlCommand(pastedText);
       if (parsed) {
         // Update all the fields from the parsed curl command
-        setMethod(parsed.method as RequestMethod);
+        setMethod(apiId, parsed.method as RequestMethod);
         onChange(parsed.url);
         setCurrentUrl(parsed.url);
         
         if (Object.keys(parsed.headers).length > 0) {
-          setHeaders(parsed.headers);
+          setHeaders(apiId, parsed.headers);
         }
         
         if (Object.keys(parsed.params).length > 0) {
-          setParameters(parsed.params);
+          setParameters(apiId, parsed.params);
         }
         
         if (parsed.body) {
-          setRequestBody(parsed.body);
+          setRequestBody(apiId, parsed.body);
         }
         
         // Show success feedback

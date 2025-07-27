@@ -8,6 +8,8 @@ import AddFolderIcon from "@/components/icons/AddFolderIcon";
 import SearchIcon from "@/components/icons/SearchIcon";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
+import { useEditorStore } from "@/store/editor-store/editor.store";
+import { TabTypes } from "@/store/editor-store/editor.types";
 
 export default function ExplorerPanel() {
   const { createAPI, createCollection } = useApiStore(
@@ -17,8 +19,13 @@ export default function ExplorerPanel() {
     }))
   );
 
+  const { createTab } = useEditorStore(
+    useShallow(({ createTab }) => ({ createTab }))
+  );
+
   const handleCreateNewRequest = () => {
-    createAPI({});
+    const apiId = createAPI({});
+    createTab({ id: apiId, type: TabTypes.API });
   };
 
   const handleCreateNewCollection = () => {

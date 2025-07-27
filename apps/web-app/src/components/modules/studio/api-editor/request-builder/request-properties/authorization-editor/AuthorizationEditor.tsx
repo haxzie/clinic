@@ -5,7 +5,8 @@ import { AuthorizationType, AuthorizationTypes } from "@apiclinic/core";
 import { DropDown } from "@/components/base/dropdown/DropDown";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 
-export default function AuthorizationEditor() {
+export default function AuthorizationEditor({ apiId }: { apiId: string }) {
+  console.log("apiId", apiId);
   const dropDownOptions = {
     [AuthorizationTypes.NONE]: {
       id: AuthorizationTypes.NONE,

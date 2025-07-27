@@ -10,16 +10,16 @@ import { useShallow } from "zustand/shallow";
 import { DropDown } from "@/components/base/dropdown/DropDown";
 import FormDataEditor from "../form-data-editor/FormDataEditor";
 
-export default function RequestBodyEditor() {
+export default function RequestBodyEditor({ apiId }: { apiId: string }) {
   const { requestBody, setRequestBody } = useApiStore(
     useShallow((state) => ({
-      requestBody: state.apis[state.activeAPI].requestBody,
+      requestBody: state.apis[apiId].requestBody,
       setRequestBody: state.setRequestBody,
     }))
   );
 
   const handleRequestBodyChange = (value: string) => {
-    setRequestBody({ ...requestBody, content: value });
+    setRequestBody(apiId, { ...requestBody, content: value });
   };
 
   const handleRequestBodyTypeChange = ({ id }: { id: string }) => {
@@ -46,7 +46,7 @@ export default function RequestBodyEditor() {
         break;
     }
     
-    setRequestBody({ contentType: id, content: defaultContent });
+    setRequestBody(apiId, { contentType: id, content: defaultContent });
   };
 
   const dropDownOptions = [

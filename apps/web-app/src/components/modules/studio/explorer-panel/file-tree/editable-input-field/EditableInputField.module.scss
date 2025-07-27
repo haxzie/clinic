@@ -9,10 +9,11 @@
     width: 100%;
     font-size: var(--font-size-s);
     line-height: var(--line-height-s);
-    color: var(--color-font);
+    color: currentColor;
     background-color: transparent;
     border: 1px solid transparent;
     border-radius: var(--radius-m);
+    font-weight: var(--font-weight-semibold);
     padding: 5px 10px;
     letter-spacing: normal;
     outline: none;

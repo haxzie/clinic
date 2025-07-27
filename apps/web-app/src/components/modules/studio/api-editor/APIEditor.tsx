@@ -6,7 +6,7 @@ import { PanelGroup } from "react-resizable-panels";
 import { getResizablePanelStorage } from "@/utils/layout";
 import { setupShortcuts } from "@/utils/shortCuts";
 
-export default function APIEditor() {
+export default function APIEditor({ apiId }: { apiId: string }) {
   useEffect(() => {
     document.addEventListener("keydown", setupShortcuts);
     return () => {
@@ -22,8 +22,8 @@ export default function APIEditor() {
         storage={getResizablePanelStorage()}
         direction="vertical"
       >
-        <RequestBuilder />
-        <ResponseViewer />
+        <RequestBuilder apiId={apiId} />
+        <ResponseViewer apiId={apiId} />
       </PanelGroup>
     </div>
   );

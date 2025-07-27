@@ -33,11 +33,10 @@ lowlight.register("ts", ts);
 lowlight.register("markdown", markdown);
 lowlight.register("python", python);
 
-export default function DetailsEditor() {
+export default function DetailsEditor({ apiId }: { apiId: string }) {
   const { description, setDescription } = useApiStore(
-    useShallow(({ apis, activeAPI, setDescription }) => ({
-      description: apis[activeAPI].description,
-      activeAPI,
+    useShallow(({ apis, setDescription }) => ({
+      description: apis[apiId].description,
       setDescription,
     }))
   );
@@ -68,7 +67,7 @@ export default function DetailsEditor() {
     ],
     content: description,
     onUpdate({ editor }) {
-      setDescription(editor.getHTML());
+      setDescription(apiId, editor.getHTML());
     },
   });
 

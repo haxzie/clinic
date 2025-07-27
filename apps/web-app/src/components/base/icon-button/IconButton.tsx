@@ -2,6 +2,7 @@ import React, { MouseEvent } from "react";
 import styles from "./IconButton.module.scss";
 import CheckIcon from "@/components/icons/CheckIcon";
 import Tooltip from "../tooltip/Tooltip";
+import { cn } from "@/utils/cn";
 
 export default function IconButton({
   size = "small",
@@ -44,13 +45,13 @@ export default function IconButton({
   return (
     <Tooltip text={tooltip} position={tooltipPosition}>
       <button
-        className={[
+        className={cn(
           styles.iconButton,
           clicked && styles.clicked,
           styles[size],
-          disabled && styles.disabled,  
-          className,
-        ].join(" ")}
+          disabled && styles.disabled,
+          className
+        )}
         onClick={handleClick}
         tabIndex={-1}
         type="button"
