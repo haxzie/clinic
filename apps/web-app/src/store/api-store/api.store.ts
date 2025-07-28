@@ -16,7 +16,6 @@ import { useEditorStore } from "../editor-store/editor.store";
 
 const getInitialState = () => {
   return {
-    activeAPI: null,
     collections: {},
     apis: {},
     environment: "development",
@@ -34,6 +33,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
    * @returns {Promise<void>} - A promise that resolves when the request is complete
    */
   makeHTTPRequest: async (apiId) => {
+    console.log("makeHTTPRequest", apiId);
     const api = get().apis[apiId];
     if (!api) {
       throw new Error(`API with id ${apiId} not found`);
@@ -125,7 +125,6 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         [newApi.id]: newApi,
         ...state.apis,
       },
-      activeAPI: newApi.id,
     }));
     return newApi.id;
   },

@@ -7,9 +7,10 @@ import IconButton from "@/components/base/icon-button/IconButton";
 import ClearIcon from "@/components/icons/ClearIcon";
 import TabIcon from "./TabIcon";
 import { AnimatePresence, motion } from "motion/react";
-import AddIcon from "@/components/icons/AddIcon";
 import useApiStore from "@/store/api-store/api.store";
 import { TabTypes } from "@/store/editor-store/editor.types";
+import TabName from "./TabName";
+import AddIcon from "@/components/icons/AddIcon";
 
 export default function Tabs() {
   const { tabs, activeTab, tabOrder, setActiveTab, deleteTab } = useEditorStore(
@@ -48,49 +49,51 @@ export default function Tabs() {
 
   return (
     <div className={styles.tabWrapper}>
-     {tabOrder.length > 0 && <div className={styles.tabs}>
-        <AnimatePresence>
-          {tabOrder.map((tabId, index) => {
-            return (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                layout
-                className={styles.tabContainer}
-                key={tabId}
-              >
-                <div
-                  className={cn(
-                    styles.tab,
-                    activeTab === tabId && styles.activeTab
-                  )}
-                  onClick={() => setActiveTab(tabId)}
+      {tabOrder.length > 0 && (
+        <div className={styles.tabs}>
+          <AnimatePresence>
+            {tabOrder.map((tabId, index) => {
+              return (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  layout
+                  className={styles.tabContainer}
+                  key={tabId}
                 >
-                  <TabIcon tab={tabs[tabId]} />
-                  <span>{tabs[tabId].type}</span>
-                  <IconButton
-                    className={styles.closeButton}
-                    onClick={() => deleteTab(tabId)}
+                  <div
+                    className={cn(
+                      styles.tab,
+                      activeTab === tabId && styles.activeTab
+                    )}
+                    onClick={() => setActiveTab(tabId)}
                   >
-                    <ClearIcon size={18} />
-                  </IconButton>
-                </div>
+                    <TabIcon tab={tabs[tabId]} />
+                    <TabName tab={tabs[tabId]} />
+                    <IconButton
+                      className={styles.closeButton}
+                      onClick={() => deleteTab(tabId)}
+                    >
+                      <ClearIcon size={18} />
+                    </IconButton>
+                  </div>
 
-                <div
-                  className={cn(
-                    styles.tabSeparator,
-                    !showDividers(index) && styles.hide
-                  )}
-                />
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </div>}
+                  <div
+                    className={cn(
+                      styles.tabSeparator,
+                      !showDividers(index) && styles.hide
+                    )}
+                  />
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      )}
       <IconButton className={styles.addTabButton} onClick={handleAddTab}>
-        <AddIcon size={18} />
+        <AddIcon size={16} />
       </IconButton>
     </div>
   );

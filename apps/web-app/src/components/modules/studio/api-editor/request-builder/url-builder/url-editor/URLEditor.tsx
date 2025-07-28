@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import styles from "./URLEditor.module.scss";
 import debounce from "lodash.debounce";
 import { parseCurlCommand } from "@/utils/curlParser";
@@ -53,7 +53,7 @@ export default function URLEditor({
   };
 
   // Handle paste events for curl commands
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData('text');
     
     // Check if it looks like a curl command
@@ -95,7 +95,7 @@ export default function URLEditor({
         console.warn('Failed to parse curl command');
       }
     }
-  };
+  }, [apiId, onChange, setMethod, setHeaders, setParameters, setRequestBody]);
 
   // Sync input and overlay scroll positions
   useEffect(() => {

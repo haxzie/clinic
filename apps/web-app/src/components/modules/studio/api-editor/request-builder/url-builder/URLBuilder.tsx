@@ -24,6 +24,10 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
       }))
     );
 
+  const handleSendRequest = useCallback(() => {
+    makeHTTPRequest(apiId);
+  }, [makeHTTPRequest, apiId]);
+
   const handleMethodChange = useCallback(
     (method: RequestMethod) => {
       setMethod(apiId, method);
@@ -35,7 +39,7 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
     (url: string) => {
       setUrl(apiId, url);
     },
-    [setUrl]
+    [setUrl, apiId]
   );
 
   /**
@@ -45,10 +49,10 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
     (event: KeyboardEvent) => {
       if (event.key === "Enter" && event.metaKey) {
         event.preventDefault();
-        makeHTTPRequest(apiId);
+        handleSendRequest();
       }
     },
-    [makeHTTPRequest, apiId]
+    [handleSendRequest, apiId]
   );
 
   useEffect(() => {
@@ -70,7 +74,7 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
       />
       <div className={styles.options}>
         <CopyOptions apiId={apiId} />
-        <Button onClick={() => makeHTTPRequest(apiId)} loading={isLoading}>
+        <Button onClick={handleSendRequest} loading={isLoading}>
           Send
           <span className={styles.buttonIcons}>
             <CommandIcon size={14} />
