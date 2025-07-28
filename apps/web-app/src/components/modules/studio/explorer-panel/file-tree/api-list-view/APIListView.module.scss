@@ -34,6 +34,9 @@
     .name {
       flex: 1;
       color: var(--color-font-light);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .methodText {
@@ -76,9 +79,6 @@
       font-size: var(--font-size-s);
       line-height: var(--line-height-s);
       color: var(--color-font-light);
-      width: auto;
-      overflow: hidden;
-      text-overflow: ellipsis;
       font-family: var(--font-monospace);
 
       &.success {
