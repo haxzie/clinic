@@ -17,7 +17,7 @@ export default function ParamsEditor({ apiId }: { apiId: string }) {
     (parameters: RequestParameters) => {
       setParameters(apiId, parameters);
     },
-    [setParameters]
+    [setParameters, apiId]
   );
 
   return (

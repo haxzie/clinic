@@ -15,7 +15,6 @@ export default function EditableInputField({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
-  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleClick = () => {
@@ -25,8 +24,9 @@ export default function EditableInputField({
   };
 
   const handleDoubleClick = () => {
-    if (!clickTimeout.current) return;
-    clearTimeout(clickTimeout.current);
+    const timeout = clickTimeout.current;
+    if (!timeout) return;
+    clearTimeout(timeout);
     handleClickEdit();
   };
 
@@ -82,8 +82,9 @@ export default function EditableInputField({
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
+      const timeout = clickTimeout.current;
+      if (timeout) {
+        clearTimeout(timeout);
       }
     };
   }, []);

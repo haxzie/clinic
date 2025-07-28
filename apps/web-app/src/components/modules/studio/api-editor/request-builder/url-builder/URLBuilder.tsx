@@ -32,7 +32,7 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
     (method: RequestMethod) => {
       setMethod(apiId, method);
     },
-    [setMethod]
+    [setMethod, apiId]
   );
 
   const handleUrlChange = useCallback(
@@ -52,7 +52,7 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
         handleSendRequest();
       }
     },
-    [handleSendRequest, apiId]
+    [handleSendRequest]
   );
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function URLBuilder({ apiId }: { apiId: string }) {
     return () => {
       window.removeEventListener("keydown", handleCmdEnter);
     };
-  }, [handleCmdEnter, apiId]);
+  }, [handleCmdEnter]);
 
   return (
     <div className={[styles.urlBuilder, focused && styles.focused].join(" ")}>

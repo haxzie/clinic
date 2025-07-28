@@ -18,7 +18,7 @@ export default function HeadersEditor({ apiId }: { apiId: string }) {
         type="headers"
         title="Header"
         value={headers}
-        onChange={setHeaders}
+        onChange={(headers) => setHeaders(apiId, headers)}
         allowSelection={true}
       />
     </div>

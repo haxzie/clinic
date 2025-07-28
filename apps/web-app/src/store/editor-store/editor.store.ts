@@ -34,7 +34,7 @@ export const useEditorStore = create<EditorStoreState>()((set, get) => ({
     }
 
     // if the tab does not exist, create a new tab
-    let tab: TabSchema = {
+    const tab: TabSchema = {
       id: tabDetails.id,
       type: tabDetails.type,
       createdAt: new Date().toISOString(),

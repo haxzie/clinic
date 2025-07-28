@@ -23,13 +23,13 @@ export default function Tabs() {
     }))
   );
 
-  const handleAddTab = () => {
+  const handleAddTab = useCallback(() => {
     const APIId = useApiStore.getState().createAPI({});
     useEditorStore.getState().createTab({
       id: APIId,
       type: TabTypes.API,
     });
-  };
+  }, []);
 
   const showDividers = useCallback(
     (index: number) => {
@@ -44,7 +44,7 @@ export default function Tabs() {
         )
       );
     },
-    [tabs, tabOrder, activeTab]
+    [tabOrder, activeTab]
   );
 
   return (
