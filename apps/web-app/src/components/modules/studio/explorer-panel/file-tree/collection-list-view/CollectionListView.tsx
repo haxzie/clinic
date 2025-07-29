@@ -3,6 +3,8 @@ import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import { AnimatePresence } from "motion/react";
 import CollectionItem from "./CollectionItem";
+import { useEditorStore } from "@/store/editor-store/editor.store";
+import { TabTypes } from "@/store/editor-store/editor.types";
 
 export default function CollectionListView() {
   const { collections, createAPI, updateCollection } = useApiStore(
@@ -12,10 +14,19 @@ export default function CollectionListView() {
       updateCollection,
     }))
   );
+  const { createTab } = useEditorStore(
+    useShallow(({ createTab }) => ({
+      createTab,
+    }))
+  );
 
   const handleCreateAPIClick = (collectionId: string) => {
-    createAPI({
+    const apiId = createAPI({
       collectionId: collectionId,
+    });
+    createTab({
+      id: apiId,
+      type: TabTypes.API,
     });
   };
 

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useShallow } from "zustand/shallow";
 import { useEditorStore } from "@/store/editor-store/editor.store";
 import { cn } from "@/utils/cn";
@@ -46,6 +46,13 @@ export default function Tabs() {
     },
     [tabOrder, activeTab]
   );
+
+  // During the initial render if there are no tabs, we need to create a default tab
+  useEffect(() => {
+    if (tabOrder.length === 0) {
+      handleAddTab();
+    }
+  }, []);
 
   return (
     <div className={styles.tabWrapper}>
