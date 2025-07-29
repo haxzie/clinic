@@ -17,10 +17,10 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
   try {
     // Parse URL and add query params
     const parsedUrl = new URL(request.url);
-    
+
     if (request.params) {
-      Object.values(request.params).forEach(({ name, value }) => {
-        parsedUrl.searchParams.append(name, String(value));
+      Object.entries(request.headers).forEach(([key, value]) => {
+        parsedUrl.searchParams.append(key, String(value));
       });
     }
 
@@ -32,10 +32,15 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
     // Add original headers
     Object.entries(request.headers).forEach(([key, value]) => {
       // Handle both simple string headers and HeaderSchema objects
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         // Simple key-value format from frontend
         requestHeaders[key] = value;
-      } else if (value && typeof value === 'object' && 'name' in value && 'value' in value) {
+      } else if (
+        value &&
+        typeof value === "object" &&
+        "name" in value &&
+        "value" in value
+      ) {
         // HeaderSchema format
         requestHeaders[value.name] = value.value;
       }
@@ -43,29 +48,39 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
 
     // Prepare request body (ignore for GET, HEAD, OPTIONS methods)
     let requestBody: string | undefined;
-    const methodsWithoutBody = ['GET', 'HEAD', 'OPTIONS'];
-    
-    if (request.body && request.body.content && !methodsWithoutBody.includes(request.method.toUpperCase())) {
+    const methodsWithoutBody = ["GET", "HEAD", "OPTIONS"];
+
+    if (
+      request.body &&
+      request.body.content &&
+      !methodsWithoutBody.includes(request.method.toUpperCase())
+    ) {
       requestBody = request.body.content;
-      
+
       // Process JSON content to ensure it's properly formatted
-      if (request.body.contentType === "application/json" && typeof request.body.content === "string") {
+      if (
+        request.body.contentType === "application/json" &&
+        typeof request.body.content === "string"
+      ) {
         try {
           // Parse and re-stringify to ensure proper JSON formatting
           const parsed = JSON.parse(request.body.content);
           requestBody = JSON.stringify(parsed);
         } catch (error) {
           // If JSON parsing fails, use the raw content
-          console.warn("Failed to parse JSON request body, using raw content:", error);
+          console.warn(
+            "Failed to parse JSON request body, using raw content:",
+            error
+          );
           requestBody = request.body.content;
         }
       }
-      
+
       // Set content-type if provided and not already set
       if (request.body.contentType) {
         // Check if content-type header already exists (case-insensitive)
         const hasContentType = Object.keys(requestHeaders).some(
-          key => key.toLowerCase() === "content-type"
+          (key) => key.toLowerCase() === "content-type"
         );
         if (!hasContentType) {
           requestHeaders["content-type"] = request.body.contentType;
@@ -80,16 +95,15 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
       body: requestBody,
     };
 
-
     // Make the request
     const fetchResponse = await fetch(parsedUrl.toString(), fetchOptions);
-    
+
     // First byte received
     responseStartTime = performance.now();
 
     // Read response body
     const responseBody = await fetchResponse.text();
-    
+
     // Response completed
     responseEndTime = performance.now();
 
@@ -105,7 +119,6 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
     });
 
     return response;
-
   } catch (error) {
     throw new Error(
       `Request failed: ${
@@ -154,8 +167,8 @@ function createResponseObject({
 
   // Extract content type
   const contentTypeHeader = headers.get("content-type");
-  const contentType = contentTypeHeader 
-    ? contentTypeHeader.split(";")[0] 
+  const contentType = contentTypeHeader
+    ? contentTypeHeader.split(";")[0]
     : null;
 
   // Parse JSON if content type is application/json
@@ -186,7 +199,9 @@ function createResponseObject({
 
   // Get content-length from headers
   const contentLengthHeader = headers.get("content-length");
-  const contentLength = contentLengthHeader ? parseInt(contentLengthHeader, 10) : 0;
+  const contentLength = contentLengthHeader
+    ? parseInt(contentLengthHeader, 10)
+    : 0;
 
   // Build and return response object
   return {

@@ -198,7 +198,7 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
           />
         </div>
       </div>
-      {selectedOption.component}
+      <div className={styles.content}>{selectedOption.component}</div>
     </div>
   );
 }

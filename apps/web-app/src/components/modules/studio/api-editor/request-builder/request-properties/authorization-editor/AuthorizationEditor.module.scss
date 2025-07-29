@@ -12,6 +12,7 @@
         height: 42px;
         border-bottom: 1px solid var(--color-border);
         background-color: var(--color-input-background);
+        flex-shrink: 0;
 
         .contentTypePicker {
             display: flex;
@@ -52,5 +53,11 @@
                 }
             }
         }
+    }
+
+    .content {
+        flex: 1;
+        height: 100%;
+        overflow: auto;
     }
 }
