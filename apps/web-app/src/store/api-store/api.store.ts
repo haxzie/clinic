@@ -75,10 +75,15 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         },
         {}
       );
+
+      // remove query params from the url
+      const urlWithoutQueryParams = api.url.split("?")[0];
+      const preparedUrl = urlWithoutQueryParams;
+
       // make the http request
       const response = await relayRequest({
         method: api.method,
-        url: api.url,
+        url: preparedUrl,
         headers: preparedHeaders,
         params: preparedParameters,
         body: api.requestBody,
