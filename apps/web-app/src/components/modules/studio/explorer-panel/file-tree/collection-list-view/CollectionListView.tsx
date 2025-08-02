@@ -7,11 +7,12 @@ import { useEditorStore } from "@/store/editor-store/editor.store";
 import { TabTypes } from "@/store/editor-store/editor.types";
 
 export default function CollectionListView() {
-  const { collections, createAPI, updateCollection } = useApiStore(
-    useShallow(({ collections, createAPI, updateCollection }) => ({
+  const { collections, createAPI, updateCollection, deleteCollection } = useApiStore(
+    useShallow(({ collections, createAPI, updateCollection, deleteCollection }) => ({
       collections,
       createAPI,
       updateCollection,
+      deleteCollection,
     }))
   );
   const { createTab } = useEditorStore(
@@ -37,6 +38,10 @@ export default function CollectionListView() {
     [updateCollection]
   );
 
+  const handleDeleteCollection = (collectionId: string) => {
+    deleteCollection(collectionId);
+  };
+
   return (
     <AnimatePresence>
       {Object.values(collections).map((collection) => (
@@ -44,6 +49,7 @@ export default function CollectionListView() {
           key={collection.id}
           collection={collection}
           onClickCreateAPI={handleCreateAPIClick}
+          onDeleteCollection={handleDeleteCollection}
           onNameChange={handleNameChange}
         />
       ))}

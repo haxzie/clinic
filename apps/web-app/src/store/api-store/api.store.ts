@@ -218,8 +218,15 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
   deleteCollection: (id) => {
     set((state) => {
       const collections = { ...state.collections };
+      const apis = { ...state.apis };
+      // delete all the apis in the collection
+      Object.values(apis).forEach((api) => {
+        if (api.collectionId === id) {
+          get().deleteAPI(api.id);
+        }
+      });
       delete collections[id];
-      return { collections };
+      return { collections, apis };
     });
   },
 }));

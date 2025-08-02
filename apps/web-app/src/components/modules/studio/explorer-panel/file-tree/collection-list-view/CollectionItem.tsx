@@ -10,15 +10,18 @@ import APIListView from "../api-list-view/APIListView";
 import { CollectionSchema } from "@/types/API.types";
 import { memo, useCallback, useState } from "react";
 import FolderIcon from "@/components/icons/FolderIcon";
+import DeleteIcon from "@/components/icons/DeleteIcon";
 
 function CollectionItem({
   collection,
   onClickCreateAPI,
   onNameChange,
+  onDeleteCollection,
 }: {
   collection: CollectionSchema;
   onClickCreateAPI: (collectionId: string) => void;
   onNameChange: (collectionId: string, value: string) => void;
+  onDeleteCollection: (collectionId: string) => void;
 }) {
   const [showContent, setShowContent] = useState(false);
   const handleCollectionClick = () => {
@@ -54,6 +57,13 @@ function CollectionItem({
           <IconButton
             size="small"
             tooltip="Add Request"
+            onClick={() => onDeleteCollection(collection.id)}
+          >
+            <DeleteIcon size={16} />
+          </IconButton>
+          <IconButton
+            size="small"
+            tooltip="Add Request"
             onClick={() => handleCreateAPIClick(collection.id)}
           >
             <AddIcon size={16} />
@@ -63,7 +73,6 @@ function CollectionItem({
       <AnimatePresence>
         {showContent && (
           <motion.div
-            
             className={styles.collectionContent}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
