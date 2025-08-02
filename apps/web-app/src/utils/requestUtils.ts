@@ -1,21 +1,22 @@
 import { APISchema } from "@/types/API.types";
+import { prepareAuthorizationHeaders } from "./auth";
 
 export const createCurlCommand = (api: APISchema): string => {
+
+  console.log(JSON.stringify(api, null, 2));
   let requestURL = api.url;
-  if (api.parameters && Object.keys(api.parameters).length > 0) {
-    requestURL += "?";
-    Object.entries(api.parameters).forEach(([key, value]) => {
-      requestURL += `${key}=${value}&`;
-    });
-    requestURL = requestURL.slice(0, -1); // Remove the last '&'
-  }
   const requestMethod = api.method.toUpperCase();
 
   let curlCommand = `curl -X ${requestMethod} '${requestURL}' -H 'Content-Type: application/json'`;
+  const authHeaders = prepareAuthorizationHeaders(api.authorization);
+  
+  Object.entries(authHeaders).forEach(([key, value]) => {
+    curlCommand += ` -H '${key}: ${value}'`;
+  });
 
   if (api.headers && Object.keys(api.headers).length > 0) {
-    Object.entries(api.headers).forEach(([key, value]) => {
-      curlCommand += ` -H '${key}: ${value}'`;
+    Object.values(api.headers).forEach((value) => {
+      curlCommand += ` -H '${value.name}: ${value.value}'`;
     });
   }
 
