@@ -2,14 +2,12 @@ import { APISchema } from "@/types/API.types";
 import { prepareAuthorizationHeaders } from "./auth";
 
 export const createCurlCommand = (api: APISchema): string => {
-
-  console.log(JSON.stringify(api, null, 2));
   let requestURL = api.url;
   const requestMethod = api.method.toUpperCase();
 
   let curlCommand = `curl -X ${requestMethod} '${requestURL}' -H 'Content-Type: application/json'`;
   const authHeaders = prepareAuthorizationHeaders(api.authorization);
-  
+
   Object.entries(authHeaders).forEach(([key, value]) => {
     curlCommand += ` -H '${key}: ${value}'`;
   });
