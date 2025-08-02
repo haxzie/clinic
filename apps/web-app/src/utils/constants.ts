@@ -20,7 +20,6 @@ export const AppConstants = {
 <p>This is an API description. You can use this space to describe the API, its purpose, and how to use it.</p>`,
   DEFAULT_API_AUTHORIZATION: {
     type: AuthorizationTypes.NONE,
-    content: {},
   } as Authorization,
   DEFAULT_REQUEST_BODY: {
     contentType: "application/json",

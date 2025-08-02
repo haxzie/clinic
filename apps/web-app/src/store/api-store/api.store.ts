@@ -13,6 +13,7 @@ import {
 } from "@apiclinic/core";
 import { extractAPINameFromURL } from "@/utils/requestUtils";
 import { useEditorStore } from "../editor-store/editor.store";
+import { prepareAuthorizationHeaders } from "@/utils/auth";
 
 const getInitialState = () => {
   return {
@@ -42,7 +43,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     try {
       // set the api status to loading
       get().setAPIStatus(apiId, true);
-      const preparedHeaders = Object.values(api.headers).reduce(
+      const baseHeaders = Object.values(api.headers).reduce(
         (acc, value) => {
           if (value.isDisabled) {
             return acc;
@@ -54,6 +55,13 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         },
         {}
       );
+
+      // Apply authorization headers using the reusable function
+      const authHeaders = prepareAuthorizationHeaders(api.authorization);
+      const preparedHeaders = {
+        ...baseHeaders,
+        ...authHeaders,
+      };
 
       const preparedParameters = Object.values(api.parameters).reduce(
         (acc, value) => {

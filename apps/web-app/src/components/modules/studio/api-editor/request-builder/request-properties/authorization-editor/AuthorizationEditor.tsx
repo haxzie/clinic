@@ -1,16 +1,144 @@
-import React, { useState } from "react";
-import ListPropertyEditor from "../shared/list-property-editor/ListPropertyEditor";
+import React from "react";
+import ListPropertyEditor, { Parameter } from "../shared/list-property-editor/ListPropertyEditor";
 import styles from "./AuthorizationEditor.module.scss";
-import { AuthorizationType, AuthorizationTypes } from "@apiclinic/core";
+import { AuthorizationType, AuthorizationTypes, Authorization } from "@apiclinic/core";
 import { DropDown } from "@/components/base/dropdown/DropDown";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
+import { useShallow } from "zustand/shallow";
+import useApiStore from "@/store/api-store/api.store";
 
 export default function AuthorizationEditor({ apiId }: { apiId: string }) {
-  console.log("apiId", apiId);
+  const { authorization, setAuthorization } = useApiStore(
+    useShallow((state) => ({
+      authorization: state.apis[apiId].authorization,
+      setAuthorization: state.setAuthorization,
+    }))
+  );
+  
+  // Helper functions to create authorization objects
+  const createBasicAuth = (username: string, password: string): Authorization => ({
+    type: AuthorizationTypes.BASIC,
+    username,
+    password,
+  });
+
+  const createBearerAuth = (token: string): Authorization => ({
+    type: AuthorizationTypes.BEARER,
+    token,
+  });
+
+  const createApiKeyAuth = (key: string): Authorization => ({
+    type: AuthorizationTypes.API_KEY,
+    key,
+  });
+
+  const createOAuth2Auth = (token: string): Authorization => ({
+    type: AuthorizationTypes.OAUTH2,
+    token,
+  });
+
+  const createCustomAuth = (token: string): Authorization => ({
+    type: AuthorizationTypes.CUSTOM,
+    token,
+  });
+
+  const createNoAuth = (): Authorization => ({
+    type: AuthorizationTypes.NONE,
+  });
+
+  // Handler for Basic Auth changes
+  const handleBasicAuthChange = (value: Record<string, Parameter>) => {
+    const username = value.username?.value || "";
+    const password = value.password?.value || "";
+    setAuthorization(apiId, createBasicAuth(username, password));
+  };
+
+  // Handler for Bearer Token changes
+  const handleBearerAuthChange = (value: Record<string, Parameter>) => {
+    const token = value.bearer_token?.value || "";
+    setAuthorization(apiId, createBearerAuth(token));
+  };
+
+  // Handler for API Key changes
+  const handleApiKeyAuthChange = (value: Record<string, Parameter>) => {
+    const key = value.api_key?.value || "";
+    setAuthorization(apiId, createApiKeyAuth(key));
+  };
+
+  // Handler for OAuth2 changes
+  const handleOAuth2AuthChange = (value: Record<string, Parameter>) => {
+    const token = value.access_token?.value || "";
+    setAuthorization(apiId, createOAuth2Auth(token));
+  };
+
+  // Handler for Custom Auth changes
+  const handleCustomAuthChange = (value: Record<string, Parameter>) => {
+    // For custom auth, we'll use the first header value as the token
+    const firstKey = Object.keys(value)[0];
+    const token = firstKey ? value[firstKey]?.value || "" : "";
+    setAuthorization(apiId, createCustomAuth(token));
+  };
+
+  // Generic helper to create parameter objects
+  const createParameter = (id: string, name: string, value: string, placeholder: string) => ({
+    id,
+    name,
+    value,
+    placeholder,
+  });
+
+  // Generic helper to get authorization values for any type
+  const getAuthValues = (authType: AuthorizationType, fields: Array<{id: string, name: string, placeholder: string, valueKey?: string}>) => {
+    const isCorrectType = authorization?.type === authType;
+    
+    return fields.reduce((acc, field) => {
+      let value = "";
+      if (isCorrectType && authorization) {
+        const valueKey = field.valueKey || (field.id === 'username' || field.id === 'password' ? field.id : 'token');
+        
+        // Type-safe property access
+        if (valueKey === 'username' && 'username' in authorization) {
+          value = authorization.username || "";
+        } else if (valueKey === 'password' && 'password' in authorization) {
+          value = authorization.password || "";
+        } else if (valueKey === 'key' && 'key' in authorization) {
+          value = authorization.key || "";
+        } else if (valueKey === 'token' && 'token' in authorization) {
+          value = authorization.token || "";
+        }
+      }
+      
+      acc[field.id] = createParameter(field.id, field.name, value, field.placeholder);
+      return acc;
+    }, {} as Record<string, Parameter>);
+  };
+
+  // Get authorization values for specific types
+  const getBasicAuthValues = () => getAuthValues(AuthorizationTypes.BASIC, [
+    { id: "username", name: "username", placeholder: "Enter Username", valueKey: "username" },
+    { id: "password", name: "password", placeholder: "Enter Password", valueKey: "password" }
+  ]);
+
+  const getBearerAuthValues = () => getAuthValues(AuthorizationTypes.BEARER, [
+    { id: "bearer_token", name: "Bearer Token", placeholder: "Enter Bearer Token" }
+  ]);
+
+  const getApiKeyAuthValues = () => getAuthValues(AuthorizationTypes.API_KEY, [
+    { id: "api_key", name: "API Key", placeholder: "Enter API Key", valueKey: "key" }
+  ]);
+
+  const getOAuth2AuthValues = () => getAuthValues(AuthorizationTypes.OAUTH2, [
+    { id: "access_token", name: "Access Token", placeholder: "Enter OAuth2 Access Token" }
+  ]);
+
+  const getCustomAuthValues = () => getAuthValues(AuthorizationTypes.CUSTOM, [
+    { id: "custom_token", name: "Authorization", placeholder: "Enter Custom Authorization Header Value" }
+  ]);
+
   const dropDownOptions = {
     [AuthorizationTypes.NONE]: {
       id: AuthorizationTypes.NONE,
-      value: "none",
+      value: "None",
       component: <div className={styles.none}></div>,
     },
     [AuthorizationTypes.BASIC]: {
@@ -20,21 +148,8 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
         <ListPropertyEditor
           type="authorization"
           title="Authorization"
-          onChange={() => {}}
-          value={{
-            username: {
-              id: "username",
-              name: "username",
-              value: "",
-              placeholder: "Enter Username",
-            },
-            password: {
-              id: "password",
-              name: "password",
-              value: "",
-              placeholder: "Enter Password",
-            },
-          }}
+          onChange={handleBasicAuthChange}
+          value={getBasicAuthValues()}
           hideHeader={true}
           disableNewItem={true}
           disableKeyChange={true}
@@ -49,15 +164,8 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
         <ListPropertyEditor
           type="authorization"
           title="Authorization"
-          onChange={() => {}}
-          value={{
-            bearer_token: {
-              id: "bearer_token",
-              name: "Bearer Token",
-              value: "",
-              placeholder: "Enter Bearer Token",
-            },
-          }}
+          onChange={handleBearerAuthChange}
+          value={getBearerAuthValues()}
           hideHeader={true}
           disableNewItem={true}
           disableKeyChange={true}
@@ -72,15 +180,8 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
         <ListPropertyEditor
           type="authorization"
           title="Authorization"
-          onChange={() => {}}
-          value={{
-            api_key: {
-              id: "api_key",
-              name: "API Key",
-              value: "",
-              placeholder: "Enter API Key",
-            },
-          }}
+          onChange={handleApiKeyAuthChange}
+          value={getApiKeyAuthValues()}
           hideHeader={true}
           disableNewItem={true}
           disableKeyChange={true}
@@ -95,57 +196,8 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
         <ListPropertyEditor
           type="authorization"
           title="Authorization"
-          onChange={() => {}}
-          value={{
-            access_token: {
-              id: "access_token",
-              name: "Access Token",
-              value: "",
-              placeholder: "Enter OAuth2 Access Token",
-            },
-            refresh_token: {
-              id: "refresh_token",
-              name: "Refresh Token",
-              value: "",
-              placeholder: "Enter OAuth2 Token Type",
-            },
-            authorization_url: {
-              id: "authorization_url",
-              name: "Authorization URL",
-              value: "",
-              placeholder: "Enter OAuth2 Authorization URL",
-            },
-            client_id: {
-              id: "client_id",
-              name: "Client ID",
-              value: "",
-              placeholder: "Enter OAuth2 Client ID",
-            },
-            client_secret: {
-              id: "client_secret",
-              name: "Client Secret",
-              value: "",
-              placeholder: "Enter OAuth2 Client Secret",
-            },
-            redirect_uri: {
-              id: "redirect_uri",
-              name: "Redirect URI",
-              value: "",
-              placeholder: "Enter OAuth2 Redirect URI",
-            },
-            token_type: {
-              id: "token_type",
-              name: "Token Type",
-              value: "",
-              placeholder: "Enter OAuth2 Token Type",
-            },
-            scopes: {
-              id: "scopes",
-              name: "Scopes",
-              value: "",
-              placeholder: "Enter OAuth2 Scopes (comma separated)",
-            },
-          }}
+          onChange={handleOAuth2AuthChange}
+          value={getOAuth2AuthValues()}
           hideHeader={true}
           disableNewItem={true}
           disableKeyChange={true}
@@ -160,19 +212,47 @@ export default function AuthorizationEditor({ apiId }: { apiId: string }) {
         <ListPropertyEditor
           type="headers"
           title="Auth Header"
-          onChange={() => {}}
-          value={{}}
+          onChange={handleCustomAuthChange}
+          value={getCustomAuthValues()}
+          hideHeader={true}
+          disableNewItem={true}
+          disableKeyChange={true}
+          disableRemoveItem={true}
         />
       ),
     },
   };
 
-  const [selectedOption, setSelectedOption] = useState<
-    (typeof dropDownOptions)[AuthorizationType]
-  >(dropDownOptions[AuthorizationTypes.NONE]);
+  // Get current selected option based on authorization from store
+  const currentAuthType = authorization?.type || AuthorizationTypes.NONE;
+  const selectedOption = dropDownOptions[currentAuthType];
 
   const handleAuthorizationTypeChange = ({ id }: { id: string }) => {
-    setSelectedOption(dropDownOptions[id as AuthorizationType]);
+    const newAuthType = id as AuthorizationType;
+    
+    // Update the store with the new authorization type
+    switch (newAuthType) {
+      case AuthorizationTypes.NONE:
+        setAuthorization(apiId, createNoAuth());
+        break;
+      case AuthorizationTypes.BASIC:
+        setAuthorization(apiId, createBasicAuth("", ""));
+        break;
+      case AuthorizationTypes.BEARER:
+        setAuthorization(apiId, createBearerAuth(""));
+        break;
+      case AuthorizationTypes.API_KEY:
+        setAuthorization(apiId, createApiKeyAuth(""));
+        break;
+      case AuthorizationTypes.OAUTH2:
+        setAuthorization(apiId, createOAuth2Auth(""));
+        break;
+      case AuthorizationTypes.CUSTOM:
+        setAuthorization(apiId, createCustomAuth(""));
+        break;
+      default:
+        setAuthorization(apiId, createNoAuth());
+    }
   };
 
   const DropDownSelectElement = () => {
