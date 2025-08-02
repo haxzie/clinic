@@ -32,7 +32,7 @@ export default function HeadersEditor({ apiId }: { apiId: string }) {
     });
 
     return authHeaderEntries;
-  }, [authorization, prepareAuthorizationHeaders]);
+  }, [authorization]);
 
   // Combine regular headers with auth headers
   const combinedHeaders = useMemo(() => {

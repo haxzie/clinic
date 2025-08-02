@@ -52,7 +52,7 @@ export default function Tabs() {
     if (tabOrder.length === 0) {
       handleAddTab();
     }
-  }, []);
+  }, [tabOrder.length, handleAddTab]);
 
   return (
     <div className={styles.tabWrapper}>
