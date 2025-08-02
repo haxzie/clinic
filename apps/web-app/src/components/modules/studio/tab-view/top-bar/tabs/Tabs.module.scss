@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: flex-start;
   height: 100%;
-  padding: 0px 5px;
   overflow: hidden;
 
   .addTabButton {
@@ -54,7 +53,7 @@
     align-items: center;
     cursor: pointer;
     border: 1px solid transparent;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 6px 6px 0px 0px;
     color: var(--color-font-light);
     width: 160px;
     max-width: 240px;

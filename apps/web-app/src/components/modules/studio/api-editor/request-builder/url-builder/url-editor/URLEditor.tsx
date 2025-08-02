@@ -3,8 +3,77 @@ import styles from "./URLEditor.module.scss";
 import debounce from "lodash.debounce";
 import { parseCurlCommand } from "@/utils/curlParser";
 import useApiStore from "@/store/api-store/api.store";
-import { RequestMethod } from "@apiclinic/core";
+import { RequestMethod, RequestParameters } from "@apiclinic/core";
 import { useShallow } from "zustand/shallow";
+import { generateUUID } from "@/utils/dataUtils";
+
+/**
+ * Extract query parameters from a URL and convert them to RequestParameters format
+ */
+const extractQueryParameters = (url: string): RequestParameters => {
+  const parameters: RequestParameters = {};
+  
+  try {
+    const urlObject = new URL(url);
+    const searchParams = urlObject.searchParams;
+    
+    searchParams.forEach((value, name) => {
+      const id = generateUUID();
+      parameters[id] = {
+        id,
+        name,
+        value,
+      };
+    });
+  } catch (error) {
+    console.error(error);
+    // If URL parsing fails, try to extract parameters manually
+    const queryIndex = url.indexOf('?');
+    if (queryIndex !== -1) {
+      const queryString = url.substring(queryIndex + 1);
+      const pairs = queryString.split('&');
+      
+      pairs.forEach(pair => {
+        const [name, value = ''] = pair.split('=');
+        if (name) {
+          const id = generateUUID();
+          parameters[id] = {
+            id,
+            name: decodeURIComponent(name),
+            value: decodeURIComponent(value),
+          };
+        }
+      });
+    }
+  }
+  
+  return parameters;
+};
+
+/**
+ * Compare two RequestParameters objects to see if they're different
+ */
+const areParametersDifferent = (params1: RequestParameters, params2: RequestParameters): boolean => {
+  const keys1 = Object.keys(params1);
+  const keys2 = Object.keys(params2);
+  
+  // Different number of parameters
+  if (keys1.length !== keys2.length) {
+    return true;
+  }
+  
+  // Check if all parameters in params1 exist in params2 with same name and value
+  for (const key1 of keys1) {
+    const param1 = params1[key1];
+    const matchingParam2 = Object.values(params2).find(p => p.name === param1.name);
+    
+    if (!matchingParam2 || matchingParam2.value !== param1.value) {
+      return true;
+    }
+  }
+  
+  return false;
+};
 
 export default function URLEditor({
   value,
@@ -19,13 +88,14 @@ export default function URLEditor({
   onBlur: () => void;
   apiId: string;
 }) {
-  // Get store methods for curl parsing
-  const { setMethod, setHeaders, setParameters, setRequestBody } = useApiStore(
+  // Get store methods for curl parsing and current parameters
+  const { setMethod, setHeaders, setParameters, setRequestBody, currentParameters } = useApiStore(
     useShallow((state) => ({
       setMethod: state.setMethod,
       setHeaders: state.setHeaders,
       setParameters: state.setParameters,
       setRequestBody: state.setRequestBody,
+      currentParameters: state.apis[apiId]?.parameters || {},
     }))
   );
   const [currentUrl, setCurrentUrl] = useState(value);
@@ -35,6 +105,17 @@ export default function URLEditor({
     () => debounce((url: string) => onChange(url), 300),
     [onChange]
   );
+  const debouncedSetParameters = useMemo(
+    () => debounce((url: string) => {
+      const parameters = extractQueryParameters(url);
+      
+      // Only update parameters if they're actually different to prevent infinite loops
+      if (areParametersDifferent(parameters, currentParameters)) {
+        setParameters(apiId, parameters);
+      }
+    }, 300),
+    [apiId, setParameters, currentParameters]
+  );
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +123,9 @@ export default function URLEditor({
     const trimmedValue = e.target.value.trimStart();
     setCurrentUrl(trimmedValue);
     debouncedSetUrl(trimmedValue);
+    
+    // Extract and update query parameters (debounced)
+    debouncedSetParameters(trimmedValue);
   };
 
   // Handle key down events
