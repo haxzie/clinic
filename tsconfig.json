@@ -1,6 +1,15 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./apps/cli" },
+    { "path": "./apps/server" },
+    { "path": "./apps/web-app" }
+  ]
 }

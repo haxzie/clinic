@@ -100,9 +100,9 @@ export type ResponsePerformance = {
 export interface Request {
   url: string;
   method: RequestMethod;
-  headers: RequestHeaders;
+  headers: Record<string, unknown>;
   body: RequestBody;
-  params: RequestParameters;
+  params: Record<string, unknown>;
 }
 
 export interface Response {

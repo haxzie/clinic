@@ -16,7 +16,7 @@ export default defineConfig([
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: "./tsconfig.json",
+        projectService: true,
         tsconfigRootDir: process.cwd(),
         ecmaVersion: 2020,
         sourceType: "module",

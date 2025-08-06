@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { useEditorStore } from "@/store/editor-store/editor.store";
 import { cn } from "@/utils/cn";
@@ -13,8 +13,9 @@ import TabName from "./TabName";
 import AddIcon from "@/components/icons/AddIcon";
 
 export default function Tabs() {
-  const { tabs, activeTab, tabOrder, setActiveTab, deleteTab } = useEditorStore(
-    useShallow(({ tabs, activeTab, tabOrder, setActiveTab, deleteTab }) => ({
+  const isInitialized = useRef(false);
+  const { tabs, activeTab, tabOrder, setActiveTab, deleteTab,  } = useEditorStore(
+    useShallow(({ tabs, activeTab, tabOrder, setActiveTab, deleteTab,  }) => ({
       tabs,
       activeTab,
       tabOrder,
@@ -49,8 +50,9 @@ export default function Tabs() {
 
   // During the initial render if there are no tabs, we need to create a default tab
   useEffect(() => {
-    if (tabOrder.length === 0) {
+    if (tabOrder.length === 0 && !isInitialized.current) {
       handleAddTab();
+      isInitialized.current = true;
     }
   }, [tabOrder.length, handleAddTab]);
 

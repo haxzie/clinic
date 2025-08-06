@@ -1,11 +1,13 @@
 import { Request, Response, RequestHeaders } from "../types/API";
 
 /**
- * Relays an HTTP request and captures detailed performance metrics
- * @param request The request object to relay
- * @returns Response with performance metrics
+ * Relays an HTTP request from controller input and captures detailed performance metrics
+ * @param requestInput The request input from controller
+ * @returns Response with performance metrics and streaming support
  */
-export async function relayHTTPRequest(request: Request): Promise<Response> {
+export async function relayHTTPRequest(
+  requestInput: Request
+): Promise<Response> {
   // Timing metrics
   const clientStartTime = performance.now();
   let responseStartTime = 0;
@@ -16,10 +18,10 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
 
   try {
     // Parse URL and add query params
-    const parsedUrl = new URL(request.url);
+    const parsedUrl = new URL(requestInput.url);
 
-    if (request.params) {
-      Object.entries(request.headers).forEach(([key, value]) => {
+    if (requestInput.params) {
+      Object.entries(requestInput.params).forEach(([key, value]) => {
         parsedUrl.searchParams.append(key, String(value));
       });
     }
@@ -29,94 +31,103 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
       "X-Client-Timestamp": `${clientTimestamp}`,
     };
 
-    // Add original headers
-    Object.entries(request.headers).forEach(([key, value]) => {
-      // Handle both simple string headers and HeaderSchema objects
-      if (typeof value === "string") {
-        // Simple key-value format from frontend
-        requestHeaders[key] = value;
-      } else if (
-        value &&
-        typeof value === "object" &&
-        "name" in value &&
-        "value" in value
-      ) {
-        // HeaderSchema format
-        requestHeaders[value.name] = value.value;
-      }
-    });
+    if (requestInput.headers) {
+      Object.entries(requestInput.headers).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          requestHeaders[key] = value;
+        }
+      });
+    }
 
-    // Prepare request body (ignore for GET, HEAD, OPTIONS methods)
-    let requestBody: string | undefined;
+    // Prepare request body
+    let fetchBody: string | undefined;
     const methodsWithoutBody = ["GET", "HEAD", "OPTIONS"];
 
     if (
-      request.body &&
-      request.body.content &&
-      !methodsWithoutBody.includes(request.method.toUpperCase())
+      requestInput.body &&
+      requestInput.body.content &&
+      !methodsWithoutBody.includes(requestInput.method.toUpperCase())
     ) {
-      requestBody = request.body.content;
+      fetchBody = requestInput.body.content;
 
-      // Process JSON content to ensure it's properly formatted
       if (
-        request.body.contentType === "application/json" &&
-        typeof request.body.content === "string"
-      ) {
-        try {
-          // Parse and re-stringify to ensure proper JSON formatting
-          const parsed = JSON.parse(request.body.content);
-          requestBody = JSON.stringify(parsed);
-        } catch (error) {
-          // If JSON parsing fails, use the raw content
-          console.warn(
-            "Failed to parse JSON request body, using raw content:",
-            error
-          );
-          requestBody = request.body.content;
-        }
-      }
-
-      // Set content-type if provided and not already set
-      if (request.body.contentType) {
-        // Check if content-type header already exists (case-insensitive)
-        const hasContentType = Object.keys(requestHeaders).some(
+        requestInput.body.contentType &&
+        !Object.keys(requestHeaders).some(
           (key) => key.toLowerCase() === "content-type"
-        );
-        if (!hasContentType) {
-          requestHeaders["content-type"] = request.body.contentType;
-        }
+        )
+      ) {
+        requestHeaders["content-type"] = requestInput.body.contentType;
       }
     }
 
-    // Build fetch options
-    const fetchOptions: RequestInit = {
-      method: request.method,
+    // Make the fetch request
+    const fetchResponse = await fetch(parsedUrl.toString(), {
+      method: requestInput.method,
       headers: requestHeaders,
-      body: requestBody,
-    };
+      body: fetchBody,
+    });
 
-    // Make the request
-    const fetchResponse = await fetch(parsedUrl.toString(), fetchOptions);
-
-    // First byte received
     responseStartTime = performance.now();
 
-    // Read response body
-    const responseBody = await fetchResponse.text();
+    // Handle streaming and non-streaming responses
+    const shouldStream = isStreamingResponse(fetchResponse);
+    let responseBody: string;
 
-    // Response completed
+    if (shouldStream && fetchResponse.body) {
+      // Stream the response internally and collect all data
+      const reader = fetchResponse.body.getReader();
+      const decoder = new TextDecoder();
+      const chunks: string[] = [];
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            break;
+          }
+
+          const chunk = decoder.decode(value, { stream: true });
+          chunks.push(chunk);
+        }
+
+        responseBody = chunks.join("");
+      } finally {
+        reader.releaseLock();
+      }
+    } else {
+      // Handle non-streaming response
+      responseBody = await fetchResponse.text();
+    }
+
     responseEndTime = performance.now();
 
-    // Process the response
-    const response = createResponseObject({
-      statusCode: fetchResponse.status,
-      headers: fetchResponse.headers,
-      body: responseBody,
-      clientStartTime,
-      responseStartTime,
-      responseEndTime,
-      clientTimestamp,
+    // Process response headers
+    const processedHeaders: RequestHeaders = {};
+    fetchResponse.headers.forEach((value, key) => {
+      processedHeaders[key] = { id: key, name: key, value };
     });
+
+    // Calculate timing metrics
+    const duration = responseEndTime - clientStartTime;
+    const contentType =
+      fetchResponse.headers.get("content-type")?.split(";")[0] || null;
+
+    const response: Response = {
+      headers: processedHeaders,
+      contentType,
+      statusCode: fetchResponse.status,
+      content: responseBody,
+      performance: {
+        duration,
+        latency: responseStartTime - clientStartTime,
+        processingTime: 0,
+        transferTime: responseEndTime - responseStartTime,
+        transferSize: new TextEncoder().encode(responseBody).length,
+        transferEncoding:
+          fetchResponse.headers.get("transfer-encoding") || "identity",
+      },
+    };
 
     return response;
   } catch (error) {
@@ -129,141 +140,49 @@ export async function relayHTTPRequest(request: Request): Promise<Response> {
 }
 
 /**
- * Helper function to create a standardized response object
+ * Determines if a response should be handled as a streaming response
  */
-function createResponseObject({
-  statusCode,
-  headers,
-  body,
-  clientStartTime,
-  responseStartTime,
-  responseEndTime,
-  clientTimestamp,
-}: {
-  statusCode: number;
-  headers: Headers;
-  body: string;
-  clientStartTime: number;
-  responseStartTime: number;
-  responseEndTime: number;
-  clientTimestamp: number;
-}): Response {
-  // Process response headers
-  const processedHeaders: RequestHeaders = {};
-  headers.forEach((value, key) => {
-    processedHeaders[key] = { id: key, name: key, value };
-  });
+function isStreamingResponse(response: globalThis.Response): boolean {
+  const contentType = response.headers.get("content-type")?.toLowerCase() || "";
+  const transferEncoding =
+    response.headers.get("transfer-encoding")?.toLowerCase() || "";
+  const contentLength = response.headers.get("content-length");
 
-  // Calculate timing metrics
-  const { networkLatency, processingTime } = calculateTimingMetrics({
-    headers,
-    clientStartTime,
-    responseStartTime,
-    clientTimestamp,
-  });
+  // Explicit streaming formats
+  if (
+    contentType.includes("text/event-stream") ||
+    contentType.includes("application/x-ndjson") ||
+    contentType.includes("application/jsonl")
+  ) {
+    return true;
+  }
 
-  const duration = responseEndTime - clientStartTime;
-  const transferTime = responseEndTime - responseStartTime;
-
-  // Extract content type
-  const contentTypeHeader = headers.get("content-type");
-  const contentType = contentTypeHeader
-    ? contentTypeHeader.split(";")[0]
-    : null;
-
-  // Parse JSON if content type is application/json
-  let content = body;
-  try {
-    if (contentType === "application/json" && typeof body === "string") {
-      // Validate it's actually JSON by parsing and re-stringifying
-      const parsed = JSON.parse(body);
-      content = JSON.stringify(parsed);
+  // Chunked encoding without content-length might be streaming
+  // BUT only if it's NOT a regular JSON response
+  if (transferEncoding.includes("chunked") && !contentLength) {
+    // If it's regular JSON with chunked encoding, it's probably not streaming
+    if (
+      contentType === "application/json" ||
+      contentType.startsWith("application/json;")
+    ) {
+      return false;
     }
-  } catch (error) {
-    console.error(
-      `Failed to parse JSON response: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-    // If JSON parsing fails, just use the raw body
-    content = body;
-  }
 
-  // Calculate response size more accurately
-  let actualTransferSize = 0;
-
-  // For string responses
-  if (typeof content === "string") {
-    actualTransferSize = new TextEncoder().encode(content).length;
-  }
-
-  // Get content-length from headers
-  const contentLengthHeader = headers.get("content-length");
-  const contentLength = contentLengthHeader
-    ? parseInt(contentLengthHeader, 10)
-    : 0;
-
-  // Build and return response object
-  return {
-    headers: processedHeaders,
-    contentType,
-    statusCode,
-    content,
-    performance: {
-      duration,
-      latency: networkLatency,
-      processingTime,
-      transferTime,
-      transferSize: actualTransferSize || contentLength,
-      transferEncoding: headers.get("transfer-encoding") || "identity",
-    },
-  };
-}
-
-/**
- * Calculate network latency and server processing time
- */
-function calculateTimingMetrics({
-  headers,
-  clientStartTime,
-  responseStartTime,
-  clientTimestamp,
-}: {
-  headers: Headers;
-  clientStartTime: number;
-  responseStartTime: number;
-  clientTimestamp: number;
-}): { networkLatency: number; processingTime: number } {
-  // Check if we received server timing headers
-  const serverTimestamp = headers.get("x-server-receive-time");
-  const serverProcessingStart = headers.get("x-server-processing-start");
-
-  // Calculate true network latency if server timestamp is available
-  let networkLatency = 0;
-  let processingTime = 0;
-
-  if (serverTimestamp) {
-    // Convert server timestamp to number
-    const serverReceiveTime = parseInt(serverTimestamp, 10);
-
-    // True network latency: time from client send to server receive
-    networkLatency = serverReceiveTime - clientTimestamp;
-
-    if (serverProcessingStart) {
-      // If we have both timestamps, we can calculate exact processing time
-      const processingStartTime = parseInt(serverProcessingStart, 10);
-      processingTime = processingStartTime - serverReceiveTime;
-    } else {
-      // Estimate processing time based on first byte received
-      processingTime = responseStartTime - clientStartTime - networkLatency;
+    // Other content types with chunked encoding might be streaming
+    if (
+      contentType.includes("text/plain") ||
+      contentType.includes("text/") ||
+      contentType.includes("stream") ||
+      contentType === ""
+    ) {
+      return true;
     }
-  } else {
-    // Fallback to estimates if server didn't return timing headers
-    const timeToFirstByte =
-      responseStartTime > 0 ? responseStartTime - clientStartTime : 0;
-    networkLatency = Math.round(timeToFirstByte * 0.3); // Estimated network latency
-    processingTime = timeToFirstByte - networkLatency;
   }
 
-  return { networkLatency, processingTime };
+  // Large responses (>5MB) - stream to avoid memory issues
+  if (contentLength !== null && parseInt(contentLength) > 5 * 1024 * 1024) {
+    return true;
+  }
+
+  return false;
 }

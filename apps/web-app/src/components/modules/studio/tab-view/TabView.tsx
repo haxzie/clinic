@@ -4,6 +4,7 @@ import TopBar from "./top-bar/TopBar";
 import APIEditor from "../api-editor/APIEditor";
 import { useEditorStore } from "@/store/editor-store/editor.store";
 import { useShallow } from "zustand/shallow";
+import WelcomeScreen from "../welcome-screen/WelcomeScreen";
 
 export default function TabView() {
   const { activeTab } = useEditorStore(
@@ -17,6 +18,7 @@ export default function TabView() {
       <TopBar />
       <div className={styles.content}>
         {activeTab && <APIEditor apiId={activeTab} />}
+        {!activeTab && <WelcomeScreen />}
       </div>
     </div>
   );
