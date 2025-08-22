@@ -14,6 +14,13 @@ import {
 import { extractAPINameFromURL } from "@/utils/requestUtils";
 import { useEditorStore } from "../editor-store/editor.store";
 import { prepareAuthorizationHeaders } from "@/utils/auth";
+import {
+  apiStorage,
+  collectionStorage,
+  StoredAPI,
+  StoredCollection,
+} from "@/lib/storage/db";
+import { handleCreateAPI, handleCreateCollection, handleDeleteAPI, handleDeleteCollection, handleUpdateAPI, handleUpdateCollection } from "./api.sync";
 
 const getInitialState = () => {
   return {
@@ -25,6 +32,28 @@ const getInitialState = () => {
 
 const useApiStore = create<APIStoreState>()((set, get) => ({
   ...getInitialState(),
+
+  initialize: async () => {
+    const apis = await apiStorage.list();
+    const savedAPIs = apis.reduce(
+      (acc, api) => {
+        acc[api.id] = api.data;
+        return acc;
+      },
+      {} as Record<string, StoredAPI["data"]>
+    );
+
+    const collections = await collectionStorage.list();
+    const savedCollections = collections.reduce(
+      (acc, collection) => {
+        acc[collection.id] = collection.data;
+        return acc;
+      },
+      {} as Record<string, StoredCollection["data"]>
+    );
+
+    set({ apis: savedAPIs, collections: savedCollections });
+  },
 
   /**
    * Makes an HTTP request to the specified API and updates the state with the response.
@@ -43,18 +72,15 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     try {
       // set the api status to loading
       get().setAPIStatus(apiId, true);
-      const baseHeaders = Object.values(api.headers).reduce(
-        (acc, value) => {
-          if (value.isDisabled) {
-            return acc;
-          }
-          return {
-            ...acc,
-            [value.name]: value.value,
-          };
-        },
-        {}
-      );
+      const baseHeaders = Object.values(api.headers).reduce((acc, value) => {
+        if (value.isDisabled) {
+          return acc;
+        }
+        return {
+          ...acc,
+          [value.name]: value.value,
+        };
+      }, {});
 
       // Apply authorization headers using the reusable function
       const authHeaders = prepareAuthorizationHeaders(api.authorization);
@@ -125,6 +151,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         },
       },
     }));
+    handleUpdateAPI(get().apis[apiId]);
   },
 
   createAPI: (api) => {
@@ -139,6 +166,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         ...state.apis,
       },
     }));
+    handleCreateAPI(newApi);
     return newApi.id;
   },
 
@@ -152,6 +180,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         },
       },
     }));
+    handleUpdateAPI(get().apis[id]);
   },
 
   deleteAPI: (id) => {
@@ -168,6 +197,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       delete apis[id];
       return { apis };
     });
+    handleDeleteAPI(id);
   },
 
   setMethod: (apiId: string, method: RequestMethod) => {
@@ -213,6 +243,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         [newCollection.id]: newCollection,
       },
     }));
+    handleCreateCollection(newCollection);
     return newCollection.id;
   },
 
@@ -226,6 +257,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
         },
       },
     }));
+    handleUpdateCollection(get().collections[id]);
   },
 
   deleteCollection: (id) => {
@@ -241,6 +273,7 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       delete collections[id];
       return { collections, apis };
     });
+    handleDeleteCollection(id);
   },
 }));
 

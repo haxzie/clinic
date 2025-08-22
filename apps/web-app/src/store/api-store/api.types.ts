@@ -11,6 +11,8 @@ export interface APIStoreState {
   collections: Record<string, CollectionSchema>;
   environment: string;
 
+  initialize: () => Promise<void>;
+
   makeHTTPRequest: (apiId: string) => Promise<void>;
   setAPIStatus: (apiId: string, status: boolean) => void;
   createAPI: (api: Partial<APISchema>) => string;

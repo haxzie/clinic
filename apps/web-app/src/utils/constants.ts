@@ -47,3 +47,8 @@ export const getDefaultRestApi = (): APISchema => {
     updatedAt: new Date().toISOString(),
   };
 };
+
+
+export const StorageKeys = {
+  lastActiveTab: "clinic-last-active-tab"
+}

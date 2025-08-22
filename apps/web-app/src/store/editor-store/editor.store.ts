@@ -1,17 +1,52 @@
 import { create } from "zustand";
 import { EditorStoreState, TabSchema } from "./editor.types";
+import { StoredTabs, tabStorage } from "@/lib/storage/db";
+import {
+  handleCreateTab,
+  handleDeleteTab,
+  handleUpdateTab,
+} from "./editor.sync";
+import { StorageKeys } from "@/utils/constants";
+import { LocalStore } from "@/lib/storage/local";
 
 const getInitialState = () => ({
   tabs: {},
   tabOrder: [],
-  activeTab: null,
+  activeTab: LocalStore.get(StorageKeys.lastActiveTab) || null,
 });
 
 export const useEditorStore = create<EditorStoreState>()((set, get) => ({
   ...getInitialState(),
 
+  initialize: async () => {
+    const tabs = await tabStorage.list();
+    if (tabs.length === 0) {
+      return;
+    }
+    const indexedTabs = tabs.reduce(
+      (acc, tab) => {
+        acc[tab.id] = tab.data;
+        return acc;
+      },
+      {} as Record<string, StoredTabs["data"]>
+    );
+
+    const tabOrder = tabs
+      .sort((a, b) => a.data.createdAt.localeCompare(b.data.createdAt))
+      .map((tab) => tab.id);
+
+    set({ tabs: indexedTabs, tabOrder });
+
+    // set the last active tab
+    const lastActiveTab = LocalStore.get(StorageKeys.lastActiveTab);
+    if (lastActiveTab) {
+      set({ activeTab: lastActiveTab });
+    }
+  },
+
   setActiveTab: (tabId) => {
     set({ activeTab: tabId });
+    LocalStore.set(StorageKeys.lastActiveTab, tabId);
   },
 
   /**
@@ -46,6 +81,9 @@ export const useEditorStore = create<EditorStoreState>()((set, get) => ({
       activeTab: tab.id,
     });
 
+    handleCreateTab(tab);
+    LocalStore.set(StorageKeys.lastActiveTab, tab.id);
+
     return tab;
   },
 
@@ -56,27 +94,36 @@ export const useEditorStore = create<EditorStoreState>()((set, get) => ({
         [id]: { ...get().tabs[id], ...tab } as TabSchema,
       },
     });
+    handleUpdateTab(get().tabs[id]);
   },
 
   deleteTab: (id) => {
     const { tabs, tabOrder } = get();
     delete tabs[id];
+    let nextTab: string | null = null;
     // check if the tab is active
     if (get().activeTab === id) {
       // set the adjascent tab to the left if it exists or else the right one
       const index = tabOrder.indexOf(id);
       if (index > 0) {
-        set({ activeTab: tabOrder[index - 1] });
+        nextTab = tabOrder[index - 1];
       } else if (index < tabOrder.length - 1) {
-        set({ activeTab: tabOrder[index + 1] });
+        nextTab = tabOrder[index + 1];
       } else {
         // create a new tab
-        set({ activeTab: null });
+        nextTab = null;
       }
     }
     set({
       tabs,
       tabOrder: get().tabOrder.filter((tabId) => tabId !== id),
+      activeTab: nextTab,
     });
+    handleDeleteTab(id);
+    if (nextTab) {
+      LocalStore.set(StorageKeys.lastActiveTab, nextTab);
+    } else {
+      LocalStore.remove(StorageKeys.lastActiveTab);
+    }
   },
 }));

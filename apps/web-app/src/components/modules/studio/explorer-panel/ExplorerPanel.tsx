@@ -5,7 +5,6 @@ import FileTree from "./file-tree/FileTree";
 import IconButton from "@/components/base/icon-button/IconButton";
 import AddIcon from "@/components/icons/AddIcon";
 import AddFolderIcon from "@/components/icons/AddFolderIcon";
-import SearchIcon from "@/components/icons/SearchIcon";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import { useEditorStore } from "@/store/editor-store/editor.store";
@@ -44,13 +43,6 @@ export default function ExplorerPanel() {
             clinic
           </h4>
           <div className={styles.options}>
-            <IconButton
-              size="small"
-              tooltip="Search"
-              className={styles.optionIcon}
-            >
-              <SearchIcon size={16} />
-            </IconButton>
             <IconButton
               size="small"
               tooltip="Create Collection"

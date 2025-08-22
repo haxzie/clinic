@@ -11,10 +11,15 @@ export interface TabSchema {
   metadata?: Record<string, unknown>;
   type: TabType;
 }
-export interface EditorStoreState {
-  tabs: Record<string, TabSchema>;
-  tabOrder: string[];
+
+export interface EditorState {
   activeTab: string | null;
+  tabOrder: string[];
+}
+export interface EditorStoreState extends EditorState {
+  tabs: Record<string, TabSchema>;
+
+  initialize: () => Promise<void>;
 
   // actions
   setActiveTab: (tabId: string) => void;
