@@ -9,6 +9,7 @@ import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import { DropDown } from "@/components/base/dropdown/DropDown";
 import FormDataEditor from "../form-data-editor/FormDataEditor";
+import { Events, track } from "@/lib/analytics";
 
 export default function RequestBodyEditor({ apiId }: { apiId: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -143,6 +144,7 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
       } catch (error) {
         console.error(error);
       }
+      track(Events.API_REQUEST_BODY_PRETTIFIED, {});
     }
   }, [requestBody, setRequestBody, apiId]);
 
@@ -152,51 +154,68 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
     }
   }, []);
 
-  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target?.result as string;
-      const fileName = file.name.toLowerCase();
-      
-      let contentType = "text/plain";
-      let processedContent = content;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const fileName = file.name.toLowerCase();
 
-      // Detect file type based on extension and content
-      if (fileName.endsWith('.json') || content.trim().startsWith('{') || content.trim().startsWith('[')) {
-        try {
-          // Try to parse as JSON to validate
-          JSON.parse(content);
-          contentType = "application/json";
-          // Pretty print JSON
-          processedContent = JSON.stringify(JSON.parse(content), null, 2);
-        } catch (error) {
-          console.log(error);
-          // If JSON parsing fails, keep as plain text
+        let contentType = "text/plain";
+        let processedContent = content;
+
+        // Detect file type based on extension and content
+        if (
+          fileName.endsWith(".json") ||
+          content.trim().startsWith("{") ||
+          content.trim().startsWith("[")
+        ) {
+          try {
+            // Try to parse as JSON to validate
+            JSON.parse(content);
+            contentType = "application/json";
+            // Pretty print JSON
+            processedContent = JSON.stringify(JSON.parse(content), null, 2);
+          } catch (error) {
+            console.log(error);
+            // If JSON parsing fails, keep as plain text
+            contentType = "text/plain";
+          }
+        } else if (
+          fileName.endsWith(".xml") ||
+          content.trim().startsWith("<")
+        ) {
+          contentType = "application/xml";
+        } else if (
+          fileName.endsWith(".txt") ||
+          fileName.endsWith(".md") ||
+          fileName.endsWith(".log")
+        ) {
           contentType = "text/plain";
         }
-      } else if (fileName.endsWith('.xml') || content.trim().startsWith('<')) {
-        contentType = "application/xml";
-      } else if (fileName.endsWith('.txt') || fileName.endsWith('.md') || fileName.endsWith('.log')) {
-        contentType = "text/plain";
+
+        // Update the request body with new content and type
+        setRequestBody(apiId, {
+          contentType,
+          content: processedContent,
+        });
+      };
+
+      reader.readAsText(file);
+
+      // Reset the file input
+      if (event.target) {
+        event.target.value = "";
       }
-
-      // Update the request body with new content and type
-      setRequestBody(apiId, {
-        contentType,
-        content: processedContent,
+      track(Events.API_REQUEST_BODY_UPLOADED, {
+        extension: file.name.split(".").pop() || "unknown",
       });
-    };
-
-    reader.readAsText(file);
-    
-    // Reset the file input
-    if (event.target) {
-      event.target.value = '';
-    }
-  }, [apiId, setRequestBody]);
+    },
+    [apiId, setRequestBody]
+  );
 
   const selectedOption =
     dropDownOptions.find((option) => option.id === requestBody.contentType) ||
@@ -210,7 +229,7 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
         type="file"
         accept=".json,.xml,.txt,.md,.log"
         onChange={handleFileUpload}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
       <div className={styles.header}>
         <div className={styles.contentTypePicker}>

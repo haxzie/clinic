@@ -13,6 +13,7 @@ import FolderIcon from "@/components/icons/FolderIcon";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/utils/cn";
+import { Events, track } from "@/lib/analytics";
 
 function CollectionItem({
   collection,
@@ -32,6 +33,9 @@ function CollectionItem({
 
   const handleCollectionClick = () => {
     setShowContent((showContent) => !showContent);
+    
+    // Track COLLECTION_VIEWED event when collection is clicked
+    track(Events.COLLECTION_VIEWED, {});
   };
 
   const handleCreateAPIClick = useCallback(

@@ -6,6 +6,7 @@ import { DropDown } from "@/components/base/dropdown/DropDown";
 import useApiStore from "@/store/api-store/api.store";
 import { createCurlCommand, createFetchCommand } from "@/utils/requestUtils";
 import CheckIcon from "@/components/icons/CheckIcon";
+import { Events, track } from "@/lib/analytics";
 
 export default function CopyOptions({ apiId }: { apiId: string }) {
   const [copied, setCopied] = React.useState(false);
@@ -39,10 +40,16 @@ export default function CopyOptions({ apiId }: { apiId: string }) {
       case "copy-curl": {
         // Copy cURL command to clipboard
         navigator.clipboard.writeText(createCurlCommand(api));
+        
+        // Track API_CURL_COPIED event
+        track(Events.API_CURL_COPIED, {});
         break;
       }
       case "copy-fetch": {
         navigator.clipboard.writeText(createFetchCommand(api));
+        
+        // Track API_FETCH_COPIED event
+        track(Events.API_FETCH_COPIED, {});
         break;
       }
       default:

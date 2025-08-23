@@ -21,6 +21,7 @@ import {
   StoredCollection,
 } from "@/lib/storage/db";
 import { handleCreateAPI, handleCreateCollection, handleDeleteAPI, handleDeleteCollection, handleUpdateAPI, handleUpdateCollection } from "./api.sync";
+import { Events, track } from "@/lib/analytics";
 
 const getInitialState = () => {
   return {
@@ -126,6 +127,24 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
             },
           },
         }));
+
+        // Track API_HIT event with detailed properties
+        const isLocalServer = api.url.includes('localhost') || api.url.includes('127.0.0.1') || api.url.includes('::1');
+        const headerCount = Object.keys(preparedHeaders).length;
+        const queryParamCount = Object.keys(preparedParameters).length;
+        const requestBodyType = api.requestBody.contentType || 'none';
+        const authorizationType = api.authorization.type || 'none';
+
+        track(Events.API_HIT, {
+          method: api.method,
+          response_status: response.response.statusCode,
+          response_content_type: response.response.contentType || 'unknown',
+          is_local_server: isLocalServer,
+          header_count: headerCount,
+          query_param_count: queryParamCount,
+          request_body_type: requestBodyType,
+          authorization_type: authorizationType,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -167,6 +186,10 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       },
     }));
     handleCreateAPI(newApi);
+    
+    // Track API_CREATED event
+    track(Events.API_CREATED, {});
+    
     return newApi.id;
   },
 
@@ -198,6 +221,9 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       return { apis };
     });
     handleDeleteAPI(id);
+    
+    // Track API_DELETED event
+    track(Events.API_DELETED, {});
   },
 
   setMethod: (apiId: string, method: RequestMethod) => {
@@ -244,6 +270,10 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       },
     }));
     handleCreateCollection(newCollection);
+    
+    // Track COLLECTION_CREATED event
+    track(Events.COLLECTION_CREATED, {});
+    
     return newCollection.id;
   },
 
@@ -274,6 +304,9 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
       return { collections, apis };
     });
     handleDeleteCollection(id);
+    
+    // Track COLLECTION_DELETED event
+    track(Events.COLLECTION_DELETED, {});
   },
 }));
 

@@ -21,6 +21,7 @@ import EmptyResponse from "./empty-response/EmptyResponse";
 import { downloadFile } from "@/utils/fileUtils";
 import ResponseBodyTopBar from "./response-body-top-bar/ResponseBodyTopBar";
 import NProgress from "./nprogress/NProgress";
+import { Events, track } from "@/lib/analytics";
 
 export default function ResponseViewer({ apiId }: { apiId: string }) {
   const [isPanelHidden, setIsPanelHidden] = useState(false);
@@ -80,12 +81,18 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
             response.contentType || "text/plain"
           );
       }
+      
+      // Track API_RESPONSE_DOWNLOADED event
+      track(Events.API_RESPONSE_DOWNLOADED, {});
     }
   };
 
   const handleResponseCopy = () => {
     if (response) {
       navigator.clipboard.writeText(response.content);
+      
+      // Track API_RESPONSE_COPIED event
+      track(Events.API_RESPONSE_COPIED, {});
     }
   };
 
