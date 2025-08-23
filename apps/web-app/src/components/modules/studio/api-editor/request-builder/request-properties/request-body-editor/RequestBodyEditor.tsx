@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import styles from "./RequestBodyEditor.module.scss";
 import ContentEditor from "@/components/modules/studio/content-editor/ContentEditor";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
@@ -11,6 +11,7 @@ import { DropDown } from "@/components/base/dropdown/DropDown";
 import FormDataEditor from "../form-data-editor/FormDataEditor";
 
 export default function RequestBodyEditor({ apiId }: { apiId: string }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { requestBody, setRequestBody } = useApiStore(
     useShallow((state) => ({
       requestBody: state.apis[apiId].requestBody,
@@ -25,7 +26,7 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
   const handleRequestBodyTypeChange = ({ id }: { id: string }) => {
     // Reset content based on the selected content type
     let defaultContent = "";
-    
+
     switch (id) {
       case "application/json":
         defaultContent = "{}";
@@ -45,7 +46,7 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
         defaultContent = "";
         break;
     }
-    
+
     setRequestBody(apiId, { contentType: id, content: defaultContent });
   };
 
@@ -127,12 +128,90 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
     );
   };
 
-  const selectedOption = dropDownOptions.find(
-    (option) => option.id === requestBody.contentType
-  ) || dropDownOptions[0];
+  const prettyify = useCallback(() => {
+    if (requestBody.contentType === "application/json" && requestBody.content) {
+      try {
+        const prettyContent = JSON.stringify(
+          JSON.parse(requestBody?.content),
+          null,
+          2
+        );
+        setRequestBody(apiId, {
+          contentType: "application/json",
+          content: prettyContent,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [requestBody, setRequestBody, apiId]);
+
+  const uploadRequestBody = useCallback(() => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }, []);
+
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      const fileName = file.name.toLowerCase();
+      
+      let contentType = "text/plain";
+      let processedContent = content;
+
+      // Detect file type based on extension and content
+      if (fileName.endsWith('.json') || content.trim().startsWith('{') || content.trim().startsWith('[')) {
+        try {
+          // Try to parse as JSON to validate
+          JSON.parse(content);
+          contentType = "application/json";
+          // Pretty print JSON
+          processedContent = JSON.stringify(JSON.parse(content), null, 2);
+        } catch (error) {
+          console.log(error);
+          // If JSON parsing fails, keep as plain text
+          contentType = "text/plain";
+        }
+      } else if (fileName.endsWith('.xml') || content.trim().startsWith('<')) {
+        contentType = "application/xml";
+      } else if (fileName.endsWith('.txt') || fileName.endsWith('.md') || fileName.endsWith('.log')) {
+        contentType = "text/plain";
+      }
+
+      // Update the request body with new content and type
+      setRequestBody(apiId, {
+        contentType,
+        content: processedContent,
+      });
+    };
+
+    reader.readAsText(file);
+    
+    // Reset the file input
+    if (event.target) {
+      event.target.value = '';
+    }
+  }, [apiId, setRequestBody]);
+
+  const selectedOption =
+    dropDownOptions.find((option) => option.id === requestBody.contentType) ||
+    dropDownOptions[0];
 
   return (
     <div className={styles.requestBodyEditor}>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,.xml,.txt,.md,.log"
+        onChange={handleFileUpload}
+        style={{ display: 'none' }}
+      />
       <div className={styles.header}>
         <div className={styles.contentTypePicker}>
           Content Type:
@@ -150,7 +229,13 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
             size="small"
             className={styles.icon}
             tooltip="Prettyify"
+            disabled={
+              requestBody.contentType === "none" ||
+              requestBody.contentType === "application/xml" ||
+              requestBody.contentType === "text/plain"
+            }
             showSuccess
+            onClick={prettyify}
           >
             <FormatIcon size={18} />
           </IconButton>
@@ -159,6 +244,7 @@ export default function RequestBodyEditor({ apiId }: { apiId: string }) {
             className={styles.icon}
             tooltip="Upload Request Body"
             tooltipPosition="left"
+            onClick={uploadRequestBody}
           >
             <UploadIcon size={18} />
           </IconButton>
