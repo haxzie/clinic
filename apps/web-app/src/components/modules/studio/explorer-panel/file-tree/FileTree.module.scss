@@ -1,10 +1,13 @@
 .fileTree {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
 
   .fileListing {
     display: flex;
     flex-direction: column;
     padding: 4px 6px;
+    flex: 1;
   }
 }

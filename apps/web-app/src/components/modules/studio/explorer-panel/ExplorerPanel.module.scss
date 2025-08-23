@@ -10,7 +10,8 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-
+  overflow: hidden;
+  
   .listHeader {
     display: flex;
     align-items: center;

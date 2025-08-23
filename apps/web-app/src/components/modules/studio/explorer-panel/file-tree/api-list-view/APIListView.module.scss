@@ -8,21 +8,6 @@
   border-radius: var(--radius-m);
   border: 1px solid transparent;
 
-  .method {
-    display: flex;
-    align-items: center;
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-xs);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-family: "Fira Code", monospace;
-  }
-
   .texts {
     display: flex;
     align-items: center;
@@ -48,31 +33,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       font-family: "Fira Code", monospace;
-
-      &.GET {
-        color: #46d326;
-        // background-color: #46d326;
-      }
-
-      &.POST {
-        color: #83b2ff;
-        // background-color: #2777f7;
-      }
-
-      &.PUT {
-        color: #e8aa1b;
-        // background-color: #e8aa1b;
-      }
-
-      &.DELETE {
-        color: #f25b2d;
-        // background-color: #f25b2d;
-      }
-
-      &.PATCH {
-        color: #9f92ff;
-        // background-color: #9f92ff;
-      }
+      cursor: grab;
     }
 
     .status {
@@ -134,5 +95,10 @@
     .name {
       color: var(--color-font);
     }
+  }
+
+  &.dragging {
+    opacity: 0.5;
+    border: 1px dashed var(--color-element-background);
   }
 }

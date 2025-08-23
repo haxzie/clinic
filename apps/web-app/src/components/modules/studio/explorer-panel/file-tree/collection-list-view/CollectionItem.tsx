@@ -11,6 +11,8 @@ import { CollectionSchema } from "@/types/API.types";
 import { memo, useCallback, useState } from "react";
 import FolderIcon from "@/components/icons/FolderIcon";
 import DeleteIcon from "@/components/icons/DeleteIcon";
+import { useDroppable } from "@dnd-kit/core";
+import { cn } from "@/utils/cn";
 
 function CollectionItem({
   collection,
@@ -24,6 +26,10 @@ function CollectionItem({
   onDeleteCollection: (collectionId: string) => void;
 }) {
   const [showContent, setShowContent] = useState(false);
+  const { isOver, setNodeRef } = useDroppable({
+    id: collection.id,
+  });
+
   const handleCollectionClick = () => {
     setShowContent((showContent) => !showContent);
   };
@@ -38,7 +44,11 @@ function CollectionItem({
 
   return (
     <motion.div className={styles.collectionWrapper} key={collection.id}>
-      <div className={styles.folder} onClick={handleCollectionClick}>
+      <div
+        className={cn(styles.folder, isOver && styles.over)}
+        onClick={handleCollectionClick}
+        ref={setNodeRef}
+      >
         <div className={styles.icon}>
           {showContent ? (
             <ChevronDownIcon size={18} />
