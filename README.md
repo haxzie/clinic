@@ -1,6 +1,6 @@
 # Clinic
 
-**Clinic** is a minimal, open-source API client designed to run directly in your browser. Easily explore, send, and organize HTTP requests, all with a snappy interface and seamless local persistence—no external servers required.
+**[Clinic](https://clinic.sh)** is a minimal, open-source API client designed to run directly in your browser. Easily explore, send, and organize HTTP requests, all with a snappy interface and seamless local persistence—no external servers required.
 
 <img width="1360" height="920" alt="Screenshot 2025-08-26 at 9 28 42 AM" src="https://github.com/user-attachments/assets/104bd5fc-7a9d-4c05-83ed-7a9ec141454c" />
 
