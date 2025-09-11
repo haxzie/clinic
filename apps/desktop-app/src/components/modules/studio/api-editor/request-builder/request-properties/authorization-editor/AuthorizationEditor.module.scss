@@ -1,0 +1,63 @@
+.authorizationEditor {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 42px;
+        border-bottom: 1px solid var(--color-border);
+        background-color: var(--color-input-background);
+        flex-shrink: 0;
+
+        .contentTypePicker {
+            display: flex;
+            align-items: center;
+            font-size: var(--font-size-xs);
+            line-height: var(--line-height-xs);
+            gap: 5px;
+            padding: 0px 20px;
+            font-family: var(--font-monospace);
+            color: var(--color-font-light);
+
+            .picker {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding: 5px 5px 5px 10px;
+                border-radius: var(--radius-m);
+                color: var(--color-font);
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: var(--color-element-background-dark);
+                }
+            }
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0px 15px;
+
+            .icon {
+                color: var(--color-font-light);
+
+                &:hover {
+                    color: var(--color-font);
+                }
+            }
+        }
+    }
+
+    .content {
+        flex: 1;
+        height: 100%;
+        overflow: auto;
+    }
+}

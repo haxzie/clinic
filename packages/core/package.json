@@ -2,10 +2,11 @@
   "name": "@apiclinic/core",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node"
+    "build": "bun build src/index.ts --outdir dist --target node && tsc --emitDeclarationOnly --outDir dist"
   },
   "keywords": [],
   "author": "",

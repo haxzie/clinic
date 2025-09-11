@@ -1,0 +1,33 @@
+.nprogress {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-input-background);
+  
+  &.active {
+    opacity: 1;
+    background: repeating-linear-gradient(
+      to right,
+      rgb(2, 59, 94) 0%,
+      rgb(0, 255, 162) 50%,
+      rgb(2, 59, 94) 0% 100%
+    );
+    background-size: 200% auto;
+    background-position: 0 100%;
+    animation: gradient 1s infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+  }
+
+  &:hover {
+    background-color: var(--color-element-background);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

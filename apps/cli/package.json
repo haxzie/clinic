@@ -1,0 +1,37 @@
+{
+  "name": "@clinic/cli",
+  "version": "1.0.0",
+  "description": "CLI tool for running a local proxy server",
+  "main": "dist/index.mjs",
+  "bin": {
+    "clinic": "dist/index.mjs"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.mjs",
+    "clean": "rm -rf dist",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@apiclinic/server": "workspace:*",
+    "@hono/node-server": "^1.13.8",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "cli",
+    "proxy",
+    "server",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,41 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 20px;
+
+  .apiStatusIcon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: var(--color-font-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .collectionDetails {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .input {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .collectionName {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--color-font-light);
+      font-size: var(--font-size-s);
+      line-height: var(--line-height-s);
+      margin-left: 15px;
+      
+      span {
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-font-light);
+      }
+    }
+  }
+}

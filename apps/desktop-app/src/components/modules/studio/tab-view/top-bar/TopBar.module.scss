@@ -1,0 +1,44 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  background-color: var(--color-background-light);
+  overflow: hidden;
+
+  .options {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 4px;
+
+    .envButton {
+      height: 32px;
+      background-color: var(--color-background);
+      color: var(--color-font);
+      border: none;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      gap: 10px;
+      width: 180px;
+      border-radius: var(--radius-m);
+      // border-left: 1px solid var(--color-border);
+      padding: 0px 10px 0px 15px;
+
+      span {
+        flex: 1;
+        text-align: start;
+        font-size: var(--font-size-s);
+        line-height: var(--line-height-xs);
+        // font-family: var(--font-monospace);
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: var(--color-input-background);
+        opacity: 1;
+      }
+    }
+  }
+}

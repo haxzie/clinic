@@ -1,0 +1,13 @@
+.navigationBar {
+    width: 48px;
+    border-right: 1px solid var(--color-border);
+    background-color: var(--color-element-background-dark);
+
+    .branding {
+        height: 48px;
+        border: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

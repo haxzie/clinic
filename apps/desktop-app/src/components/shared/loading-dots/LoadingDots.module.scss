@@ -1,0 +1,32 @@
+.loader {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  box-shadow:
+    10px 0 currentColor,
+    -10px 0 currentColor;
+  position: relative;
+  animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #fff2;
+    box-shadow:
+      10px 0 #fff2,
+      -10px 0 currentColor;
+  }
+  50% {
+    background-color: currentColor;
+    box-shadow:
+      10px 0 #fff2,
+      -10px 0 #fff2;
+  }
+  100% {
+    background-color: #fff2;
+    box-shadow:
+      10px 0 currentColor,
+      -10px 0 #fff2;
+  }
+}

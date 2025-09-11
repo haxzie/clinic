@@ -10,9 +10,9 @@ export default defineConfig([
     ignores: ["**/node_modules/**", "**/dist/**", "**/.next/**", "**/*.{test,spec}.{js,jsx,ts,tsx}"],
   },
 
-  // General JS/TS config (applies everywhere)
+  // General TS config (applies everywhere)
   {
-    files: ["**/*.{js,jsx,ts,tsx}"],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -36,6 +36,31 @@ export default defineConfig([
         "error",
         { argsIgnorePattern: "^_" },
       ],
+    },
+  },
+
+  // React desktop app (browser + node environment)
+  {
+    files: ["apps/desktop-app/src/**/*.{ts,tsx,js,jsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        React: "readonly",
+      },
+    },
+    plugins: {
+      react: pluginReact,
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      ...pluginReact.configs.recommended.rules,
+      "react/react-in-jsx-scope": "off",
+      "no-undef": ["error", { typeof: true }],
     },
   },
 
@@ -72,6 +97,14 @@ export default defineConfig([
     },
   },
 
+  // CLI app (node environment)
+  {
+    files: ["apps/cli/**/*.{ts,js}"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+
   // Libraries in `packages` folder (node environment)
   {
     files: ["packages/**/**/*.{ts,js}"],
@@ -86,6 +119,33 @@ export default defineConfig([
         "error",
         { argsIgnorePattern: "^_" },
       ],
+    },
+  },
+
+  // Node config files (do not use TS project service)
+  {
+    files: [
+      "**/*.{config,conf}.js",
+      "**/*.{config,conf}.cjs",
+      "**/*.{config,conf}.mjs",
+      "**/tailwind.config.js",
+      "**/tailwind.config.cjs",
+      "**/tailwind.config.mjs",
+      "**/postcss.config.js",
+      "**/postcss.config.cjs",
+      "**/postcss.config.mjs",
+      "apps/**/vite.config.ts",
+      "apps/**/vite.config.js",
+      "apps/**/vite.config.mjs",
+      "apps/**/vite.config.cjs",
+    ],
+    languageOptions: {
+      globals: globals.node,
+      parserOptions: {
+        projectService: false,
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
     },
   },
 ]);

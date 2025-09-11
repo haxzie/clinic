@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022", 
-    "moduleResolution": "bundler", 
+    "module": "ES2022",
+    "moduleResolution": "node",
     "lib": ["ES2022"],
     "outDir": "dist",
     "rootDir": "src",
@@ -14,7 +14,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "declaration": false,
-    "skipLibCheck": true
+    "declaration": true,
+    "skipLibCheck": true,
+    "composite": true
+  },
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
   }
 }
