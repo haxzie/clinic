@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo run build",
+    "build:web": "turbo run build --filter=@apiclinic/web-app",
     "build:server": "turbo run build --filter=@apiclinic/server",
     "build:client": "turbo run build --filter=@apiclinic/web-app",
     "dev": "turbo run dev",
