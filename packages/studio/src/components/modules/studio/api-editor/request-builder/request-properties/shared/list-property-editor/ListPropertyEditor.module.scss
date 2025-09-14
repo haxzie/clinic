@@ -4,6 +4,7 @@
   position: relative;
   overflow-y: auto;
   position: relative;
+  height: 100%;
 
   .header,
   .param {
@@ -121,7 +122,7 @@
     font-size: var(--font-size-s);
     font-weight: var(--font-weight-semibold);
     background-color: var(--color-input-background);
-
+    flex-shrink: 0;
     text-transform: uppercase;
     position: sticky;
     top: 0;

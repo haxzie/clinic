@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import styles from "./HeadersEditor.module.scss";
-import ListPropertyEditor, { Parameter } from "../shared/list-property-editor/ListPropertyEditor";
+import ListPropertyEditor, {
+  Parameter,
+} from "../shared/list-property-editor/ListPropertyEditor";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import { generateUUID } from "@/utils/dataUtils";
@@ -55,14 +56,12 @@ export default function HeadersEditor({ apiId }: { apiId: string }) {
   };
 
   return (
-    <div className={styles.headersEditor}>
-      <ListPropertyEditor
-        type="headers"
-        title="Header"
-        value={combinedHeaders}
-        onChange={handleOnChangeHeaders}
-        allowSelection={true}
-      />
-    </div>
+    <ListPropertyEditor
+      type="headers"
+      title="Header"
+      value={combinedHeaders}
+      onChange={handleOnChangeHeaders}
+      allowSelection={true}
+    />
   );
 }
