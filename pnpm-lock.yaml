@@ -297,7 +297,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/core
       '@apiclinic/studio':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/studio
       '@codemirror/lang-html':
         specifier: ^6.4.9
