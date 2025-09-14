@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node && tsc --emitDeclarationOnly --outDir dist"
+    "build": "bun build src/index.ts --outdir dist --target node && tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "",

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@apiclinic/core": "workspace:*",
+    "@apiclinic/studio": "workspace:*",
     "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-markdown": "^6.3.2",
@@ -51,7 +52,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-resizable-panels": "^2.1.7",
-    "sass": "^1.85.1",
+    "sass-embedded": "^1.86.0",
     "uuid": "^11.1.0",
     "zustand": "^5.0.3"
   },
@@ -62,8 +63,6 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20.17.24",
     "@types/prettier": "^3.0.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",

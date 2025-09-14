@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { Request, Response as APIResponse } from "@apiclinic/core";
+import { RequestClient } from "@apiclinic/studio";
 
 export interface RelayResponse {
   status: string;
@@ -18,4 +19,7 @@ export const relayRequest = async (request: Request): Promise<RelayResponse> => 
   }
 };
 
+export const requestClient: RequestClient = {
+  relayRequest,
+};
 

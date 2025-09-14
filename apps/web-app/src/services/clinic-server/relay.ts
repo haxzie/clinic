@@ -1,5 +1,9 @@
 import { RELAY_API_URL } from "@/utils/secrets";
-import { Request, Response as APIResponse } from "@apiclinic/core";
+import {
+  Request,
+  Response as APIResponse,
+} from "@apiclinic/core";
+import { RequestClient } from "@apiclinic/studio";
 
 export interface RelayResponse {
   status: string;
@@ -8,11 +12,13 @@ export interface RelayResponse {
   timestamp: string;
 }
 
-export const relayRequest = async (request: Request): Promise<RelayResponse> => {
+export const relayRequest = async (
+  request: Request
+): Promise<RelayResponse> => {
   const response = await fetch(`${RELAY_API_URL}/relay`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(request),
   });
@@ -26,4 +32,6 @@ export const relayRequest = async (request: Request): Promise<RelayResponse> => 
   return data as RelayResponse;
 };
 
-
+export const requestClient: RequestClient = {
+  relayRequest,
+};

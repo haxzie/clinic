@@ -122,6 +122,31 @@ export default defineConfig([
     },
   },
 
+  // Studio package (browser + node environment)
+  {
+    files: ["packages/studio/src/**/*.{ts,tsx,js,jsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        React: "readonly",
+      },
+    },
+    plugins: {
+      react: pluginReact,
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      ...pluginReact.configs.recommended.rules,
+      "react/react-in-jsx-scope": "off",
+      "no-undef": ["error", { typeof: true }],
+    },
+  },
+
   // Node config files (do not use TS project service)
   {
     files: [

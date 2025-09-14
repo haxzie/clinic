@@ -10,11 +10,5 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
-  },
-  "references": [
-    { "path": "./packages/core" },
-    { "path": "./apps/cli" },
-    { "path": "./apps/server" },
-    { "path": "./apps/web-app" }
-  ]
+  }
 }

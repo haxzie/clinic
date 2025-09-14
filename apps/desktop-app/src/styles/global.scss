@@ -1,8 +1,66 @@
-@use "setup/reset";
-@use "setup/normalize";
-@use "setup/mixins";
-@use "setup/layout";
+@use "tailwindcss";
 @use "setup/typography";
-@use "setup/icons";
-@use "setup/colors";
-@use "setup/variables";
+
+@layer base {
+
+  html, 
+  body,
+  #app,
+  #root,
+  #__next {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    color: var(--color-font);
+    background-color: var(--color-background-light);
+  }
+
+  :root {
+    --color-background: #161618;
+    --color-background-light: #18181b;
+    --color-background-transparent: #27272b3f;
+    --color-background-dark: #19191d;
+    --color-element-background: #2f2f34;
+    --color-element-background-light: #2c2c31;
+    --color-element-background-dark: #232327; // d/slate/3
+    --color-element-background-dark-transparent: #2b2b2f56;
+    --color-element-border: #37373a;
+    --color-primary: #4377f6;
+    --color-primary-dark: #3b61c2;
+    --color-primary-light: #5482f7;
+    --color-primary-transparent: #0f172a9d;
+    --color-dots: #3b415e;
+    --drag-over-color: #d8dfe9;
+    --drag-over-background: #065bca15;
+    --color-input-background: #1b1b1f;
+    --color-input-border: #424447;
+    --color-font: #e4ebf1;
+    --color-font-light: rgb(178, 178, 178);
+    --color-font-lighter: #889096;
+    --color-font-inverted: #edeef0;
+    --color-font-inverted-light: #9ba1a7;
+    --color-link: #427bf6;
+    --color-link-active: #3d9a50;
+    --color-secondary: #2288e5;
+    --color-secondary-light: #2287e521;
+    --color-secondary-white: #96cafc;
+    --color-secondary-dark: #1a487d;
+    --color-accent: #46a758;
+    --color-accent-light: #0e8dd71c;
+    --color-tirtiary: #ffa600;
+    --color-tirtiary-light: #ffa60027;
+    --color-success: #04b33b;
+    --color-success-light: #07d849;
+    --color-success-dark: #03892e;
+    --color-error: #f15609;
+    --color-error-light: #732e0b;
+    --color-error-transparent: #f1560915;
+    --color-border: #25252a; // l/slate/200
+    --color-popup-background: rgba(36, 39, 46, 0.537);
+    --smooth-shadow: 0 10px 16px rgba(11, 13, 19, 0.623);
+    --color-dark-background: #060a0e;
+    --color-dark-background-transparent: #060a0e44;
+    --color-dark-background-skeleton: #222f3b;
+    --color-dark-background-light: #161f27;
+  }
+}
