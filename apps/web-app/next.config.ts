@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  transpilePackages: ["@apiclinic/studio", "@apiclinic/core"],
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
 };
