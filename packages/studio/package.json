@@ -17,6 +17,7 @@
     "./scss/mixins": "./src/styles/setup/_mixins.scss"
   },
   "scripts": {
+    "dev": "vite",
     "build": "vite build"
   },
   "devDependencies": {
@@ -27,8 +28,8 @@
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "@apiclinic/core": "workspace:*",
     "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-json": "^6.0.1",

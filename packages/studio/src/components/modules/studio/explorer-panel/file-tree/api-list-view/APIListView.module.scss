@@ -101,4 +101,8 @@
     opacity: 0.5;
     border: 1px dashed var(--color-element-background);
   }
+
+  &.hover {
+    background-color: var(--color-element-background-dark);
+  }
 }

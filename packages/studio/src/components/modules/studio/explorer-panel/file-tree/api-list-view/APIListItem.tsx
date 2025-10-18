@@ -14,11 +14,15 @@ import { CSS } from "@dnd-kit/utilities";
 export default function APIListItem({
   api,
   isActive,
+  isContextMenuOpen,
   onClick,
+  onContextMenu,
 }: {
   api: APISchema;
   isActive: boolean;
+  isContextMenuOpen: boolean;
   onClick: () => void;
+  onContextMenu: (event: React.MouseEvent<HTMLDivElement>) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
@@ -59,6 +63,13 @@ export default function APIListItem({
     [deleteAPI]
   );
 
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    console.log("context menu");
+    event.preventDefault();
+    event.stopPropagation();
+    onContextMenu(event);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -79,9 +90,11 @@ export default function APIListItem({
       className={cn(
         styles.file,
         isActive && styles.active,
-        isDragging && styles.dragging
+        isDragging && styles.dragging,
+        isContextMenuOpen && styles.hover
       )}
       onClick={onClick}
+      onContextMenu={handleContextMenu}
     >
       <div className={styles.texts}>
         <div className={styles.methodText} {...listeners} {...attributes}>

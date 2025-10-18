@@ -5,6 +5,7 @@ import TabView from "./tab-view/TabView";
 import { setupShortcuts } from "@/utils/shortCuts";
 import useApiStore from "@/store/api-store/api.store";
 import { useEditorStore } from "@/store/editor-store/editor.store";
+import { ContextMenuRenderer } from "@/hooks/useContextMenu";
 
 export function Studio() {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -30,10 +31,13 @@ export function Studio() {
   }, [setupShortcuts]);
 
   return isInitialized ? (
-    <StudioLayout>
-      <ExplorerPanel />
-      <TabView />
-    </StudioLayout>
+    <>
+      <StudioLayout>
+        <ExplorerPanel />
+        <TabView />
+      </StudioLayout>
+      <ContextMenuRenderer />
+    </>
   ) : (
     <></>
   );

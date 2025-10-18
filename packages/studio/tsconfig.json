@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
     "noEmit": true,
     "jsx": "react-jsx",
     "module": "ESNext",
@@ -11,11 +10,10 @@
     "skipLibCheck": true,
     "typeRoots": ["../../node_modules/@types"],
     "baseUrl": ".",
-    "types": ["vite/client"],
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src", "dev", "vite-env.d.ts"]
 }

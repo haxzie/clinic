@@ -16,11 +16,13 @@ export interface APIStoreState {
   makeHTTPRequest: (apiId: string) => Promise<void>;
   setAPIStatus: (apiId: string, status: boolean) => void;
   createAPI: (api: Partial<APISchema>) => string;
+  duplicateAPI: (id: string) => string;
   updateAPI: (id: string, api: Omit<Partial<APISchema>, "id">) => void;
   deleteAPI: (id: string) => void;
 
   // collections
   createCollection: (collection: Partial<CollectionSchema>) => string;
+  duplicateCollection: (id: string) => string;
   updateCollection: (
     id: string,
     collection: Omit<Partial<CollectionSchema>, "id">

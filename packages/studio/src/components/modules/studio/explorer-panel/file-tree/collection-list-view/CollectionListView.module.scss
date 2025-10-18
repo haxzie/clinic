@@ -59,6 +59,10 @@
       background-color: var(--color-input-background);
       border: 1px dashed var(--color-element-background);
     }
+
+    &.hover {
+      background-color: var(--color-element-background-dark);
+    }
   }
 
   .collectionContent {

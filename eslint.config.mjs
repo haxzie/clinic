@@ -124,7 +124,7 @@ export default defineConfig([
 
   // Studio package (browser + node environment)
   {
-    files: ["packages/studio/src/**/*.{ts,tsx,js,jsx}"],
+    files: ["packages/studio/src/**/*.{ts,tsx,js,jsx}", "packages/studio/dev/**/*.{ts,tsx,js,jsx}"],
     languageOptions: {
       globals: {
         ...globals.browser,

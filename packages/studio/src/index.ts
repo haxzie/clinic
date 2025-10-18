@@ -8,3 +8,4 @@ export {
 export { onTrack, emitTrack } from "./provider/StudioProvider";
 export { track, Events } from "./lib/analytics";
 export type { RequestClient, RelayResponse } from "./types/request";
+export { ContextMenuRenderer } from "./hooks/useContextMenu";

@@ -17,14 +17,18 @@ import { Events, track } from "@/lib/analytics";
 
 function CollectionItem({
   collection,
+  isContextMenuOpen,
   onClickCreateAPI,
   onNameChange,
   onDeleteCollection,
+  onContextMenu,
 }: {
   collection: CollectionSchema;
+  isContextMenuOpen: boolean;
   onClickCreateAPI: (collectionId: string) => void;
   onNameChange: (collectionId: string, value: string) => void;
   onDeleteCollection: (collectionId: string) => void;
+  onContextMenu: (event: React.MouseEvent<HTMLDivElement>) => void;
 }) {
   const [showContent, setShowContent] = useState(false);
   const { isOver, setNodeRef } = useDroppable({
@@ -46,11 +50,18 @@ function CollectionItem({
     [onClickCreateAPI]
   );
 
+  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onContextMenu(event);
+  };
+
   return (
     <motion.div className={styles.collectionWrapper} key={collection.id}>
       <div
-        className={cn(styles.folder, isOver && styles.over)}
+        className={cn(styles.folder, isOver && styles.over, isContextMenuOpen && styles.hover)}
         onClick={handleCollectionClick}
+        onContextMenu={handleContextMenu}
         ref={setNodeRef}
       >
         <div className={styles.icon}>

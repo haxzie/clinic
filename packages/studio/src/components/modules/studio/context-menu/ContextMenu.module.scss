@@ -1,0 +1,45 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 9999;
+}
+
+.menu {
+    position: absolute;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-m);
+    min-width: 180px;
+    color: var(--color-text);
+    font-size: var(--font-size-s);
+    user-select: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.menuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    white-space: nowrap;
+    background: transparent;
+    transition: background 0.1s ease;
+
+    &:hover {
+        background: var(--color-input-background);
+    }
+}
+
+.menuItemIcon {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+}

@@ -193,6 +193,37 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     return newApi.id;
   },
 
+  duplicateAPI: (id) => {
+    const api = get().apis[id];
+    if (!api) {
+      throw new Error(`API with id ${id} not found`);
+    }
+
+    // Create a new API with the same properties but a new ID and name
+    const newApiId = generateUUID("api");
+    const duplicatedApi = {
+      ...api,
+      id: newApiId,
+      name: `${api.name} (Copy)`,
+      response: undefined, // Clear the response for the duplicated API
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    set((state) => ({
+      apis: {
+        [newApiId]: duplicatedApi,
+        ...state.apis,
+      },
+    }));
+    handleCreateAPI(duplicatedApi);
+
+    // Track API_DUPLICATED event
+    track(Events.API_DUPLICATED, {});
+
+    return newApiId;
+  },
+
   updateAPI: (id, api) => {
     set((state) => ({
       apis: {
@@ -275,6 +306,59 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
     track(Events.COLLECTION_CREATED, {});
     
     return newCollection.id;
+  },
+
+  duplicateCollection: (id) => {
+    const collection = get().collections[id];
+    if (!collection) {
+      throw new Error(`Collection with id ${id} not found`);
+    }
+
+    // Create a new collection with the same properties but a new ID and name
+    const newCollectionId = generateUUID("collection");
+    const duplicatedCollection = {
+      ...collection,
+      id: newCollectionId,
+      name: `${collection.name} (Copy)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    set((state) => ({
+      collections: {
+        ...state.collections,
+        [newCollectionId]: duplicatedCollection,
+      },
+    }));
+    handleCreateCollection(duplicatedCollection);
+
+    // Duplicate all APIs in the collection
+    const apisInCollection = Object.values(get().apis).filter(
+      (api) => api.collectionId === id
+    );
+    apisInCollection.forEach((api) => {
+      const duplicatedApiId = generateUUID("api");
+      const duplicatedApi = {
+        ...api,
+        id: duplicatedApiId,
+        collectionId: newCollectionId,
+        response: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      set((state) => ({
+        apis: {
+          ...state.apis,
+          [duplicatedApiId]: duplicatedApi,
+        },
+      }));
+      handleCreateAPI(duplicatedApi);
+    });
+
+    // Track COLLECTION_DUPLICATED event
+    track(Events.COLLECTION_DUPLICATED, {});
+
+    return newCollectionId;
   },
 
   updateCollection: (id, collection) => {
