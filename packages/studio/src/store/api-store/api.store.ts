@@ -145,9 +145,74 @@ const useApiStore = create<APIStoreState>()((set, get) => ({
           request_body_type: requestBodyType,
           authorization_type: authorizationType,
         });
+      } else if (response.status === "error") {
+        // Create a synthetic error response
+        const errorResponse = {
+          headers: {},
+          contentType: "text/plain",
+          statusCode: 0,
+          content: response.message || "Request failed",
+          performance: {
+            duration: 0,
+            latency: 0,
+            processingTime: 0,
+            transferTime: 0,
+            transferSize: 0,
+            transferEncoding: "identity",
+          },
+        };
+
+        set((state) => ({
+          apis: {
+            ...state.apis,
+            [apiId]: {
+              ...state.apis[apiId],
+              response: errorResponse,
+            },
+          },
+        }));
+
+        // Track failed API request
+        track(Events.API_HIT, {
+          method: api.method,
+          response_status: 0,
+          response_content_type: 'error',
+          is_local_server: false,
+          header_count: Object.keys(preparedHeaders).length,
+          query_param_count: Object.keys(preparedParameters).length,
+          request_body_type: api.requestBody.contentType || 'none',
+          authorization_type: api.authorization.type || 'none',
+        });
       }
     } catch (error) {
       console.error(error);
+      
+      // Store the caught exception as an error response
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorResponse = {
+        headers: {},
+        contentType: "text/plain",
+        statusCode: 0,
+        content: `Request Error: ${errorMessage}`,
+        performance: {
+          duration: 0,
+          latency: 0,
+          processingTime: 0,
+          transferTime: 0,
+          transferSize: 0,
+          transferEncoding: "identity",
+        },
+      };
+
+      set((state) => ({
+        apis: {
+          ...state.apis,
+          [apiId]: {
+            ...state.apis[apiId],
+            response: errorResponse,
+          },
+        },
+      }));
     } finally {
       // set the api status to not loading
       get().setAPIStatus(apiId, false);

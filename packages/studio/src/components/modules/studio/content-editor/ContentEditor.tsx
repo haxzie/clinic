@@ -5,6 +5,8 @@ import { json } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { markdown } from "@codemirror/lang-markdown";
 import { xml } from "@codemirror/lang-xml";
+import { keymap } from "@codemirror/view";
+import { Prec } from "@codemirror/state";
 import { linkifyPlugin } from "./plugins/linkify";
 import "./CodeMirrorReset.scss";
 
@@ -57,6 +59,15 @@ export default function ContentEditor({
     }
   };
 
+  const customKeymap = Prec.high(
+    keymap.of([
+      {
+        key: "Mod-Enter",
+        run: () => true, // Return true to prevent default behavior and allow event to bubble up
+      },
+    ])
+  );
+
   return (
     <div className={[styles.responseViewer, "editor-config"].join(" ")}>
       <CodeMirror
@@ -69,6 +80,7 @@ export default function ContentEditor({
           fontSize,
           getLanguageForContentType(contentType),
           linkifyPlugin(),
+          customKeymap,
         ]}
         onChange={handleChange}
       />

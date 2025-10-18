@@ -102,7 +102,7 @@ export default function URLEditor({
   const inputRef = useRef<HTMLInputElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const debouncedSetUrl = useMemo(
-    () => debounce((url: string) => onChange(url), 300),
+    () => debounce((url: string) => onChange(url), 100),
     [onChange]
   );
   const debouncedSetParameters = useMemo(
@@ -113,7 +113,7 @@ export default function URLEditor({
       if (areParametersDifferent(parameters, currentParameters)) {
         setParameters(apiId, parameters);
       }
-    }, 300),
+    }, 100),
     [apiId, setParameters, currentParameters]
   );
 
