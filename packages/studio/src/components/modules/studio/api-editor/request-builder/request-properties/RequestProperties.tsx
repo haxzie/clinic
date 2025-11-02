@@ -5,22 +5,24 @@ import ParamsEditor from "./params-editor/ParamsEditor";
 import RequestBodyEditor from "./request-body-editor/RequestBodyEditor";
 import DetailsEditor from "./details-editor/DetailsEditor";
 import AuthorizationEditor from "./authorization-editor/AuthorizationEditor";
+import { motion } from "motion/react";
+
+export enum Tabs {
+  description = "description",
+  auth = "auth",
+  headers = "headers",
+  params = "params",
+  body = "body",
+}
 
 export default function RequestProperties({ apiId }: { apiId: string }) {
-  enum Tabs {
-    description = "description",
-    auth = "auth",
-    headers = "headers",
-    params = "params",
-    body = "body",
-  }
   const [activeTab, setActiveTab] = useState<Tabs>(Tabs.headers);
   const tabs: Record<
     Tabs,
     {
       id: Tabs;
       label: string;
-      component: React.ComponentType<{ apiId: string }>;
+      component: React.ComponentType<{ apiId: string; onTabChange?: (tab: Tabs) => void }>;
     }
   > = {
     [Tabs.description]: {
@@ -52,7 +54,7 @@ export default function RequestProperties({ apiId }: { apiId: string }) {
 
   const ActiveView = ({ tabId }: { tabId: Tabs }) => {
     const TabComponent = tabs[tabId].component;
-    return <TabComponent apiId={apiId} />;
+    return <TabComponent apiId={apiId} onTabChange={setActiveTab} />;
   };
 
   return (
@@ -68,6 +70,17 @@ export default function RequestProperties({ apiId }: { apiId: string }) {
               ].join(" ")}
               onClick={() => setActiveTab(tab.id)}
             >
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeRequestTabIndicator"
+                  className={styles.activeTabIndicator}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 35,
+                  }}
+                />
+              )}
               <span className={styles.label}>{tab.label}</span>
               <span className={styles.contentIndicator}></span>
             </button>

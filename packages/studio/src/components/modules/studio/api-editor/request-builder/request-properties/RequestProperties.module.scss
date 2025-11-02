@@ -31,17 +31,29 @@
         cursor: pointer;
         transition: color 0.2s;
         gap: 8px;
-        padding: 0 15px 5px 15px;
+        padding: 5px 15px 5px 15px;
         margin-top: 4px;
         border: 1px solid transparent;
         border-radius: var(--radius-m) var(--radius-m) 0 0;
+        position: relative;
   
         span.label {
           font-size: var(--font-size-s);
           line-height: var(--line-height-s);
           color: var(--color-font-light);
           font-weight: var(--font-weight-semibold);
+          position: relative;
+          z-index: 1;
           // font-family: "Fira Code", monospace;
+        }
+
+        .activeTabIndicator {
+          position: absolute;
+          inset: 0;
+          background-color: var(--color-background-light);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-m) var(--radius-m) 0 0;
+          z-index: 0;
         }
   
         .contentIndicator {
@@ -51,11 +63,11 @@
           background-color: var(--color-success);
           margin-top: 3px;
           display: none;
+          position: relative;
+          z-index: 1;
         }
   
         &.active {
-          background-color: var(--color-background-light);
-          border: 1px solid var(--color-border);
           span.label {
             color: var(--color-font);
           }

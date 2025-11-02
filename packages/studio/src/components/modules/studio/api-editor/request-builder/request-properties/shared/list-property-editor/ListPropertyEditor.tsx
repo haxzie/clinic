@@ -4,6 +4,10 @@ import { generateUUID } from "@/utils/dataUtils";
 import ClearIcon from "@/components/icons/ClearIcon";
 import CopyIcon from "@/components/icons/CopyIcon";
 import CheckBox from "@/components/base/check-box/CheckBox";
+import VariableIcon from "@/components/icons/VariableIcon";
+import KeyIcon from "@/components/icons/KeyIcon";
+import RefreshIcon from "@/components/icons/RefreshIcon";
+import IconButton from "@/components/base/icon-button/IconButton";
 
 export type Parameter = {
   id: string;
@@ -11,7 +15,9 @@ export type Parameter = {
   value: string;
   isDisabled?: boolean;
   isReadOnly?: boolean;
+  isKeyReadOnly?: boolean;
   placeholder?: string;
+  source?: "environment" | "auth" | "custom";
 };
 
 export default function ListPropertyEditor({
@@ -24,6 +30,7 @@ export default function ListPropertyEditor({
   disableNewItem = false,
   disableKeyChange = false,
   disableRemoveItem = false,
+  onIconClick,
 }: {
   type: string;
   title: string;
@@ -34,6 +41,7 @@ export default function ListPropertyEditor({
   disableNewItem?: boolean;
   disableKeyChange?: boolean;
   disableRemoveItem?: boolean;
+  onIconClick?: (itemId: string) => void;
 }) {
   const inputKeyRef = useRef<HTMLInputElement>(null);
   const inputValueRef = useRef<HTMLInputElement>(null);
@@ -85,6 +93,15 @@ export default function ListPropertyEditor({
   const deleteKeyValue = (id: string) => {
     const params = { ...value };
     delete params[id];
+    onChange(params);
+  };
+
+  const resetKeyValue = (id: string) => {
+    const params = { ...value };
+    params[id] = {
+      ...params[id],
+      value: "",
+    };
     onChange(params);
   };
 
@@ -153,16 +170,37 @@ export default function ListPropertyEditor({
               </div>
             )}
 
-            <input
-              className={styles.paramKey}
-              value={value[itemId].name || ""}
-              id={`${itemId}-key`}
-              onChange={(e) =>
-                updateKeyValue(itemId, e.target.value, value[itemId].value)
-              }
-              readOnly={value[itemId].isReadOnly || disableKeyChange}
-              disabled={value[itemId].isReadOnly || disableKeyChange}
-            />
+            <div className={styles.paramKey}>
+              <input
+                value={value[itemId].name || ""}
+                id={`${itemId}-key`}
+                onChange={(e) =>
+                  updateKeyValue(itemId, e.target.value, value[itemId].value)
+                }
+                readOnly={value[itemId].isReadOnly || value[itemId].isKeyReadOnly || disableKeyChange}
+                disabled={value[itemId].isReadOnly || value[itemId].isKeyReadOnly || disableKeyChange}
+              />
+              {value[itemId].source === "environment" && onIconClick && (
+                <IconButton
+                  size="small"
+                  onClick={() => onIconClick(itemId)}
+                  tooltip="Open environment editor"
+                  className={styles.iconButton}
+                >
+                  <VariableIcon size={16} />
+                </IconButton>
+              )}
+              {value[itemId].source === "auth" && onIconClick && (
+                <IconButton
+                  size="small"
+                  onClick={() => onIconClick(itemId)}
+                  tooltip="Open authorization settings"
+                  className={styles.iconButton}
+                >
+                  <KeyIcon size={16} />
+                </IconButton>
+              )}
+            </div>
             <input
               className={styles.paramValue}
               value={value[itemId].value || ""}
@@ -174,24 +212,48 @@ export default function ListPropertyEditor({
               readOnly={value[itemId].isReadOnly}
               placeholder={value[itemId].placeholder}
             />
-            {/** Show delete button only for editable items items */}
+            {/** Show action button for each item */}
             {value[itemId].isReadOnly ? (
-              <button
-                className={styles.deleteButton}
-                onClick={() => {
-                  navigator.clipboard.writeText(value[itemId].value);
-                }}
-              >
-                <CopyIcon size={18} />
-              </button>
+              <div className={styles.actionButton}>
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    navigator.clipboard.writeText(value[itemId].value);
+                  }}
+                  tooltip="Copy value"
+                  tooltipPosition="left"
+                  showSuccess
+                >
+                  <CopyIcon size={18} />
+                </IconButton>
+              </div>
             ) : (
               !disableRemoveItem && (
-                <button
-                  className={styles.deleteButton}
-                  onClick={() => deleteKeyValue(itemId)}
-                >
-                  <ClearIcon size={18} />
-                </button>
+                value[itemId].source === "environment" && value[itemId].value ? (
+                  <div className={styles.actionButton}>
+                    <IconButton
+                      size="small"
+                      onClick={() => resetKeyValue(itemId)}
+                      tooltip="Reset to environment default"
+                      tooltipPosition="left"
+                      showSuccess
+                    >
+                      <RefreshIcon size={18} />
+                    </IconButton>
+                  </div>
+                ) : (
+                  <div className={styles.actionButton}>
+                    <IconButton
+                      size="small"
+                      onClick={() => deleteKeyValue(itemId)}
+                      tooltip="Delete"
+                      tooltipPosition="left"
+                      showSuccess
+                    >
+                      <ClearIcon size={18} />
+                    </IconButton>
+                  </div>
+                )
               )
             )}
           </div>

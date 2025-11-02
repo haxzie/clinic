@@ -143,6 +143,24 @@ export default function Tabs() {
                     onClick={() => setActiveTab(tabId)}
                     onContextMenu={(event) => handleTabContextMenu(event, tabId)}
                   >
+                    {activeTab === tabId && (
+                      <motion.div
+                        layoutId="activeTopLevelTabIndicator"
+                        className={styles.activeTabIndicator}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 35,
+                          layout: {
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 35,
+                          },
+                        }}
+                      >
+                        <div className={styles.borderOverlay} />
+                      </motion.div>
+                    )}
                     <TabIcon tab={tabs[tabId]} />
                     <TabName tab={tabs[tabId]} />
                     <IconButton

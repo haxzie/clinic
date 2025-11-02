@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo } from "react";
 import type { RequestClient } from "../types/request";
+import { DialogRenderer } from "../hooks/useDialog";
 
 const RequestClientContext = createContext<RequestClient | null>(null);
 type AnalyticsListener = (event: string, properties?: Record<string, unknown>) => void;
@@ -56,7 +57,9 @@ export function StudioProvider({
   }, [onTrackProp]);
   return (
     <RequestClientContext.Provider value={value}>
-      {children}
+      <DialogRenderer>
+        {children}
+      </DialogRenderer>
     </RequestClientContext.Provider>
   );
 }

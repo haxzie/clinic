@@ -5,6 +5,7 @@ import { HeaderSchema, ParameterSchema } from "@apiclinic/core";
 interface APIParmsExtras {
   isDisabled?: boolean;
   isReadonly?: boolean;
+  source?: "environment" | "auth" | "custom";
 }
 export type RequestHeaders = Record<string, HeaderSchema & APIParmsExtras>;
 export type RequestParameters = Record<

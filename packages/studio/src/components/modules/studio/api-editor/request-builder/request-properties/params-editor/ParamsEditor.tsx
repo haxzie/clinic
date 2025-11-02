@@ -7,16 +7,21 @@ import { RequestParameters } from "@/types/API.types";
 
 /**
  * Convert RequestParameters to URL query string and append to base URL
+ * Note: Parameters are NOT encoded here for display purposes
+ * Encoding happens when the actual HTTP request is made
+ * Only includes enabled parameters in the URL
  */
 const updateUrlWithParameters = (baseUrl: string, parameters: RequestParameters): string => {
   // Remove existing query parameters from the base URL
   const urlWithoutQuery = baseUrl.split('?')[0];
   
-  // Convert parameters object to query string
+  // Convert parameters object to query string (no encoding for display)
+  // Only include parameters that are not disabled
   const queryParams: string[] = [];
   Object.values(parameters).forEach(param => {
-    if (param.name && param.value) {
-      queryParams.push(`${encodeURIComponent(param.name)}=${encodeURIComponent(param.value)}`);
+    if (param.name && param.value && !param.isDisabled) {
+      // Don't encode - keep raw values for display
+      queryParams.push(`${param.name}=${param.value}`);
     }
   });
   

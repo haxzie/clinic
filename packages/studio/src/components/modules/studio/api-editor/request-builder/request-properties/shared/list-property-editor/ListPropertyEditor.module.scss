@@ -10,19 +10,52 @@
   .param {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    padding-right: 24px;
+    padding-right: 32px;
     border-bottom: 1px solid var(--color-border);
     height: 42px;
     position: relative;
 
     .paramKey {
       border-right: 1px solid var(--color-border);
-      padding: 10px 15px;
       font-size: var(--font-size-s);
       font-family: var(--font-monospace);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding-right: 8px;
 
-      &:disabled {
+      input {
+        flex: 1;
+        padding: 10px 0 10px 15px;
+        
+        &:disabled {
+          color: var(--color-font-light);
+        }
+      }
+
+      .iconButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 4px;
         color: var(--color-font-light);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        flex-shrink: 0;
+
+        &:hover {
+          color: var(--color-font);
+          background-color: var(--color-background-light);
+        }
+
+        &:active {
+          transform: scale(0.9);
+        }
       }
     }
 
@@ -48,7 +81,7 @@
       }
     }
 
-    .deleteButton {
+    .actionButton {
       position: absolute;
       display: flex;
       align-items: center;
@@ -59,22 +92,6 @@
       margin: auto 4px;
       width: 32px;
       height: 32px;
-      background: transparent;
-      border: 0;
-      color: var(--color-font-light);
-      border-radius: 50%;
-      transition: all 0.2s ease-in-out;
-      background-color: var(--color-input-background);
-
-      &:active {
-        transform: scale(0.9);
-      }
-
-      &:hover {
-        color: var(--color-font);
-        background-color: var(--color-background-light);
-        cursor: pointer;
-      }
     }
 
     &.readOnly {
@@ -121,7 +138,7 @@
     color: var(--color-font-light);
     font-size: var(--font-size-s);
     font-weight: var(--font-weight-semibold);
-    background-color: var(--color-input-background);
+    background-color: var(--color-background-light);
     flex-shrink: 0;
     text-transform: uppercase;
     position: sticky;
@@ -130,6 +147,7 @@
     z-index: 2;
     .paramKey,
     .paramValue {
+      padding: 10px 15px;
       font-size: var(--font-size-xs);
     }
   }

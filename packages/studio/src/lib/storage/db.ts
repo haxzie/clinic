@@ -1,5 +1,6 @@
 import { APISchema, CollectionSchema } from '@/types/API.types';
 import { TabSchema } from '@/store/editor-store/editor.types';
+import { EnvironmentSchema } from '@/store/api-store/api.types';
 import { StorageDriver } from './driver';
 import { db } from './dexie';
 
@@ -16,6 +17,11 @@ export interface StoredTabs {
 export interface StoredCollection {
     id: string;
     data: CollectionSchema;
+}
+
+export interface StoredEnvironment {
+    id: string;
+    data: EnvironmentSchema;
 }
 
 export class APIStorageDriver extends StorageDriver<StoredAPI> {
@@ -246,9 +252,77 @@ export class TabStorageDriver extends StorageDriver<StoredTabs> {
     }
 }
 
+export class EnvironmentStorageDriver extends StorageDriver<StoredEnvironment> {
+    constructor() {
+        super('environment');
+    }
+
+    async list(): Promise<Array<StoredEnvironment>> {
+        try {
+            return await db.environments.toArray();
+        } catch (error) {
+            console.error('Error listing environments:', error);
+            return [];
+        }
+    }
+
+    async get(id: string): Promise<StoredEnvironment> {
+        try {
+            const environment = await db.environments.get(id);
+            if (!environment) {
+                throw new Error(`Environment with id ${id} not found`);
+            }
+            return environment;
+        } catch (error) {
+            console.error(`Error getting environment ${id}:`, error);
+            throw error;
+        }
+    }
+
+    async create(item: StoredEnvironment): Promise<StoredEnvironment> {
+        try {
+            await db.environments.add(item);
+            return item;
+        } catch (error) {
+            console.error('Error creating environment:', error);
+            throw error;
+        }
+    }
+
+    async update(id: string, item: StoredEnvironment): Promise<StoredEnvironment> {
+        try {
+            await db.environments.update(id, { data: item.data });
+            return item;
+        } catch (error) {
+            console.error(`Error updating environment ${id}:`, error);
+            throw error;
+        }
+    }
+
+    async delete(id: string): Promise<void> {
+        try {
+            await db.environments.delete(id);
+        } catch (error) {
+            console.error(`Error deleting environment ${id}:`, error);
+            throw error;
+        }
+    }
+
+    async getDefault(): Promise<StoredEnvironment | null> {
+        try {
+            const environments = await db.environments.where('data.isDefault').equals(true).toArray();
+            return environments.length > 0 ? environments[0] : null;
+        } catch (error) {
+            console.error('Error getting default environment:', error);
+            return null;
+        }
+    }
+}
+
 // Export instances for easy use
 export const apiStorage = new APIStorageDriver();
 export const tabStorage = new TabStorageDriver();
 export const collectionStorage = new CollectionStorageDriver();
+export const environmentStorage = new EnvironmentStorageDriver();
 
 

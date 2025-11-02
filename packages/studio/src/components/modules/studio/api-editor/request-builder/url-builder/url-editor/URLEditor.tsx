@@ -8,6 +8,25 @@ import { useShallow } from "zustand/shallow";
 import { generateUUID } from "@/utils/dataUtils";
 
 /**
+ * Decode a parameter value but preserve variable placeholders like {{variableName}}
+ * If the value contains variable syntax, don't decode it
+ */
+const safeDecodeURIComponent = (str: string): string => {
+  // If string contains variable placeholders, return as-is to preserve them
+  if (/\{\{\w+\}\}/.test(str)) {
+    return str;
+  }
+  
+  // Otherwise, decode normally
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    // If decoding fails, return original
+    return str;
+  }
+};
+
+/**
  * Extract query parameters from a URL and convert them to RequestParameters format
  */
 const extractQueryParameters = (url: string): RequestParameters => {
@@ -39,8 +58,8 @@ const extractQueryParameters = (url: string): RequestParameters => {
           const id = generateUUID();
           parameters[id] = {
             id,
-            name: decodeURIComponent(name),
-            value: decodeURIComponent(value),
+            name: safeDecodeURIComponent(name),
+            value: safeDecodeURIComponent(value),
           };
         }
       });

@@ -1,5 +1,6 @@
-import { apiStorage, collectionStorage } from "@/lib/storage/db";
+import { apiStorage, collectionStorage, environmentStorage } from "@/lib/storage/db";
 import { APISchema, CollectionSchema } from "@/types/API.types";
+import { EnvironmentSchema } from "./api.types";
 
 export const handleCreateAPI = async (api: APISchema) => {
   const newAPI = await apiStorage.create({
@@ -39,4 +40,24 @@ export const handleUpdateCollection = async (collection: CollectionSchema) => {
 
 export const handleDeleteCollection = async (collectionId: string) => {
   await collectionStorage.delete(collectionId);
+};
+
+export const handleCreateEnvironment = async (environment: EnvironmentSchema) => {
+  const newEnvironment = await environmentStorage.create({
+    id: environment.id,
+    data: environment,
+  });
+  return newEnvironment;
+};
+
+export const handleUpdateEnvironment = async (environment: EnvironmentSchema) => {
+  const updatedEnvironment = await environmentStorage.update(environment.id, {
+    id: environment.id,
+    data: environment,
+  });
+  return updatedEnvironment;
+};
+
+export const handleDeleteEnvironment = async (environmentId: string) => {
+  await environmentStorage.delete(environmentId);
 };
