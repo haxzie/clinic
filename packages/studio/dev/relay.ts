@@ -9,7 +9,7 @@ export interface RelayResponse {
 }
 
 // Development relay URL - can be overridden via environment variable
-const RELAY_API_URL = import.meta.env.VITE_RELAY_API_URL || "http://localhost:8787";
+const RELAY_API_URL = import.meta.env.VITE_RELAY_API_URL || "https://api.clinic.sh";
 
 export const relayRequest = async (
   request: Request

@@ -12,40 +12,44 @@ export default function ResponseStatusBar({
   isPanelHidden,
   onClickTogglePanel,
 }: {
-  status: number;
-  time: number;
+  status?: number;
+  time?: number;
   isPanelHidden: boolean;
   onClickTogglePanel: () => void;
 }) {
   return (
     <div className={styles.responseStatusBar}>
       <div className={styles.details}>
-        <div className={styles.status}>
-          <span className={styles.key}>Status: </span>
-          <span className={styles.value}>
-            <span
-              className={styles.responseIcon}
-              style={{
-                backgroundColor:
-                  status >= 200 && status < 300
-                    ? "var(--color-success)"
-                    : "var(--color-error)",
-              }}
-            ></span>
-            {status}
-          </span>
-        </div>
-        <div className={styles.status}>
-          <span className={styles.key}>Time: </span>
-          <span className={styles.value}>
-            {formatTime(time)}
-            {time > 1000 && (
-              <span className={styles.slowIcon}>
-                <SlowIcon size={16} />
-              </span>
-            )}
-          </span>
-        </div>
+        {status !== undefined && (
+          <div className={styles.status}>
+            <span className={styles.key}>Status: </span>
+            <span className={styles.value}>
+              <span
+                className={styles.responseIcon}
+                style={{
+                  backgroundColor:
+                    status >= 200 && status < 300
+                      ? "var(--color-success)"
+                      : "var(--color-error)",
+                }}
+              ></span>
+              {status}
+            </span>
+          </div>
+        )}
+        {time !== undefined && (
+          <div className={styles.status}>
+            <span className={styles.key}>Time: </span>
+            <span className={styles.value}>
+              {formatTime(time)}
+              {time > 1000 && (
+                <span className={styles.slowIcon}>
+                  <SlowIcon size={16} />
+                </span>
+              )}
+            </span>
+          </div>
+        )}
       </div>
       <div className={styles.options}>
         <IconButton

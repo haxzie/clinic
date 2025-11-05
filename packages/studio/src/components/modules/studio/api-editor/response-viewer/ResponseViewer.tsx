@@ -25,7 +25,10 @@ import ResponseContentRenderer from "./response-content-renderer/ResponseContent
 
 export default function ResponseViewer({ apiId }: { apiId: string }) {
   const [isPanelHidden, setIsPanelHidden] = useState(false);
+  const [animatedTime, setAnimatedTime] = useState<number>(0);
   const panelRef = useRef<ImperativePanelHandle | null>(null);
+  const startTimeRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   const setPanelSize = (size: number) => {
     if (panelRef.current) {
@@ -128,6 +131,39 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
     }
   }, [isPanelHidden]);
 
+  // Animate time while request is in progress
+  useEffect(() => {
+    if (isLoading) {
+      // Reset and start timer
+      startTimeRef.current = performance.now();
+      setAnimatedTime(0);
+
+      const animate = () => {
+        if (startTimeRef.current) {
+          const elapsed = performance.now() - startTimeRef.current;
+          setAnimatedTime(elapsed);
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
+      };
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+      };
+    } else {
+      // Stop animation when request completes
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      startTimeRef.current = null;
+    }
+  }, [isLoading]);
+
   useEffect(() => {
     if (panelRef.current && panelRef.current.getSize() === 0) {
       setPanelSize(50);
@@ -138,10 +174,10 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
     <>
       <PanelResizeHandle />
       {/* This is outside the panel to avoid the panel from being hidden */}
-      {response && (
+      {(response || isLoading) && (
         <ResponseStatusBar
-          status={response.statusCode}
-          time={response.performance?.duration}
+          status={response?.statusCode}
+          time={isLoading ? animatedTime : response?.performance?.duration}
           isPanelHidden={isPanelHidden}
           onClickTogglePanel={handleTogglePanel}
         />
@@ -152,7 +188,10 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
         onResize={handleResize}
         className={styles.responseViewer}
       >
-        <NProgress active={isLoading} />
+        <NProgress 
+          active={isLoading} 
+          duration={isLoading ? animatedTime : response?.performance?.duration}
+        />
         {response ? (
           <PanelGroup direction="horizontal" className={styles.responseArea}>
             <Panel defaultSize={70} className={styles.viewerContent}>
