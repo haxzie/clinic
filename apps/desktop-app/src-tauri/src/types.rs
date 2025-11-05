@@ -82,19 +82,7 @@ pub enum RequestMethod {
     HEAD,
 }
 
-impl RequestMethod {
-    pub fn to_reqwest_method(&self) -> reqwest::Method {
-        match self {
-            RequestMethod::GET => reqwest::Method::GET,
-            RequestMethod::POST => reqwest::Method::POST,
-            RequestMethod::PUT => reqwest::Method::PUT,
-            RequestMethod::DELETE => reqwest::Method::DELETE,
-            RequestMethod::PATCH => reqwest::Method::PATCH,
-            RequestMethod::OPTIONS => reqwest::Method::OPTIONS,
-            RequestMethod::HEAD => reqwest::Method::HEAD,
-        }
-    }
-}
+// RequestMethod conversion is now handled directly in relay.rs
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ResponsePerformance {

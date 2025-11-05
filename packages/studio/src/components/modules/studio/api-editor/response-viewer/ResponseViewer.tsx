@@ -14,7 +14,6 @@ import {
   PanelResizeHandle,
 } from "react-resizable-panels";
 import ResponseHeaders from "./response-headers/ResponseHeaders";
-import ContentEditor from "@/components/modules/studio/content-editor/ContentEditor";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import EmptyResponse from "./empty-response/EmptyResponse";
@@ -22,6 +21,7 @@ import { downloadFile } from "@/utils/fileUtils";
 import ResponseBodyTopBar from "./response-body-top-bar/ResponseBodyTopBar";
 import NProgress from "./nprogress/NProgress";
 import { Events, track } from "@/lib/analytics";
+import ResponseContentRenderer from "./response-content-renderer/ResponseContentRenderer";
 
 export default function ResponseViewer({ apiId }: { apiId: string }) {
   const [isPanelHidden, setIsPanelHidden] = useState(false);
@@ -162,7 +162,11 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
                 onClickCopy={handleResponseCopy}
                 onClickDownload={handleResponseDownload}
               />
-              <ContentEditor editable={false} value={formattedResponse} />
+              <ResponseContentRenderer
+                contentType={response.contentType || ""}
+                content={response.content}
+                formattedContent={formattedResponse}
+              />
             </Panel>
 
             <PanelResizeHandle />
