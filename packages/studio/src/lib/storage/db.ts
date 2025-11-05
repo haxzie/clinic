@@ -310,7 +310,7 @@ export class EnvironmentStorageDriver extends StorageDriver<StoredEnvironment> {
 
     async getDefault(): Promise<StoredEnvironment | null> {
         try {
-            const environments = await db.environments.where('data.isDefault').equals(true).toArray();
+            const environments = await db.environments.where('data.isDefault').equals(1).toArray();
             return environments.length > 0 ? environments[0] : null;
         } catch (error) {
             console.error('Error getting default environment:', error);

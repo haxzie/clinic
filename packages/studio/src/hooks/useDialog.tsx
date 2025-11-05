@@ -10,7 +10,7 @@ export type TDialogResult<TResult> = {
 }
 
 export interface TProps<TResult, TInput> {
-    data: TInput;
+    data?: TInput;
     submit: (result?: TResult) => void;
     close: (error?: string) => void;
 }
@@ -19,8 +19,8 @@ export interface TProps<TResult, TInput> {
 interface DialogInstance<TResult = unknown, TInput = unknown> {
     id: string;
     component: React.ComponentType<TProps<TResult, TInput>>;
-    props: { data: TInput };
-    resolve: (result: TDialogResult<TResult>) => void;
+    props: { data?: TInput };
+    resolve: (result?: TDialogResult<TResult>) => void;
 }
 
 interface DialogContextValue {
@@ -79,8 +79,8 @@ export const DialogBackDrop = <TResult, TInput>({
 }: {
     id: string;
     component: React.ComponentType<TProps<TResult, TInput>>;
-    props: { data: TInput };
-    resolve: (result: TDialogResult<TResult>) => void;
+    props: { data?: TInput };
+    resolve: (result?: TDialogResult<TResult>) => void;
 }) => {
     const context = useContext(DialogContext);
 
@@ -146,15 +146,15 @@ export const DialogBackDrop = <TResult, TInput>({
  * }
  * ```
  */
-export const createDialog = <TResult, TInput = void>(
+export function createDialog<TResult, TInput = void>(
     component: React.ComponentType<TProps<TResult, TInput>>
-) => {
-    return (): {
-        open: (data: TInput) => Promise<TDialogResult<TResult>>;
-        close: () => void;
-        isOpen: boolean;
-        result: TDialogResult<TResult> | null;
-    } => {
+): () => {
+    open: (data?: TInput) => Promise<TDialogResult<TResult>>;
+    close: () => void;
+    isOpen: boolean;
+    result: TDialogResult<TResult> | null;
+} {
+    return () => {
         const context = useContext(DialogContext);
         const [dialogId, setDialogId] = useState<string | null>(null);
         const [result, setResult] = useState<TDialogResult<TResult> | null>(null);
@@ -164,17 +164,17 @@ export const createDialog = <TResult, TInput = void>(
             throw new Error('Dialog hook must be used within DialogRenderer. Make sure DialogRenderer is in your component tree.');
         }
 
-        const open = useCallback((data: TInput): Promise<TDialogResult<TResult>> => {
+        const open = useCallback((data?: TInput): Promise<TDialogResult<TResult>> => {
             return new Promise((resolve) => {
                 resolveRef.current = resolve;
                 
                 const id = context.openDialog({
                     component,
                     props: { data },
-                    resolve: (dialogResult: TDialogResult<TResult>) => {
-                        setResult(dialogResult);
+                    resolve: (dialogResult?: TDialogResult<TResult>) => {
+                        setResult(dialogResult ?? { status: 'error', error: 'Dialog closed programmatically' });
                         setDialogId(null);
-                        resolve(dialogResult);
+                        resolve(dialogResult ?? { status: 'error', error: 'Dialog closed programmatically' });
                         resolveRef.current = null;
                     },
                 });
@@ -204,7 +204,7 @@ export const createDialog = <TResult, TInput = void>(
             result,
         };
     };
-};
+}
 
 /**
  * Hook to use dialog context within React components

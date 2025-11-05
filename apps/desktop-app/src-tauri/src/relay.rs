@@ -97,11 +97,15 @@ impl RelayService {
             }
         }
 
+        // PERFORMANCE MEASUREMENT: Start timing just before sending request
+        let request_send_time = Instant::now();
+
         // Execute the request
         let response = request_builder.send().await
             .map_err(|e| anyhow!("Request failed: {}", e))?;
 
-        let response_start_time = Instant::now();
+        // PERFORMANCE MEASUREMENT: Response headers received (Time to First Byte)
+        let headers_received_time = Instant::now();
 
         // Handle streaming and non-streaming responses
         let should_stream = self.is_streaming_response(&response);
@@ -131,12 +135,46 @@ impl RelayService {
                 .map_err(|e| anyhow!("Failed to read response: {}", e))?
         };
 
-        let response_end_time = Instant::now();
+        // PERFORMANCE MEASUREMENT: Body fully received
+        let body_received_time = Instant::now();
 
-        // Calculate performance metrics
-        let duration = response_end_time.duration_since(client_start_time).as_secs_f64() * 1000.0;
-        let latency = response_start_time.duration_since(client_start_time).as_secs_f64() * 1000.0;
-        let transfer_time = response_end_time.duration_since(response_start_time).as_secs_f64() * 1000.0;
+        // Calculate performance metrics according to HTTP timing model:
+        // Total time = Latency (network) + Processing (server) + Transfer (download)
+        
+        // Time to First Byte (TTFB) = Network latency + Server processing time
+        let ttfb = headers_received_time.duration_since(request_send_time).as_secs_f64() * 1000.0;
+        
+        // Transfer Time: Time to download the response body (pure data transfer)
+        let transfer_time = body_received_time.duration_since(headers_received_time).as_secs_f64() * 1000.0;
+        
+        // Check if server echoed back our timestamp to calculate accurate server processing time
+        let (latency, processing_time) = if let Some(server_timestamp_header) = processed_headers.get("x-server-timestamp") {
+            // Server provided its timestamp, we can calculate accurate timings
+            if let Ok(server_timestamp) = server_timestamp_header.value.parse::<i64>() {
+                // Network latency (round trip): Difference between when we sent and when server processed
+                let one_way_latency = (server_timestamp - client_timestamp) as f64;
+                
+                // Server processing time: TTFB minus the round-trip network time
+                // Assuming symmetric network (return trip ≈ one way latency)
+                let server_processing = ttfb - (one_way_latency * 2.0);
+                
+                (one_way_latency * 2.0, server_processing.max(0.0))
+            } else {
+                // Server header exists but invalid, estimate 50/50 split
+                (ttfb / 2.0, ttfb / 2.0)
+            }
+        } else {
+            // No server timestamp available, estimate using TTFB
+            // Assume network latency is ~40% and server processing is ~60% of TTFB
+            // This is a rough estimate - for accurate measurements, server should send timestamp
+            let estimated_latency = ttfb * 0.4;
+            let estimated_processing = ttfb * 0.6;
+            (estimated_latency, estimated_processing)
+        };
+        
+        // Total Duration: End-to-end time from start to finish
+        let duration = body_received_time.duration_since(client_start_time).as_secs_f64() * 1000.0;
+        
         let transfer_size = response_body.len();
         let transfer_encoding = processed_headers
             .get("transfer-encoding")
@@ -151,7 +189,7 @@ impl RelayService {
             performance: ResponsePerformance {
                 duration,
                 latency,
-                processing_time: 0.0,
+                processing_time,
                 transfer_time,
                 transfer_size,
                 transfer_encoding,

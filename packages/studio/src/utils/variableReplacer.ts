@@ -41,21 +41,21 @@ export const replaceVariablesInObject = <T extends Record<string, unknown>>(
   obj: T,
   environmentData: EnvironmentData
 ): T => {
-  const result = {} as T;
+  const result: Record<string, unknown> = {};
   
   for (const key in obj) {
     const value = obj[key];
     
     if (typeof value === "string") {
-      result[key] = replaceVariables(value, environmentData) as T[Extract<keyof T, string>];
+      result[key] = replaceVariables(value, environmentData);
     } else if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      result[key] = replaceVariablesInObject(value, environmentData);
+      result[key] = replaceVariablesInObject(value as Record<string, unknown>, environmentData);
     } else {
       result[key] = value;
     }
   }
   
-  return result;
+  return result as T;
 };
 
 /**
@@ -140,41 +140,41 @@ export const replaceVariablesInAuthorization = (
     return authorization;
   }
 
-  const replaced = { ...authorization };
-
   switch (authorization.type) {
     case "BASIC":
-      if (authorization.username) {
-        replaced.username = replaceVariables(authorization.username, environmentData);
-      }
-      if (authorization.password) {
-        replaced.password = replaceVariables(authorization.password, environmentData);
-      }
-      break;
+      return {
+        ...authorization,
+        username: replaceVariables(authorization.username, environmentData),
+        password: replaceVariables(authorization.password, environmentData),
+      };
 
-    case "BEARER_TOKEN":
-      if (authorization.token) {
-        replaced.token = replaceVariables(authorization.token, environmentData);
-      }
-      break;
+    case "BEARER":
+      return {
+        ...authorization,
+        token: replaceVariables(authorization.token, environmentData),
+      };
 
     case "API_KEY":
-      if (authorization.value) {
-        replaced.value = replaceVariables(authorization.value, environmentData);
-      }
-      if (authorization.key) {
-        replaced.key = replaceVariables(authorization.key, environmentData);
-      }
-      break;
+      return {
+        ...authorization,
+        key: replaceVariables(authorization.key, environmentData),
+      };
 
     case "OAUTH2":
-      if (authorization.token) {
-        replaced.token = replaceVariables(authorization.token, environmentData);
-      }
-      break;
-  }
+      return {
+        ...authorization,
+        token: replaceVariables(authorization.token, environmentData),
+      };
 
-  return replaced;
+    case "CUSTOM":
+      return {
+        ...authorization,
+        token: replaceVariables(authorization.token, environmentData),
+      };
+
+    default:
+      return authorization;
+  }
 };
 
 /**
