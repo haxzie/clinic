@@ -60,9 +60,36 @@
     }
 
     .paramValue {
-      padding: 10px 15px;
       font-size: var(--font-size-s);
       font-family: var(--font-monospace);
+      position: relative;
+      display: flex;
+      align-items: stretch;
+
+      // For regular input elements (password fields)
+      > input {
+        border: 0;
+        height: 100%;
+        width: 100%;
+        background-color: transparent;
+        color: var(--color-font);
+        outline: none;
+        padding: 10px 15px;
+        font-size: var(--font-size-s);
+        font-family: var(--font-monospace);
+
+        &:focus {
+          background-color: var(--color-input-background);
+        }
+      }
+
+      // For VariableInput component
+      .variableInputField {
+        width: 100%;
+        font-size: var(--font-size-s);
+        font-family: var(--font-monospace);
+        flex: 1;
+      }
     }
 
     input {
@@ -72,7 +99,6 @@
       background-color: transparent;
       color: var(--color-font);
       outline: none;
-      padding: 10px 15px;
       font-size: var(--font-size-s);
       font-family: var(--font-monospace);
 
@@ -129,8 +155,15 @@
   .placeholder {
     .paramKey,
     .paramValue {
-      padding: 0;
       color: var(--color-font-light);
+      
+      input {
+        // padding: 10px 0 10px 15px;
+      }
+
+      .variableInputField {
+        // padding: 10px 0 10px 15px;
+      }
     }
   }
 

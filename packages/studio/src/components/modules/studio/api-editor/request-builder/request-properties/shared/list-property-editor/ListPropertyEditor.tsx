@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import styles from "./ListPropertyEditor.module.scss";
 import { generateUUID } from "@/utils/dataUtils";
 import ClearIcon from "@/components/icons/ClearIcon";
@@ -8,6 +8,7 @@ import VariableIcon from "@/components/icons/VariableIcon";
 import KeyIcon from "@/components/icons/KeyIcon";
 import RefreshIcon from "@/components/icons/RefreshIcon";
 import IconButton from "@/components/base/icon-button/IconButton";
+import VariableInput from "@/components/modules/studio/variable-input/VariableInput";
 
 export type Parameter = {
   id: string;
@@ -44,7 +45,6 @@ export default function ListPropertyEditor({
   onIconClick?: (itemId: string) => void;
 }) {
   const inputKeyRef = useRef<HTMLInputElement>(null);
-  const inputValueRef = useRef<HTMLInputElement>(null);
   const [keyInput, setKeyInput] = useState("");
   const [valueInput, setValueInput] = useState("");
   /**
@@ -65,13 +65,10 @@ export default function ListPropertyEditor({
     onChange(params);
 
     setTimeout(() => {
-      if (name) {
-        setKeyInput("");
-        document.getElementById(`${itemId}-key`)?.focus();
-      } else {
-        setValueInput("");
-        document.getElementById(`${itemId}-value`)?.focus();
-      }
+      setKeyInput("");
+      setValueInput("");
+      // Focus on the newly created item's key field
+      document.getElementById(`${itemId}-key`)?.focus();
     }, 2);
   };
 
@@ -201,17 +198,31 @@ export default function ListPropertyEditor({
                 </IconButton>
               )}
             </div>
-            <input
-              className={styles.paramValue}
-              value={value[itemId].value || ""}
-              id={`${itemId}-value`}
-              type={value[itemId].isReadOnly ? "password" : "text"}
-              onChange={(e) =>
-                updateKeyValue(itemId, value[itemId].name, e.target.value)
-              }
-              readOnly={value[itemId].isReadOnly}
-              placeholder={value[itemId].placeholder}
-            />
+            <div className={styles.paramValue}>
+              {value[itemId].isReadOnly ? (
+                // Use regular input for password/readonly fields
+                <input
+                  value={value[itemId].value || ""}
+                  id={`${itemId}-value`}
+                  type="password"
+                  onChange={(e) =>
+                    updateKeyValue(itemId, value[itemId].name, e.target.value)
+                  }
+                  readOnly={true}
+                  placeholder={value[itemId].placeholder}
+                />
+              ) : (
+                // Use VariableInput for editable text fields
+                <VariableInput
+                  value={value[itemId].value || ""}
+                  onChange={(newValue) =>
+                    updateKeyValue(itemId, value[itemId].name, newValue)
+                  }
+                  placeholder={value[itemId].placeholder}
+                  className={styles.variableInputField}
+                />
+              )}
+            </div>
             {/** Show action button for each item */}
             {value[itemId].isReadOnly ? (
               <div className={styles.actionButton}>
@@ -271,16 +282,28 @@ export default function ListPropertyEditor({
                 value={keyInput}
                 type="text"
                 placeholder="key"
-                onChange={(e) => addKeyValue(e.target.value, "")}
+                onChange={(e) => {
+                  const newKey = e.target.value;
+                  setKeyInput(newKey);
+                  // Only create a new item if we have a key and there's a value
+                  if (newKey && valueInput) {
+                    addKeyValue(newKey, valueInput);
+                  }
+                }}
               />
             </div>
             <div className={styles.paramValue}>
-              <input
-                ref={inputValueRef}
+              <VariableInput
                 value={valueInput}
-                type="text"
+                onChange={(newValue) => {
+                  setValueInput(newValue);
+                  // Only create a new item if we have a key
+                  if (keyInput && newValue) {
+                    addKeyValue(keyInput, newValue);
+                  }
+                }}
                 placeholder="value"
-                onChange={(e) => addKeyValue("", e.target.value)}
+                className={styles.variableInputField}
               />
             </div>
           </div>

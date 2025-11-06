@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import styles from "./URLEditor.module.scss";
 import debounce from "lodash.debounce";
 import { parseCurlCommand } from "@/utils/curlParser";
@@ -6,6 +6,7 @@ import useApiStore from "@/store/api-store/api.store";
 import { RequestMethod, RequestParameters } from "@apiclinic/core";
 import { useShallow } from "zustand/shallow";
 import { generateUUID } from "@/utils/dataUtils";
+import VariableInput from "@/components/modules/studio/variable-input/VariableInput";
 
 /**
  * Decode a parameter value but preserve variable placeholders like {{variableName}}
@@ -118,8 +119,6 @@ export default function URLEditor({
     }))
   );
   const [currentUrl, setCurrentUrl] = useState(value);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
   const debouncedSetUrl = useMemo(
     () => debounce((url: string) => onChange(url), 100),
     [onChange]
@@ -137,9 +136,9 @@ export default function URLEditor({
   );
 
   // Handle input change
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (url: string) => {
     // trim the leading and trailing spaces
-    const trimmedValue = e.target.value.trimStart();
+    const trimmedValue = url.trimStart();
     setCurrentUrl(trimmedValue);
     debouncedSetUrl(trimmedValue);
     
@@ -148,7 +147,7 @@ export default function URLEditor({
   };
 
   // Handle key down events
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     // Ignore all key presses while Alt is pressed
     if (e.altKey) {
       e.preventDefault();
@@ -156,7 +155,7 @@ export default function URLEditor({
   };
 
   // Handle paste events for curl commands
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
     const pastedText = e.clipboardData.getData('text');
     
     // Check if it looks like a curl command
@@ -200,46 +199,22 @@ export default function URLEditor({
     }
   }, [apiId, onChange, setMethod, setHeaders, setParameters, setRequestBody]);
 
-  // Sync input and overlay scroll positions
-  useEffect(() => {
-    const syncScroll = () => {
-      if (overlayRef.current && inputRef.current) {
-        overlayRef.current.scrollLeft = inputRef.current.scrollLeft;
-      }
-    };
-
-    const input = inputRef.current;
-    if (input) {
-      input.addEventListener("scroll", syncScroll);
-    }
-
-    return () => {
-      if (input) {
-        input.removeEventListener("scroll", syncScroll);
-      }
-    };
-  }, []);
-
   useEffect(() => {
     setCurrentUrl(value);
   }, [value]);
 
   return (
     <div className={styles.URLEditor}>
-      <div className={styles.editorContainer}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={currentUrl}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          className={styles.input}
-          spellCheck={false}
-          onFocus={() => onFocus()}
-          onBlur={() => onBlur()}
-        />
-      </div>
+      <VariableInput
+        value={currentUrl}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        placeholder="https://example.com"
+        spellCheck={false}
+        onFocus={() => onFocus()}
+        onBlur={() => onBlur()}
+      />
     </div>
   );
 }

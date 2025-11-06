@@ -69,11 +69,44 @@ export async function relayHTTPRequest(
 
     responseStartTime = performance.now();
 
+    // Get content type early to determine how to handle the response
+    const contentType =
+      fetchResponse.headers.get("content-type")?.split(";")[0] || null;
+    
+    // Determine if this is binary content that should be converted to base64
+    const isBinaryContent = contentType ? (
+      contentType.startsWith("image/") ||
+      contentType.startsWith("video/") ||
+      contentType.startsWith("audio/") ||
+      contentType === "application/pdf" ||
+      contentType === "application/octet-stream" ||
+      contentType.startsWith("application/vnd.") ||
+      contentType.startsWith("font/")
+    ) : false;
+
     // Handle streaming and non-streaming responses
     const shouldStream = isStreamingResponse(fetchResponse);
     let responseBody: string;
 
-    if (shouldStream && fetchResponse.body) {
+    if (isBinaryContent) {
+      // For binary content, convert to base64
+      const arrayBuffer = await fetchResponse.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      
+      // More efficient base64 conversion using chunks
+      const chunkSize = 8192;
+      let binary = '';
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+        binary += String.fromCharCode.apply(null, Array.from(chunk));
+      }
+      
+      const base64 = btoa(binary);
+      // Return as data URL for direct rendering
+      responseBody = `data:${contentType};base64,${base64}`;
+      
+      console.log(`Binary content converted: ${contentType}, size: ${bytes.length} bytes`);
+    } else if (shouldStream && fetchResponse.body) {
       // Stream the response internally and collect all data
       const reader = fetchResponse.body.getReader();
       const decoder = new TextDecoder();
@@ -110,8 +143,6 @@ export async function relayHTTPRequest(
 
     // Calculate timing metrics
     const duration = responseEndTime - clientStartTime;
-    const contentType =
-      fetchResponse.headers.get("content-type")?.split(";")[0] || null;
 
     const response: Response = {
       headers: processedHeaders,

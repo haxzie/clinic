@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import ListPropertyEditor, {
   Parameter,
 } from "../shared/list-property-editor/ListPropertyEditor";

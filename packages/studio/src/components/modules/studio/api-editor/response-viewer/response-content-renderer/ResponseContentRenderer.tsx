@@ -19,6 +19,9 @@ export default function ResponseContentRenderer({
 
   // Determine the type of content
   const renderType = useMemo(() => {
+    console.log("ResponseContentRenderer: contentType =", contentType);
+    console.log("ResponseContentRenderer: content length =", content?.length);
+    
     if (!contentType) return "text";
 
     const lowerContentType = contentType.toLowerCase();
@@ -28,6 +31,7 @@ export default function ResponseContentRenderer({
       lowerContentType.startsWith("image/") &&
       !lowerContentType.includes("svg")
     ) {
+      console.log("ResponseContentRenderer: Detected image type");
       return "image";
     }
 
@@ -36,17 +40,20 @@ export default function ResponseContentRenderer({
       lowerContentType.includes("svg") ||
       lowerContentType === "image/svg+xml"
     ) {
+      console.log("ResponseContentRenderer: Detected SVG type");
       return "svg";
     }
 
     // HTML
     if (lowerContentType.includes("text/html")) {
+      console.log("ResponseContentRenderer: Detected HTML type");
       return "html";
     }
 
     // Default to text/code editor
+    console.log("ResponseContentRenderer: Defaulting to text type");
     return "text";
-  }, [contentType]);
+  }, [contentType, content]);
 
   // Render based on type
   switch (renderType) {

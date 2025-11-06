@@ -6,11 +6,14 @@ interface SvgRendererProps {
 }
 
 export default function SvgRenderer({ content }: SvgRendererProps) {
+  const svgDataUri = `data:image/svg+xml;base64,${btoa(content)}`;
+
   return (
     <div className={styles.svgContainer}>
-      <div
-        className={styles.svgWrapper}
-        dangerouslySetInnerHTML={{ __html: content }}
+      <img 
+        src={svgDataUri} 
+        alt="SVG content" 
+        className={styles.svgImage}
       />
     </div>
   );
