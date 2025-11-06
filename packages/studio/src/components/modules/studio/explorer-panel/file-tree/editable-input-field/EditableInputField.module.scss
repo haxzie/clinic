@@ -32,6 +32,10 @@
     }
   }
 
+  .valueDisplay {
+    cursor: default;
+  }
+
   &.editing {
     input {
       display: block;
