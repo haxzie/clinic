@@ -25,15 +25,10 @@
     }
 
     .methodText {
-      font-size: var(--font-size-s);
-      line-height: var(--line-height-s);
-      color: var(--color-font-light);
-      opacity: 0.5;
-      width: 38px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-family: "Fira Code", monospace;
       cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .status {

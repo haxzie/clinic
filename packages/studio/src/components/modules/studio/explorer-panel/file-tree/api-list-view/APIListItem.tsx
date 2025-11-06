@@ -10,6 +10,7 @@ import EditableInputField from "../editable-input-field/EditableInputField";
 import IconButton from "@/components/base/icon-button/IconButton";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import RequestIcon from "@/components/icons/RequestIcon";
 
 export default function APIListItem({
   api,
@@ -98,7 +99,7 @@ export default function APIListItem({
     >
       <div className={styles.texts}>
         <div className={styles.methodText} {...listeners} {...attributes}>
-          {api.method}
+          <RequestIcon method={api.method} size={14} />
         </div>
         <div className={styles.name}>
           <EditableInputField

@@ -1,8 +1,6 @@
 import { motion } from "motion/react";
 import styles from "./CollectionListView.module.scss";
 import { AnimatePresence } from "motion/react";
-import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
-import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
 import EditableInputField from "../editable-input-field/EditableInputField";
 import AddIcon from "@/components/icons/AddIcon";
 import IconButton from "@/components/base/icon-button/IconButton";
@@ -14,6 +12,7 @@ import DeleteIcon from "@/components/icons/DeleteIcon";
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/utils/cn";
 import { Events, track } from "@/lib/analytics";
+import FolderOpenIcon from "@/components/icons/FolderOpenIcon";
 
 function CollectionItem({
   collection,
@@ -66,11 +65,10 @@ function CollectionItem({
       >
         <div className={styles.icon}>
           {showContent ? (
-            <ChevronDownIcon size={18} />
+            <FolderOpenIcon size={18} />
           ) : (
-            <ChevronRightIcon size={18} />
+            <FolderIcon size={18} />
           )}
-          <FolderIcon size={18} />
         </div>
         <EditableInputField
           value={collection.name}
