@@ -93,6 +93,61 @@ export function DropDownPortal({
   );
 }
 
+function DropDownOptions<T extends { id: string; value: string }>({
+  options,
+  optionElement,
+  onChange,
+}: {
+  options: Array<T>;
+  optionElement?: React.ComponentType<{ value: T["value"] }>;
+  onChange: (option: T) => void;
+}) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const optionRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
+  const backgroundStyle: React.CSSProperties = useMemo(() => {
+    if (hoveredIndex === null || !optionRefs.current[hoveredIndex]) {
+      return { opacity: 0 };
+    }
+
+    const hoveredElement = optionRefs.current[hoveredIndex];
+    if (!hoveredElement) return { opacity: 0 };
+
+    const firstElement = optionRefs.current[0];
+    if (!firstElement) return { opacity: 0 };
+
+    const offsetTop = hoveredElement.offsetTop - firstElement.offsetTop;
+
+    return {
+      opacity: 1,
+      transform: `translateY(${offsetTop}px)`,
+      height: `${hoveredElement.offsetHeight}px`,
+    };
+  }, [hoveredIndex]);
+
+  return (
+    <div className={styles.options}>
+      <div className={styles.hoverBackground} style={backgroundStyle} />
+      {options.map((option, index) => (
+        <div
+          key={option.id}
+          ref={(el) => {
+            optionRefs.current[index] = el;
+          }}
+          className={styles.option}
+          onMouseEnter={() => setHoveredIndex(index)}
+          onMouseLeave={() => setHoveredIndex(null)}
+          onClick={() => onChange(option)}
+        >
+          {optionElement
+            ? React.createElement(optionElement, { value: option.value })
+            : option.value}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function DropDown<T extends { id: string; value: string }>({
   value,
   onChange,
@@ -141,22 +196,14 @@ export function DropDown<T extends { id: string; value: string }>({
           parentRef={parentRef}
           onClickOutside={() => setIsOpen(false)}
         >
-          <div className={`${styles.options}`}>
-            {displayOptions.map((option) => (
-              <div
-                key={option.id}
-                className={styles.option}
-                onClick={() => {
-                  onChange(option);
-                  setIsOpen(false);
-                }}
-              >
-                {optionElement
-                  ? React.createElement(optionElement, { value: option.value })
-                  : option.value}
-              </div>
-            ))}
-          </div>
+          <DropDownOptions
+            options={displayOptions}
+            optionElement={optionElement}
+            onChange={(option) => {
+              onChange(option);
+              setIsOpen(false);
+            }}
+          />
         </DropDownPortal>
       )}
     </>
