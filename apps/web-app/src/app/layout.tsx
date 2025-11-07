@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "API Clinic",
-  description: "Model API Client for all your APIs",
+  description: "Free API Client for testing and developing APIs",
   openGraph: {
     title: "API Clinic",
-    description: "Model API Client for all your APIs",
+    description: "Free API Client for testing and developing APIs",
     images: [
       {
         url: "/cover.png",
