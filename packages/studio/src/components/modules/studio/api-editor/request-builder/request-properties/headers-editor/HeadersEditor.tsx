@@ -57,6 +57,7 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
         name: defaultHeader.name,
         value: "",
         placeholder: defaultHeader.value,
+        defaultValue: defaultHeader.value, // Reset to this on blur if empty
         isKeyReadOnly: true, // Key cannot be edited, from environment
         source: "environment",
       };
@@ -71,6 +72,7 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
           envHeaderEntries[id] = {
             ...envHeaderEntries[id],
             value: envHeader.value,
+            defaultValue: envHeader.value, // Reset to environment-specific value on blur
             source: "environment",
           };
         } else {
@@ -80,6 +82,7 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
             name: envHeader.name,
             value: envHeader.value,
             placeholder: "",
+            defaultValue: envHeader.value, // Reset to this on blur if empty
             isKeyReadOnly: true,
             source: "environment",
           };
@@ -94,6 +97,7 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
           name: envHeader.name,
           value: envHeader.value,
           placeholder: "",
+          defaultValue: envHeader.value, // Reset to default env value on blur if empty
           isKeyReadOnly: true,
           source: "environment",
         };
@@ -147,8 +151,10 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
       if (id.startsWith("env-header-")) {
         const hasValue = header.value && header.value.trim() !== "";
         const isDisabled = header.isDisabled === true;
+        const valueMatchesDefault = header.value === header.defaultValue;
         
-        if (hasValue || isDisabled) {
+        // Only save if has a custom value (different from default) OR is disabled
+        if ((hasValue && !valueMatchesDefault) || isDisabled) {
           // Extract the original ID
           const originalId = id.replace("env-header-", "");
           editableHeaders[originalId] = {
@@ -156,7 +162,7 @@ export default function HeadersEditor({ apiId, onTabChange }: { apiId: string; o
             id: originalId,
           };
         }
-        // If neither has value nor is disabled, don't save (uses env default)
+        // If value is empty, matches default, or not disabled, don't save (uses env default)
       } else {
         // Regular custom header
         editableHeaders[id] = header;

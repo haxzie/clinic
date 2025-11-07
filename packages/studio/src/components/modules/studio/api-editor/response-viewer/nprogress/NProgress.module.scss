@@ -50,10 +50,6 @@
     background-size: 200% 100%;
     animation: gradient 2s linear infinite;
   }
-
-  &:hover {
-    background-color: var(--color-element-background);
-  }
 }
 
 @keyframes gradient {

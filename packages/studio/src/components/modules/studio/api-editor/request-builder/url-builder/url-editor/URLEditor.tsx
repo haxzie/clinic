@@ -213,7 +213,7 @@ export default function URLEditor({
         placeholder="https://example.com"
         spellCheck={false}
         onFocus={() => onFocus()}
-        onBlur={() => onBlur()}
+        onBlur={(_currentValue) => onBlur()}
       />
     </div>
   );

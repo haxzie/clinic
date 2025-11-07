@@ -17,8 +17,17 @@ export default function ResponseStatusBar({
   isPanelHidden: boolean;
   onClickTogglePanel: () => void;
 }) {
+
+  const onDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only toggle if the click is directly on this element, not its children
+    if (e.target === e.currentTarget) {
+      onClickTogglePanel();
+    }
+  };
+  
   return (
-    <div className={styles.responseStatusBar}>
+    <div className={styles.responseStatusBar} onDoubleClick={onDoubleClick}>
+      <div className={styles.draggableHandle}></div>
       <div className={styles.details}>
         {status !== undefined && (
           <div className={styles.status}>

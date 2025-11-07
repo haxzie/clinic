@@ -3,12 +3,13 @@ import useApiStore from '@/store/api-store/api.store';
 import { useShallow } from 'zustand/shallow';
 import { createPortal } from 'react-dom';
 import styles from './VariableInput.module.scss';
+import VariableIcon from '@/components/icons/VariableIcon';
 
 interface VariableInputProps {
   value: string;
   onChange: (value: string) => void;
   onFocus?: () => void;
-  onBlur?: () => void;
+  onBlur?: (currentValue: string) => void;
   onPaste?: (e: React.ClipboardEvent<HTMLDivElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   className?: string;
@@ -317,9 +318,16 @@ export default function VariableInput({
   // Handle blur - re-render with highlighting
   const handleBlurEvent = useCallback(() => {
     const text = editableRef.current?.textContent || '';
-    lastValueRef.current = text;
-    renderContent(text);
-    if (onBlur) onBlur();
+    
+    // Call onBlur first (it might update the value)
+    if (onBlur) {
+      onBlur(text);
+      // Don't update lastValueRef or renderContent yet
+      // The useEffect will handle re-rendering when the parent updates the value prop
+    } else {
+      lastValueRef.current = text;
+      renderContent(text);
+    }
   }, [onBlur, renderContent]);
 
   // Initial render and updates from external value changes
@@ -336,11 +344,8 @@ export default function VariableInput({
 
     // Subsequent updates - only if value actually changed
     if (value !== lastValueRef.current) {
-      const currentText = editableRef.current.textContent || '';
-      if (currentText !== value) {
-        lastValueRef.current = value;
-        renderContent(value);
-      }
+      lastValueRef.current = value;
+      renderContent(value);
     }
   }, [value, renderContent]);
 
@@ -383,6 +388,7 @@ export default function VariableInput({
             transform: 'translate(-50%, -100%)',
           }}
         >
+          <VariableIcon size={16}/>
           {tooltip.text}
         </div>,
         document.body

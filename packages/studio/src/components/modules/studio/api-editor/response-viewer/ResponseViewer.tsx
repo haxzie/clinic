@@ -44,7 +44,11 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
   );
 
   const formattedResponse = useMemo(() => {
-    if (response?.contentType === "application/json" && response?.content && response.content.trim()) {
+    if (
+      response?.contentType === "application/json" &&
+      response?.content &&
+      response.content.trim()
+    ) {
       try {
         const data = JSON.parse(response.content);
         return JSON.stringify(data, null, 2);
@@ -53,7 +57,7 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
         return response?.content;
       }
     }
-    return response?.content || '';
+    return response?.content || "";
   }, [response]);
 
   const handleResponseDownload = () => {
@@ -84,7 +88,7 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
             response.contentType || "text/plain"
           );
       }
-      
+
       // Track API_RESPONSE_DOWNLOADED event
       track(Events.API_RESPONSE_DOWNLOADED, {});
     }
@@ -93,7 +97,7 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
   const handleResponseCopy = () => {
     if (response) {
       navigator.clipboard?.writeText(response.content);
-      
+
       // Track API_RESPONSE_COPIED event
       track(Events.API_RESPONSE_COPIED, {});
     }
@@ -188,8 +192,8 @@ export default function ResponseViewer({ apiId }: { apiId: string }) {
         onResize={handleResize}
         className={styles.responseViewer}
       >
-        <NProgress 
-          active={isLoading} 
+        <NProgress
+          active={isLoading}
           duration={isLoading ? animatedTime : response?.performance?.duration}
         />
         {response ? (

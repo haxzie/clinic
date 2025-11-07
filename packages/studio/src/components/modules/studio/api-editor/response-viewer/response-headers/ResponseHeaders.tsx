@@ -59,18 +59,23 @@ export default function ResponseHeadersView({
           <div className={styles.timingGraph}>
             <div className={styles.timingBar}>
               {getTimingBars().map((bar) => (
-                <Tooltip 
-                  key={bar.type} 
-                  text={bar.type} 
+                <Tooltip
+                  key={bar.type}
+                  text={bar.type}
                   delay={0}
                   style={{
-                  width: `${bar.width}`,
-                  height: "6px"
-                }}>
+                    width: `${bar.width}`,
+                    height: "6px",
+                  }}
+                >
                   <div
                     key={bar.type}
                     className={styles[bar.type]}
-                    style={{ width: "100%", height: "100%", backgroundColor: bar.color }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: bar.color,
+                    }}
                   ></div>
                 </Tooltip>
               ))}
@@ -97,12 +102,14 @@ export default function ResponseHeadersView({
         </div>
         <div className={styles.headersDisplay}>
           <h4 className={styles.title}>Response Headers</h4>
-          {Object.keys(headers).map((key) => (
-            <div className={styles.headerItem} key={headers[key].id}>
-              <span className={styles.headerKey}>{headers[key].name}</span>
-              <span className={styles.headerValue}>{headers[key].value}</span>
-            </div>
-          ))}
+          {Object.keys(headers)
+            .sort()
+            .map((key) => (
+              <div className={styles.headerItem} key={headers[key].id}>
+                <span className={styles.headerKey}>{headers[key].name}</span>
+                <span className={styles.headerValue}>{headers[key].value}</span>
+              </div>
+            ))}
         </div>
       </div>
     </Panel>

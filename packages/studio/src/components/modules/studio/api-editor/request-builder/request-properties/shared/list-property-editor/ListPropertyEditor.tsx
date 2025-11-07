@@ -18,6 +18,7 @@ export type Parameter = {
   isReadOnly?: boolean;
   isKeyReadOnly?: boolean;
   placeholder?: string;
+  defaultValue?: string; // If present, empty values will reset to this on blur
   source?: "environment" | "auth" | "custom";
 };
 
@@ -52,7 +53,7 @@ export default function ListPropertyEditor({
    * @param key
    * @param value
    */
-  const addKeyValue = (name: string, data: string) => {
+  const addKeyValue = (name: string, data: string, focus: "key" | "value" = "key") => {
     const itemId = generateUUID(type);
     const params = {
       ...value,
@@ -68,7 +69,11 @@ export default function ListPropertyEditor({
       setKeyInput("");
       setValueInput("");
       // Focus on the newly created item's key field
-      document.getElementById(`${itemId}-key`)?.focus();
+      if (focus === "key") {
+        document.getElementById(`${itemId}-key`)?.focus();
+      } else {
+        document.getElementById(`${itemId}-value`)?.focus();
+      }
     }, 2);
   };
 
@@ -117,6 +122,7 @@ export default function ListPropertyEditor({
     () => Object.keys(value).every((itemId) => !value[itemId].isDisabled),
     [value]
   );
+
 
   return (
     <div
@@ -218,6 +224,15 @@ export default function ListPropertyEditor({
                   onChange={(newValue) =>
                     updateKeyValue(itemId, value[itemId].name, newValue)
                   }
+                  onBlur={(currentValue) => {
+                    console.log("currentValue", currentValue);
+                    console.log("value[itemId].defaultValue", value[itemId].defaultValue);
+                    // Reset to defaultValue if empty and defaultValue exists
+                    if (currentValue.trim() === "" && value[itemId].defaultValue) {
+                      console.log("resetting to defaultValue", value[itemId].defaultValue);
+                      updateKeyValue(itemId, value[itemId].name, value[itemId].defaultValue!);
+                    }
+                  }}
                   placeholder={value[itemId].placeholder}
                   className={styles.variableInputField}
                 />
@@ -286,8 +301,8 @@ export default function ListPropertyEditor({
                   const newKey = e.target.value;
                   setKeyInput(newKey);
                   // Only create a new item if we have a key and there's a value
-                  if (newKey && valueInput) {
-                    addKeyValue(newKey, valueInput);
+                  if (newKey.trim()) {
+                    addKeyValue(newKey, valueInput, "key");
                   }
                 }}
               />
@@ -299,7 +314,7 @@ export default function ListPropertyEditor({
                   setValueInput(newValue);
                   // Only create a new item if we have a key
                   if (keyInput && newValue) {
-                    addKeyValue(keyInput, newValue);
+                    addKeyValue(keyInput, newValue, "value");
                   }
                 }}
                 placeholder="value"

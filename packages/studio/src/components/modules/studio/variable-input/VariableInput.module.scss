@@ -63,9 +63,13 @@
 
 .tooltip {
   position: fixed;
-  background-color: var(--color-element-background);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
   color: var(--color-font);
-  font-size: var(--font-size-s);
+  font-size: var(--font-size-xs);
   font-family: var(--font-monospace);
   padding: 6px 10px;
   border-radius: 4px;
@@ -88,7 +92,7 @@
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
-    border-color: var(--color-element-background) transparent transparent
+    border-color: var(--color-background) transparent transparent
       transparent;
   }
 }
@@ -96,7 +100,7 @@
 @keyframes tooltipFadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, calc(-100% - 5px));
+    transform: translate(-50%, calc(-100% + 5px));
   }
   to {
     opacity: 0.95;
