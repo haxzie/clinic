@@ -46,6 +46,7 @@ export default function ExplorerPanel() {
             <IconButton
               size="small"
               tooltip="Create Collection"
+              tooltipPosition="bottom"
               onClick={handleCreateNewCollection}
               className={styles.optionIcon}
             >
@@ -54,6 +55,7 @@ export default function ExplorerPanel() {
             <IconButton
               size="small"
               tooltip="New Request"
+              tooltipPosition="bottom"
               onClick={handleCreateNewRequest}
               className={styles.optionIcon}
             >

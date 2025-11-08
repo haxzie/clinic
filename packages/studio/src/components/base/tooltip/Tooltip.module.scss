@@ -6,28 +6,38 @@
 }
 
 .tooltip {
-  position: absolute;
-  background-color: var(--color-element-background);
-  color: white;
-  font-size: 14px;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  color: var(--color-font);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-monospace);
   padding: 6px 10px;
   border-radius: 4px;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.9;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  animation: tooltipFadeIn 0.2s ease-in-out;
+  opacity: 0.95;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
-  transform: translate(-50%, -50%);
-  font-size: var(--font-size-s);
-  line-height: var(--line-height-s);
-  // font-family: var(--font-monospace);
-  
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: tooltipFadeIn 0.2s ease-in-out;
+
+  // Arrow pointing down
   &::after {
-    content: '';
+    content: "";
     position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
+    border-color: var(--color-background) transparent transparent
+      transparent;
   }
 }
 

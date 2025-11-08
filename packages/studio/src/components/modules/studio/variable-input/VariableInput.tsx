@@ -1,9 +1,15 @@
-import React, { useRef, useEffect, useMemo, useCallback, useState } from 'react';
-import useApiStore from '@/store/api-store/api.store';
-import { useShallow } from 'zustand/shallow';
-import { createPortal } from 'react-dom';
-import styles from './VariableInput.module.scss';
-import VariableIcon from '@/components/icons/VariableIcon';
+import React, {
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+} from "react";
+import useApiStore from "@/store/api-store/api.store";
+import { useShallow } from "zustand/shallow";
+import { createPortal } from "react-dom";
+import styles from "./VariableInput.module.scss";
+import VariableIcon from "@/components/icons/VariableIcon";
 
 interface VariableInputProps {
   value: string;
@@ -26,14 +32,14 @@ interface ParsedSegment {
 
 /**
  * VariableInput - An input component that highlights environment variables
- * 
+ *
  * Highlights variables in the format {{variableName}} with:
  * - Green: variable is defined and has a value
  * - Red: variable is undefined or has no value
- * 
+ *
  * @example
- * <VariableInput 
- *   value={url} 
+ * <VariableInput
+ *   value={url}
  *   onChange={setUrl}
  * />
  */
@@ -47,10 +53,14 @@ export default function VariableInput({
   className,
   placeholder,
   spellCheck = false,
-}: VariableInputProps) {  
+}: VariableInputProps) {
   const editableRef = useRef<HTMLDivElement>(null);
   const isComposingRef = useRef(false);
-  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [tooltip, setTooltip] = useState<{
+    text: string;
+    x: number;
+    y: number;
+  } | null>(null);
   const tooltipTimeoutRef = useRef<number | null>(null);
   const lastValueRef = useRef(value);
   const hasMountedRef = useRef(false);
@@ -66,89 +76,97 @@ export default function VariableInput({
 
   // Get merged environment variables for tooltip lookup
   const mergedVariables = useMemo(() => {
-    const defaultEnv = environments['default'];
+    const defaultEnv = environments["default"];
     const activeEnv = environments[activeEnvironmentId];
-    
+
     const merged: Record<string, { name: string; value: string }> = {};
-    
+
     // Add default environment variables
     if (defaultEnv?.data?.variables) {
       Object.values(defaultEnv.data.variables).forEach((variable) => {
         merged[variable.name] = variable;
       });
     }
-    
+
     // Overlay active environment variables (overrides defaults)
-    if (activeEnv?.data?.variables && activeEnv.id !== 'default') {
+    if (activeEnv?.data?.variables && activeEnv.id !== "default") {
       Object.values(activeEnv.data.variables).forEach((variable) => {
         merged[variable.name] = variable;
       });
     }
-    
+
     return merged;
   }, [environments, activeEnvironmentId]);
 
   // Parse text and check variable validity
-  const parseText = useCallback((text: string): ParsedSegment[] => {
-    if (!text) return [];
+  const parseText = useCallback(
+    (text: string): ParsedSegment[] => {
+      if (!text) return [];
 
-    const segments: ParsedSegment[] = [];
-    const regex = /(\{\{\w+\}\})/g;
-    let lastIndex = 0;
-    let match;
+      const segments: ParsedSegment[] = [];
+      const regex = /(\{\{\w+\}\})/g;
+      let lastIndex = 0;
+      let match;
 
-    while ((match = regex.exec(text)) !== null) {
-      // Add text before the variable
-      if (match.index > lastIndex) {
+      while ((match = regex.exec(text)) !== null) {
+        // Add text before the variable
+        if (match.index > lastIndex) {
+          segments.push({
+            text: text.substring(lastIndex, match.index),
+            isVariable: false,
+          });
+        }
+
+        // Extract variable name from {{variableName}}
+        const variableName = match[0].slice(2, -2);
+        const variable = mergedVariables[variableName];
+
+        // Check if variable exists and has a value
+        const isValid = Boolean(
+          variable && variable.value && variable.value.trim() !== ""
+        );
+
         segments.push({
-          text: text.substring(lastIndex, match.index),
+          text: match[0],
+          isVariable: true,
+          isValid,
+          variableValue: variable?.value || undefined,
+        });
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      // Add remaining text after the last variable
+      if (lastIndex < text.length) {
+        segments.push({
+          text: text.substring(lastIndex),
           isVariable: false,
         });
       }
 
-      // Extract variable name from {{variableName}}
-      const variableName = match[0].slice(2, -2);
-      const variable = mergedVariables[variableName];
-      
-      // Check if variable exists and has a value
-      const isValid = Boolean(variable && variable.value && variable.value.trim() !== '');
-
-      segments.push({
-        text: match[0],
-        isVariable: true,
-        isValid,
-        variableValue: variable?.value || undefined,
-      });
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Add remaining text after the last variable
-    if (lastIndex < text.length) {
-      segments.push({
-        text: text.substring(lastIndex),
-        isVariable: false,
-      });
-    }
-
-    return segments;
-  }, [mergedVariables]);
+      return segments;
+    },
+    [mergedVariables]
+  );
 
   // Handle tooltip on hover
-  const handleVariableMouseEnter = useCallback((e: MouseEvent, tooltipText: string) => {
-    if (tooltipTimeoutRef.current) {
-      clearTimeout(tooltipTimeoutRef.current);
-    }
+  const handleVariableMouseEnter = useCallback(
+    (e: MouseEvent, tooltipText: string) => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
 
-    tooltipTimeoutRef.current = window.setTimeout(() => {
-      const rect = (e.target as HTMLElement).getBoundingClientRect();
-      setTooltip({
-        text: tooltipText,
-        x: rect.left + rect.width / 2,
-        y: rect.top - 8,
-      });
-    }, 300);
-  }, []);
+      tooltipTimeoutRef.current = window.setTimeout(() => {
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        setTooltip({
+          text: tooltipText,
+          x: rect.left + rect.width / 2,
+          y: rect.top - 8,
+        });
+      }, 300);
+    },
+    []
+  );
 
   const handleVariableMouseLeave = useCallback(() => {
     if (tooltipTimeoutRef.current) {
@@ -161,7 +179,8 @@ export default function VariableInput({
   // Save cursor position
   const saveCursorPosition = useCallback(() => {
     const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || !editableRef.current) return null;
+    if (!selection || selection.rangeCount === 0 || !editableRef.current)
+      return null;
 
     const range = selection.getRangeAt(0);
     const preCaretRange = range.cloneRange();
@@ -212,65 +231,79 @@ export default function VariableInput({
   }, []);
 
   // Render highlighted content to the contenteditable
-  const renderContent = useCallback((text: string, preserveCursor = false) => {
-    if (!editableRef.current) return;
-    
-    // Mark that we're doing a programmatic update
-    isProgrammaticUpdateRef.current = true;
-    
-    const cursorPosition = preserveCursor ? saveCursorPosition() : null;
-    
-    const segments = parseText(text);
-    editableRef.current.innerHTML = '';
-    
-    segments.forEach((segment) => {
-      const span = document.createElement('span');
-      span.textContent = segment.text;
-      
-      if (segment.isVariable) {
-        span.className = segment.isValid ? styles.validVariable : styles.invalidVariable;
-        const tooltipText = segment.isValid && segment.variableValue
-          ? segment.variableValue
-          : 'Variable not defined or empty';
-        
-        span.addEventListener('mouseenter', (e: MouseEvent) => {
-          handleVariableMouseEnter(e, tooltipText);
-        });
-        span.addEventListener('mouseleave', handleVariableMouseLeave);
-      }
-      
-      editableRef.current!.appendChild(span);
-    });
+  const renderContent = useCallback(
+    (text: string, preserveCursor = false) => {
+      if (!editableRef.current) return;
 
-    if (cursorPosition !== null) {
-      restoreCursorPosition(cursorPosition);
-    }
-    
-    // Reset the flag using setTimeout to ensure all events have been processed
-    setTimeout(() => {
-      isProgrammaticUpdateRef.current = false;
-    }, 0);
-  }, [parseText, styles.validVariable, styles.invalidVariable, handleVariableMouseEnter, handleVariableMouseLeave, saveCursorPosition, restoreCursorPosition]);
+      // Mark that we're doing a programmatic update
+      isProgrammaticUpdateRef.current = true;
+
+      const cursorPosition = preserveCursor ? saveCursorPosition() : null;
+
+      const segments = parseText(text);
+      editableRef.current.innerHTML = "";
+
+      segments.forEach((segment) => {
+        const span = document.createElement("span");
+        span.textContent = segment.text;
+
+        if (segment.isVariable) {
+          span.className = segment.isValid
+            ? styles.validVariable
+            : styles.invalidVariable;
+          const tooltipText =
+            segment.isValid && segment.variableValue
+              ? segment.variableValue
+              : "Variable not defined or empty";
+
+          span.addEventListener("mouseenter", (e: MouseEvent) => {
+            handleVariableMouseEnter(e, tooltipText);
+          });
+          span.addEventListener("mouseleave", handleVariableMouseLeave);
+        }
+
+        editableRef.current!.appendChild(span);
+      });
+
+      if (cursorPosition !== null) {
+        restoreCursorPosition(cursorPosition);
+      }
+
+      // Reset the flag using setTimeout to ensure all events have been processed
+      setTimeout(() => {
+        isProgrammaticUpdateRef.current = false;
+      }, 0);
+    },
+    [
+      parseText,
+      styles.validVariable,
+      styles.invalidVariable,
+      handleVariableMouseEnter,
+      handleVariableMouseLeave,
+      saveCursorPosition,
+      restoreCursorPosition,
+    ]
+  );
 
   // Handle input changes
   const handleInput = useCallback(() => {
     if (isComposingRef.current) return;
-    
+
     // Ignore input events triggered by programmatic updates
     if (isProgrammaticUpdateRef.current) {
-      console.log('[handleInput] Ignoring programmatic update');
+      console.log("[handleInput] Ignoring programmatic update");
       return;
     }
-    
-    const text = editableRef.current?.textContent || '';
-    
+
+    const text = editableRef.current?.textContent || "";
+
     // Only update if text has actually changed
     if (text === lastValueRef.current) return;
-    
-    console.log('[handleInput] User input detected, text:', text);
+
+    console.log("[handleInput] User input detected, text:", text);
     lastValueRef.current = text;
     onChange(text);
-    
+
     // Render with highlighting in real-time
     // Use requestAnimationFrame to ensure onChange completes first
     requestAnimationFrame(() => {
@@ -279,31 +312,34 @@ export default function VariableInput({
   }, [onChange, renderContent]);
 
   // Handle paste - strip formatting and paste as plain text
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    
-    const text = e.clipboardData.getData('text/plain');
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-    
-    selection.deleteFromDocument();
-    const range = selection.getRangeAt(0);
-    const textNode = document.createTextNode(text);
-    range.insertNode(textNode);
-    
-    // Move cursor after inserted text
-    range.setStartAfter(textNode);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
-    // Trigger input handling which will re-render with highlighting
-    handleInput();
-    
-    if (onPaste) {
-      onPaste(e);
-    }
-  }, [handleInput, onPaste]);
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLDivElement>) => {
+      e.preventDefault();
+
+      const text = e.clipboardData.getData("text/plain");
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+
+      selection.deleteFromDocument();
+      const range = selection.getRangeAt(0);
+      const textNode = document.createTextNode(text);
+      range.insertNode(textNode);
+
+      // Move cursor after inserted text
+      range.setStartAfter(textNode);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Trigger input handling which will re-render with highlighting
+      handleInput();
+
+      if (onPaste) {
+        onPaste(e);
+      }
+    },
+    [handleInput, onPaste]
+  );
 
   // Handle composition events for IME input
   const handleCompositionStart = useCallback(() => {
@@ -316,15 +352,18 @@ export default function VariableInput({
   }, [handleInput]);
 
   // Handle keydown - prevent Enter from creating new lines
-  const handleKeyDownEvent = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-    
-    if (onKeyDown) {
-      onKeyDown(e);
-    }
-  }, [onKeyDown]);
+  const handleKeyDownEvent = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+
+      if (onKeyDown) {
+        onKeyDown(e);
+      }
+    },
+    [onKeyDown]
+  );
 
   // Handle focus - keep plain text during editing
   const handleFocusEvent = useCallback(() => {
@@ -333,8 +372,8 @@ export default function VariableInput({
 
   // Handle blur - re-render with highlighting
   const handleBlurEvent = useCallback(() => {
-    const text = editableRef.current?.textContent || '';
-    
+    const text = editableRef.current?.textContent || "";
+
     //Don't call renderContent immediately - wait for the value prop to potentially update
     if (onBlur) {
       lastValueRef.current = text;
@@ -360,7 +399,12 @@ export default function VariableInput({
 
     // Subsequent updates - only if value actually changed
     if (value !== lastValueRef.current) {
-      console.log('[useEffect] Value changed from', lastValueRef.current, 'to', value);
+      console.log(
+        "[useEffect] Value changed from",
+        lastValueRef.current,
+        "to",
+        value
+      );
       lastValueRef.current = value;
       renderContent(value);
     }
@@ -377,9 +421,9 @@ export default function VariableInput({
 
   return (
     <>
-      <div 
+      <div
         ref={editableRef}
-        className={`${styles.variableInput} ${className || ''}`}
+        className={`${styles.variableInput} ${className || ""}`}
         contentEditable
         onInput={handleInput}
         onFocus={handleFocusEvent}
@@ -393,23 +437,24 @@ export default function VariableInput({
         role="textbox"
         aria-multiline="false"
       />
-      
+
       {/* Portal tooltip to avoid parent overflow issues */}
-      {tooltip && createPortal(
-        <div
-          className={styles.tooltip}
-          style={{
-            position: 'fixed',
-            left: `${tooltip.x}px`,
-            top: `${tooltip.y}px`,
-            transform: 'translate(-50%, -100%)',
-          }}
-        >
-          <VariableIcon size={16}/>
-          {tooltip.text}
-        </div>,
-        document.body
-      )}
+      {tooltip &&
+        createPortal(
+          <div
+            className={styles.tooltip}
+            style={{
+              position: "fixed",
+              left: `${tooltip.x}px`,
+              top: `${tooltip.y}px`,
+              transform: "translate(-50%, -100%)",
+            }}
+          >
+            <VariableIcon size={16} />
+            <span>{tooltip.text}</span>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
