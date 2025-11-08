@@ -47,13 +47,14 @@ export default function VariableInput({
   className,
   placeholder,
   spellCheck = false,
-}: VariableInputProps) {
+}: VariableInputProps) {  
   const editableRef = useRef<HTMLDivElement>(null);
   const isComposingRef = useRef(false);
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const tooltipTimeoutRef = useRef<number | null>(null);
   const lastValueRef = useRef(value);
   const hasMountedRef = useRef(false);
+  const isProgrammaticUpdateRef = useRef(false);
 
   // Get environment data from store
   const { environments, activeEnvironmentId } = useApiStore(
@@ -214,6 +215,9 @@ export default function VariableInput({
   const renderContent = useCallback((text: string, preserveCursor = false) => {
     if (!editableRef.current) return;
     
+    // Mark that we're doing a programmatic update
+    isProgrammaticUpdateRef.current = true;
+    
     const cursorPosition = preserveCursor ? saveCursorPosition() : null;
     
     const segments = parseText(text);
@@ -241,17 +245,29 @@ export default function VariableInput({
     if (cursorPosition !== null) {
       restoreCursorPosition(cursorPosition);
     }
+    
+    // Reset the flag using setTimeout to ensure all events have been processed
+    setTimeout(() => {
+      isProgrammaticUpdateRef.current = false;
+    }, 0);
   }, [parseText, styles.validVariable, styles.invalidVariable, handleVariableMouseEnter, handleVariableMouseLeave, saveCursorPosition, restoreCursorPosition]);
 
   // Handle input changes
   const handleInput = useCallback(() => {
     if (isComposingRef.current) return;
     
+    // Ignore input events triggered by programmatic updates
+    if (isProgrammaticUpdateRef.current) {
+      console.log('[handleInput] Ignoring programmatic update');
+      return;
+    }
+    
     const text = editableRef.current?.textContent || '';
     
     // Only update if text has actually changed
     if (text === lastValueRef.current) return;
     
+    console.log('[handleInput] User input detected, text:', text);
     lastValueRef.current = text;
     onChange(text);
     
@@ -319,11 +335,11 @@ export default function VariableInput({
   const handleBlurEvent = useCallback(() => {
     const text = editableRef.current?.textContent || '';
     
-    // Call onBlur first (it might update the value)
+    //Don't call renderContent immediately - wait for the value prop to potentially update
     if (onBlur) {
+      lastValueRef.current = text;
       onBlur(text);
-      // Don't update lastValueRef or renderContent yet
-      // The useEffect will handle re-rendering when the parent updates the value prop
+      // Don't render here - let useEffect handle it when value prop updates
     } else {
       lastValueRef.current = text;
       renderContent(text);
@@ -344,6 +360,7 @@ export default function VariableInput({
 
     // Subsequent updates - only if value actually changed
     if (value !== lastValueRef.current) {
+      console.log('[useEffect] Value changed from', lastValueRef.current, 'to', value);
       lastValueRef.current = value;
       renderContent(value);
     }

@@ -53,7 +53,11 @@ export default function ListPropertyEditor({
    * @param key
    * @param value
    */
-  const addKeyValue = (name: string, data: string, focus: "key" | "value" = "key") => {
+  const addKeyValue = (
+    name: string,
+    data: string,
+    focus: "key" | "value" = "key"
+  ) => {
     const itemId = generateUUID(type);
     const params = {
       ...value,
@@ -123,7 +127,6 @@ export default function ListPropertyEditor({
     [value]
   );
 
-
   return (
     <div
       className={[
@@ -180,8 +183,16 @@ export default function ListPropertyEditor({
                 onChange={(e) =>
                   updateKeyValue(itemId, e.target.value, value[itemId].value)
                 }
-                readOnly={value[itemId].isReadOnly || value[itemId].isKeyReadOnly || disableKeyChange}
-                disabled={value[itemId].isReadOnly || value[itemId].isKeyReadOnly || disableKeyChange}
+                readOnly={
+                  value[itemId].isReadOnly ||
+                  value[itemId].isKeyReadOnly ||
+                  disableKeyChange
+                }
+                disabled={
+                  value[itemId].isReadOnly ||
+                  value[itemId].isKeyReadOnly ||
+                  disableKeyChange
+                }
               />
               {value[itemId].source === "environment" && onIconClick && (
                 <IconButton
@@ -225,11 +236,8 @@ export default function ListPropertyEditor({
                     updateKeyValue(itemId, value[itemId].name, newValue)
                   }
                   onBlur={(currentValue) => {
-                    console.log("currentValue", currentValue);
-                    console.log("value[itemId].defaultValue", value[itemId].defaultValue);
                     // Reset to defaultValue if empty and defaultValue exists
                     if (currentValue.trim() === "" && value[itemId].defaultValue) {
-                      console.log("resetting to defaultValue", value[itemId].defaultValue);
                       updateKeyValue(itemId, value[itemId].name, value[itemId].defaultValue!);
                     }
                   }}
@@ -254,33 +262,32 @@ export default function ListPropertyEditor({
                 </IconButton>
               </div>
             ) : (
-              !disableRemoveItem && (
-                value[itemId].source === "environment" && value[itemId].value ? (
-                  <div className={styles.actionButton}>
-                    <IconButton
-                      size="small"
-                      onClick={() => resetKeyValue(itemId)}
-                      tooltip="Reset to environment default"
-                      tooltipPosition="left"
-                      showSuccess
-                    >
-                      <RefreshIcon size={18} />
-                    </IconButton>
-                  </div>
-                ) : (
-                  <div className={styles.actionButton}>
-                    <IconButton
-                      size="small"
-                      onClick={() => deleteKeyValue(itemId)}
-                      tooltip="Delete"
-                      tooltipPosition="left"
-                      showSuccess
-                    >
-                      <ClearIcon size={18} />
-                    </IconButton>
-                  </div>
-                )
-              )
+              !disableRemoveItem &&
+              (value[itemId].source === "environment" && value[itemId].value ? (
+                <div className={styles.actionButton}>
+                  <IconButton
+                    size="small"
+                    onClick={() => resetKeyValue(itemId)}
+                    tooltip="Reset to environment default"
+                    tooltipPosition="left"
+                    showSuccess
+                  >
+                    <RefreshIcon size={18} />
+                  </IconButton>
+                </div>
+              ) : (
+                <div className={styles.actionButton}>
+                  <IconButton
+                    size="small"
+                    onClick={() => deleteKeyValue(itemId)}
+                    tooltip="Delete"
+                    tooltipPosition="left"
+                    showSuccess
+                  >
+                    <ClearIcon size={18} />
+                  </IconButton>
+                </div>
+              ))
             )}
           </div>
         ))}
