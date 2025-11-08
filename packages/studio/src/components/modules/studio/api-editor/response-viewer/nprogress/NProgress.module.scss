@@ -1,7 +1,7 @@
 .nprogress {
   width: 100%;
   height: 2px;
-  background-color: var(--color-input-background);
+  background-color: transparent;
   // Only transition opacity and background-color, NOT background-position
   transition: opacity 0.2s ease-in-out, background-color 0.2s ease-in-out;
   
