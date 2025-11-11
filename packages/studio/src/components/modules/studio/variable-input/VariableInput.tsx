@@ -238,7 +238,9 @@ export default function VariableInput({
       // Mark that we're doing a programmatic update
       isProgrammaticUpdateRef.current = true;
 
-      const cursorPosition = preserveCursor ? saveCursorPosition() : null;
+      // Only save/restore cursor if this field is currently focused
+      const isFocused = document.activeElement === editableRef.current;
+      const cursorPosition = preserveCursor && isFocused ? saveCursorPosition() : null;
 
       const segments = parseText(text);
       editableRef.current.innerHTML = "";
@@ -265,7 +267,8 @@ export default function VariableInput({
         editableRef.current!.appendChild(span);
       });
 
-      if (cursorPosition !== null) {
+      // Only restore cursor if this field is focused
+      if (cursorPosition !== null && isFocused) {
         restoreCursorPosition(cursorPosition);
       }
 
@@ -314,6 +317,16 @@ export default function VariableInput({
   // Handle paste - strip formatting and paste as plain text
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLDivElement>) => {
+      // Call parent's onPaste first to allow custom handling (e.g., curl command parsing)
+      if (onPaste) {
+        onPaste(e);
+      }
+
+      // If parent prevented default, don't proceed with normal paste handling
+      if (e.defaultPrevented) {
+        return;
+      }
+
       e.preventDefault();
 
       const text = e.clipboardData.getData("text/plain");
@@ -333,10 +346,6 @@ export default function VariableInput({
 
       // Trigger input handling which will re-render with highlighting
       handleInput();
-
-      if (onPaste) {
-        onPaste(e);
-      }
     },
     [handleInput, onPaste]
   );
@@ -409,6 +418,17 @@ export default function VariableInput({
       renderContent(value);
     }
   }, [value, renderContent]);
+
+  // Rerender when variables change (to update highlighting)
+  useEffect(() => {
+    if (!editableRef.current || !hasMountedRef.current) return;
+
+    // Only rerender if this field is not currently focused
+    // This prevents interfering with typing in other input fields
+    if (document.activeElement !== editableRef.current) {
+      renderContent(lastValueRef.current, true);
+    }
+  }, [mergedVariables, renderContent]);
 
   // Cleanup tooltip timeout on unmount
   useEffect(() => {

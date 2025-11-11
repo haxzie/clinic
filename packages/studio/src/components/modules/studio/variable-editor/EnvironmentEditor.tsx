@@ -2,16 +2,16 @@ import React, { useState, useCallback, useRef } from "react";
 import styles from "./EnvironmentEditor.module.scss";
 import IconButton from "@/components/base/icon-button/IconButton";
 import ClearIcon from "@/components/icons/ClearIcon";
-import ListPropertyEditor, { Parameter } from "../api-editor/request-builder/request-properties/shared/list-property-editor/ListPropertyEditor";
 import { createDialog, TProps } from "@/hooks/useDialog";
 import AddIcon from "@/components/icons/AddIcon";
 import DeleteIcon from "@/components/icons/DeleteIcon";
 import useApiStore from "@/store/api-store/api.store";
 import { useShallow } from "zustand/shallow";
 import EditableInputField from "../explorer-panel/file-tree/editable-input-field/EditableInputField";
-import { EnvironmentVariable } from "@/store/api-store/api.types";
 import { motion, AnimatePresence } from "motion/react";
 import LockIcon from "@/components/icons/LockIcon";
+import VariableEditorTab from "./VariableEditorTab";
+import HeaderEditorTab from "./HeaderEditorTab";
 
 type TabType = "variables" | "headers";
 
@@ -60,134 +60,10 @@ export default function EnvironmentEditor({ close, data }: TProps<unknown, { tab
     [selectedEnvironmentId, updateEnvironment]
   );
 
-  const handleUpdateVariables = useCallback(
-    (values: Record<string, Parameter>) => {
-      const variables: Record<string, EnvironmentVariable> = {};
-      Object.keys(values).forEach((key) => {
-        const param = values[key];
-        variables[key] = {
-          id: param.id,
-          name: param.name,
-          value: param.value,
-          isReadOnly: param.isReadOnly,
-          isDisabled: param.isDisabled,
-        };
-      });
-
-      updateEnvironment(selectedEnvironmentId, {
-        data: {
-          ...selectedEnvironment.data,
-          variables,
-        },
-      });
-    },
-    [selectedEnvironmentId, selectedEnvironment, updateEnvironment]
-  );
-
-  const handleUpdateHeaders = useCallback(
-    (values: Record<string, Parameter>) => {
-      const headers: Record<string, EnvironmentVariable> = {};
-      Object.keys(values).forEach((key) => {
-        const param = values[key];
-        headers[key] = {
-          id: param.id,
-          name: param.name,
-          value: param.value,
-          isReadOnly: param.isReadOnly,
-          isDisabled: param.isDisabled,
-        };
-      });
-
-      updateEnvironment(selectedEnvironmentId, {
-        data: {
-          ...selectedEnvironment.data,
-          headers,
-        },
-      });
-    },
-    [selectedEnvironmentId, selectedEnvironment, updateEnvironment]
-  );
-
   const handleSelectEnvironment = useCallback((envId: string) => {
     setSelectedEnvironmentId(envId);
     setActiveEnvironment(envId);
   }, [setActiveEnvironment]);
-
-  // Convert environment variables to Parameter format for ListPropertyEditor
-  // For non-default environments, merge with default values as placeholders
-  const variablesAsParams: Record<string, Parameter> = React.useMemo(() => {
-    if (!selectedEnvironment) return {};
-    
-    const result: Record<string, Parameter> = {};
-    const defaultEnv = environments["default"];
-    
-    // If not default environment, show default values as placeholders
-    if (!selectedEnvironment.isDefault && defaultEnv) {
-      // First, add all default variables as placeholders with readonly keys
-      Object.keys(defaultEnv.data.variables).forEach((key) => {
-        const defaultVar = defaultEnv.data.variables[key];
-        result[key] = {
-          id: defaultVar.id,
-          name: defaultVar.name,
-          value: "",
-          placeholder: defaultVar.value,
-          isKeyReadOnly: true, // Key cannot be edited, inherited from default
-        };
-      });
-    }
-    
-    // Then overlay current environment's variables
-    Object.keys(selectedEnvironment.data.variables).forEach((key) => {
-      const variable = selectedEnvironment.data.variables[key];
-      result[key] = {
-        id: variable.id,
-        name: variable.name,
-        value: variable.value,
-        placeholder: result[key]?.placeholder,
-        isKeyReadOnly: result[key]?.isKeyReadOnly, // Preserve readonly status if inherited
-        isDisabled: variable.isDisabled,
-      };
-    });
-    
-    return result;
-  }, [selectedEnvironment, environments]);
-
-  const headersAsParams: Record<string, Parameter> = React.useMemo(() => {
-    if (!selectedEnvironment) return {};
-    
-    const result: Record<string, Parameter> = {};
-    const defaultEnv = environments["default"];
-    
-    // If not default environment, show default values as placeholders
-    if (!selectedEnvironment.isDefault && defaultEnv) {
-      // First, add all default headers as placeholders with readonly keys
-      Object.keys(defaultEnv.data.headers).forEach((key) => {
-        const defaultHeader = defaultEnv.data.headers[key];
-        result[key] = {
-          id: defaultHeader.id,
-          name: defaultHeader.name,
-          value: "",
-          placeholder: defaultHeader.value,
-          isKeyReadOnly: true, // Key cannot be edited, inherited from default
-        };
-      });
-    }
-    
-    // Then overlay current environment's headers
-    Object.keys(selectedEnvironment.data.headers).forEach((key) => {
-      const header = selectedEnvironment.data.headers[key];
-      result[key] = {
-        id: header.id,
-        name: header.name,
-        value: header.value,
-        placeholder: result[key]?.placeholder,
-        isKeyReadOnly: result[key]?.isKeyReadOnly, // Preserve readonly status if inherited
-        isDisabled: header.isDisabled,
-      };
-    });
-    
-    return result;
-  }, [selectedEnvironment, environments]);
 
   return (
     <div className={styles.variableEditor}>
@@ -275,7 +151,7 @@ export default function EnvironmentEditor({ close, data }: TProps<unknown, { tab
                   />
                 )}
                 <span className={styles.label}>Variables</span>
-                {Object.keys(variablesAsParams).length > 0 && (
+                {selectedEnvironment && Object.keys(selectedEnvironment.data.variables).length > 0 && (
                   <span className={styles.indicator} />
                 )}
               </button>
@@ -295,7 +171,7 @@ export default function EnvironmentEditor({ close, data }: TProps<unknown, { tab
                   />
                 )}
                 <span className={styles.label}>Headers</span>
-                {Object.keys(headersAsParams).length > 0 && (
+                {selectedEnvironment && Object.keys(selectedEnvironment.data.headers).length > 0 && (
                   <span className={styles.indicator} />
                 )}
               </button>
@@ -314,13 +190,7 @@ export default function EnvironmentEditor({ close, data }: TProps<unknown, { tab
                       ease: "easeInOut",
                     }}
                   >
-                    <ListPropertyEditor
-                      title="Variable"
-                      type="Variable"
-                      value={variablesAsParams}
-                      onChange={handleUpdateVariables}
-                      disableRemoveItem={selectedEnvironment.isDefault ? false : undefined}
-                    />
+                    <VariableEditorTab selectedEnvironmentId={selectedEnvironmentId} />
                   </motion.div>
                 )}
                 {activeTab === "headers" && (
@@ -334,13 +204,7 @@ export default function EnvironmentEditor({ close, data }: TProps<unknown, { tab
                       ease: "easeInOut",
                     }}
                   >
-                    <ListPropertyEditor
-                      title="Header"
-                      type="Header"
-                      value={headersAsParams}
-                      onChange={handleUpdateHeaders}
-                      disableRemoveItem={selectedEnvironment.isDefault ? false : undefined}
-                    />
+                    <HeaderEditorTab selectedEnvironmentId={selectedEnvironmentId} />
                   </motion.div>
                 )}
               </AnimatePresence>
